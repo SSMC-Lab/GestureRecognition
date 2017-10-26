@@ -1,11 +1,11 @@
-package com.example.monster.airgesture;
+package com.example.monster.airgesture.model.phase;
 
-import android.content.Context;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
-import android.os.Environment;
 import android.util.Log;
+
+import com.example.monster.airgesture.GlobalConfig;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;

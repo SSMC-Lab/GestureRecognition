@@ -1,4 +1,4 @@
-package com.example.monster.airgesture;
+package com.example.monster.airgesture.model.phase;
 
 import android.support.annotation.IntDef;
 

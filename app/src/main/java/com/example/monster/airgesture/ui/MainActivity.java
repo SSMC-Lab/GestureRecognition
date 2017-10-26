@@ -1,4 +1,4 @@
-package com.example.monster.airgesture;
+package com.example.monster.airgesture.ui;
 
 import android.os.Build;
 import android.os.Message;
@@ -21,6 +21,10 @@ import java.util.Date;
 import java.util.List;
 
 import android.os.Handler;
+
+import com.example.monster.airgesture.R;
+import com.example.monster.airgesture.model.phase.AudioTrackPlay;
+import com.example.monster.airgesture.GlobalConfig;
 
 public class MainActivity extends ActionBarActivity implements Thread.UncaughtExceptionHandler {
     //////////////////UI///////////////////////////////

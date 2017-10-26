@@ -1,7 +1,8 @@
-package com.example.monster.airgesture;
+package com.example.monster.airgesture.model.phase;
 
 import android.media.AudioFormat;
-import java.text.SimpleDateFormat;
+
+import com.example.monster.airgesture.GlobalConfig;
 
 /**
  * Created by FruitBasket on 2017/5/27.

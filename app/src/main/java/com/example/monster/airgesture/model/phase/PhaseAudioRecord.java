@@ -1,15 +1,15 @@
-package com.example.monster.airgesture;
+package com.example.monster.airgesture.model.phase;
 
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
-import android.os.AsyncTask;
-import android.os.Process;
 import android.util.Log;
+
+import com.example.monster.airgesture.GlobalConfig;
+import com.example.monster.airgesture.utils.WaveFileUtil;
 
 import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;

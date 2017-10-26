@@ -1,12 +1,11 @@
-package com.example.monster.airgesture;
+package com.example.monster.airgesture.model.phase;
 
-import android.media.AudioRecord;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.provider.Settings;
 import android.util.Log;
+
+import com.example.monster.airgesture.GlobalConfig;
 
 import java.util.*;
 

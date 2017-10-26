@@ -1,19 +1,11 @@
-package  com.example.monster.airgesture;
+package com.example.monster.airgesture.model.phase;
 
-import android.content.Context;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
-import android.os.Environment;
 import android.util.Log;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import com.example.monster.airgesture.GlobalConfig;
 
 public class WavRecorder extends Recorder {
 

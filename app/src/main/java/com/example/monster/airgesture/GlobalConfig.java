@@ -2,19 +2,17 @@ package com.example.monster.airgesture;
 
 import android.app.Application;
 import android.media.AudioFormat;
-import android.media.MediaRecorder;
-import android.util.Log;
+
+import com.example.monster.airgesture.model.phase.PhaseAudioRecord;
+import com.example.monster.airgesture.model.phase.PhaseProxy;
+import com.example.monster.airgesture.model.phase.WavRecorder;
+import com.example.monster.airgesture.model.phase.WavePlayer;
+import com.example.monster.airgesture.utils.WaveFileUtil;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.text.SimpleDateFormat;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * Created by Administrator on 2017/7/5.
@@ -41,7 +39,7 @@ public class GlobalConfig extends Application {
         ///////////////////////////////////////////
         public SynchLinkedList<byte[]> byteSynchLinkedList = new SynchLinkedList<byte[]>();
         //移植深大播放录制
-        public static WavePlayer  stWavePlayer = new WavePlayer(3, AUDIO_PLAY_FREQ, 1,  AUDIO_SAMPLE_RATE);
+        public static WavePlayer stWavePlayer = new WavePlayer(3, AUDIO_PLAY_FREQ, 1,  AUDIO_SAMPLE_RATE);
         public static WavRecorder stWavRecorder = new WavRecorder(AudioFormat.CHANNEL_IN_MONO,  AUDIO_SAMPLE_RATE, AudioFormat.ENCODING_PCM_16BIT);
 
         /////////////////file play//////////////////////////////////////

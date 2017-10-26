@@ -1,4 +1,4 @@
-package com.example.monster.airgesture;
+package com.example.monster.airgesture.model.phase;
 
 /**
  * Created by bostinshi on 2017/7/27.

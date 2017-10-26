@@ -1,10 +1,10 @@
-package com.example.monster.airgesture;
+package com.example.monster.airgesture.model.phase;
 
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
-import android.os.Handler;
-import android.util.Log;
+
+import com.example.monster.airgesture.GlobalConfig;
 
 import static java.lang.Math.PI;
 
@@ -17,7 +17,7 @@ public class AudioTrackPlay {
     private byte generatedSound[] ;
     public int iDataLen = 8192;
 
-    AudioTrackPlay() {
+    public AudioTrackPlay() {
         init();
     }
     public void init(){

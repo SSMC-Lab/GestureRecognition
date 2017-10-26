@@ -1,10 +1,11 @@
-package com.example.monster.airgesture;
+package com.example.monster.airgesture.utils;
 
-import android.content.Context;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.os.Environment;
 import android.util.Log;
+
+import com.example.monster.airgesture.GlobalConfig;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -19,9 +20,6 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
 
 /**

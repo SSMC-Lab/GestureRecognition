@@ -13,12 +13,12 @@ public interface CandidateDB {
      * @param sortMode  排序模式
      * @return 对应编码的单词组成的集合
      */
-    List<String> getWordList(int coding, int sortMode);
+    List<String> getWordList(String coding, int sortMode);
 
     /**
      * 当编码序列中笔画小于2时，返回对应编码的字母
      * @param type 编码类型
      * @return 对应编码的字母集合
      */
-    List<String> getLetter(int type);
+    List<String> getLetter(String type);
 }

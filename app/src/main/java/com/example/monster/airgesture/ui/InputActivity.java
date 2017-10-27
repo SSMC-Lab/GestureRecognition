@@ -8,11 +8,11 @@ import java.util.List;
  * Created by WelkinShadow on 2017/10/26.
  */
 
-public class InputActivity<V extends InputContract.Presenter> extends BaseActivity implements InputContract.View{
+public class InputActivity<T extends InputContract.Presenter> extends BaseActivity<T> implements InputContract.View{
 
     @Override
-    public BaseContract.Presenter setPresenter() {
-        return new InputPresenterImpl();
+    public T setPresenter() {
+        return (T) new InputPresenterImpl();
     }
 
     @Override
@@ -22,7 +22,7 @@ public class InputActivity<V extends InputContract.Presenter> extends BaseActivi
 
     @Override
     public void initialize() {
-
+        getPresenter().initConfig();
     }
 
     @Override

@@ -12,12 +12,18 @@ public class InputPresenterImpl<V extends InputContract.View> extends BasePresen
 
     }
 
-    void setDBModel(CandidateDB db){
+    @Override
+    public void findWord(int coding) {
 
     }
 
     @Override
-    public void findWord(int coding) {
+    public void onAttachDB(CandidateDB db) {
+
+    }
+
+    @Override
+    public void onDetachDB(CandidateDB db) {
 
     }
 

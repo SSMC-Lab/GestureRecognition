@@ -13,12 +13,12 @@ public class BasePresenterImpl<V extends BaseContract.View> implements BaseContr
     }
 
     @Override
-    public void onAttach(V view) {
+    public void onAttachView(V view) {
         this.view = view;
     }
 
     @Override
-    public void onDetach() {
+    public void onDetachView() {
         view = null;
     }
 }

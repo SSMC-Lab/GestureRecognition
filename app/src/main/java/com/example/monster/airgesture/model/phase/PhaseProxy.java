@@ -5,6 +5,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
+import com.example.monster.airgesture.Conditions;
 import com.example.monster.airgesture.GlobalConfig;
 
 import java.util.*;
@@ -97,9 +98,9 @@ public class PhaseProxy {
                         Log.i("noaction", "cost:" + lCostTime + "|type:" + iType);
                     }
                     if (handler != null && iType > 0.0) {
-                        Message message = handler.obtainMessage(1);
                         Bundle bundle = new Bundle();
-                        bundle.putFloat("type",iType);
+                        bundle.putFloat(Conditions.TYPE, iType);
+                        Message message = handler.obtainMessage(Conditions.MESSAGE_PHASE_MODEL);
                         message.setData(bundle);
                         handler.sendMessage(message);
                     }

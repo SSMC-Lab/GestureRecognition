@@ -10,9 +10,9 @@ public interface BaseContract {
 
     interface Presenter<V extends View> {
 
-        void onAttach(V view);
+        void onAttachView(V view);
 
-        void onDetach();
+        void onDetachView();
     }
 
     interface View {

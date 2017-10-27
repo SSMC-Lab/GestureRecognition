@@ -22,6 +22,7 @@ import java.util.List;
 
 import android.os.Handler;
 
+import com.example.monster.airgesture.Conditions;
 import com.example.monster.airgesture.R;
 import com.example.monster.airgesture.model.phase.AudioTrackPlay;
 import com.example.monster.airgesture.GlobalConfig;
@@ -39,11 +40,11 @@ public class MainActivity extends ActionBarActivity implements Thread.UncaughtEx
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            float iType = msg.getData().getFloat("type");
+            float iType = msg.getData().getFloat(Conditions.TYPE);
             tvType.setText("type :" + iType);
-            SimpleDateFormat fm =new SimpleDateFormat("yyyy/MM/dd HH:mm");
+            SimpleDateFormat fm = new SimpleDateFormat("yyyy/MM/dd HH:mm");
             Date now = new Date();
-            types.add(fm.format(now) +": type :"+ iType);
+            types.add(fm.format(now) + ": type :" + iType);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
                 listView.deferNotifyDataSetChanged();
             }
@@ -59,7 +60,7 @@ public class MainActivity extends ActionBarActivity implements Thread.UncaughtEx
         tv = (TextView) findViewById(R.id.textView2);
         tvType = (TextView) findViewById(R.id.text_type);
         listView = (ListView) findViewById(R.id.type_listview);
-        listView.setAdapter(new ArrayAdapter<String>(this,android.R.layout.simple_expandable_list_item_1,types));
+        listView.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_expandable_list_item_1, types));
 
 
         //在此调用下面方法，才能捕获到线程中的异常

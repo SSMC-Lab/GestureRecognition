@@ -1,6 +1,7 @@
 package com.example.monster.airgesture.ui;
 
 import com.example.monster.airgesture.R;
+import com.example.monster.airgesture.model.db.CandidateWord;
 
 import java.util.List;
 
@@ -8,11 +9,11 @@ import java.util.List;
  * Created by WelkinShadow on 2017/10/26.
  */
 
-public class InputActivity<T extends InputContract.Presenter> extends BaseActivity<T> implements InputContract.View{
+public class InputActivity<V extends InputContract.Presenter> extends BaseActivity implements InputContract.View{
 
     @Override
-    public T setPresenter() {
-        return (T) new InputPresenterImpl();
+    public BaseContract.Presenter setPresenter() {
+        return new InputPresenterImpl();
     }
 
     @Override
@@ -22,7 +23,7 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
 
     @Override
     public void initialize() {
-        getPresenter().initConfig();
+
     }
 
     @Override
@@ -56,7 +57,7 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
     }
 
     @Override
-    public void setCandidateWord(List<String> candidateWord) {
+    public void setCandidateWord(List<CandidateWord> candidateWord) {
 
     }
 

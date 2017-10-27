@@ -1,7 +1,7 @@
 package com.example.monster.airgesture.ui;
 
 import com.example.monster.airgesture.model.db.CandidateDB;
-
+import com.example.monster.airgesture.model.db.CandidateWord;
 import java.util.List;
 
 /**
@@ -13,7 +13,7 @@ public interface InputContract {
     interface Presenter<V extends View> extends BaseContract.Presenter<V>{
 
         /** 和 database 模块的交互 */
-        void findWord(int coding);
+        void findWord(String coding);
 
         void onAttachDB(CandidateDB db);
 
@@ -47,7 +47,7 @@ public interface InputContract {
 
 
         /** candidate word **/
-        void setCandidateWord(List<String> candidateWord);
+        void setCandidateWord(List<CandidateWord> candidateWord);
 
         void clearCandidateWord();
     }

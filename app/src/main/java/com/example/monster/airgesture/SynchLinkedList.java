@@ -1,6 +1,5 @@
 package com.example.monster.airgesture;
 
-
 import java.util.LinkedList;
 
 /**

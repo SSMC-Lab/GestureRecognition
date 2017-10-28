@@ -7,6 +7,7 @@ import android.util.Log;
 
 import com.example.monster.airgesture.Conditions;
 import com.example.monster.airgesture.GlobalConfig;
+import com.example.monster.airgesture.PhaseProcessI;
 
 import java.util.*;
 

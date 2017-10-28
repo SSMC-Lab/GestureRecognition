@@ -1,13 +1,17 @@
-package com.example.monster.airgesture.model.phase;
+package com.example.monster.airgesture;
 
 /**
  * Created by bostinshi on 2017/7/27.
+ *
+ * 不要改变这个类的位置，否则会报错
  */
 
 public class PhaseProcessI {
+
     //保存c++类的地址
     public long nativePerson;
     public long nativeSignalProcess;
+
     //构造函数
     public PhaseProcessI() {
         nativeSignalProcess = createNativeSignalProcess();
@@ -29,8 +33,11 @@ public class PhaseProcessI {
     //public native float[] doProcess(long thizptr, int inNumFreq);
     public native long createNativeSignalProcess();
 
-    public native float  doActionRecognition(long thizptr, float[] recordData, int iLen);
-    public native float[]  doActionRecognitionV2(long thizptr, float[] recordData, int iLen, String sPath, String sName);
+    public native float doActionRecognition(long thizptr, float[] recordData, int iLen);
+
+    public native float[] doActionRecognitionV2(long thizptr, float[] recordData, int iLen, String sPath, String sName);
+
     public native float doActionRecognitionV3(long thizptr, short[] recordData, int iLen, String sPath, String sName);
-    public native float  doInit(long thizptr, String sPath);
+
+    public native float doInit(long thizptr, String sPath);
 }

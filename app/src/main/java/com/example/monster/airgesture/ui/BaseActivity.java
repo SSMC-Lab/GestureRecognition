@@ -4,7 +4,7 @@ import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.StringRes;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
 /**
@@ -12,7 +12,7 @@ import android.widget.Toast;
  */
 
 public abstract class BaseActivity<T extends BaseContract.Presenter>
-        extends ActionBarActivity
+        extends AppCompatActivity
         implements BaseContract.View {
 
     private ProgressDialog mProgressDialog = null;
@@ -22,9 +22,9 @@ public abstract class BaseActivity<T extends BaseContract.Presenter>
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(setLayout());
-        initialize();
         presenter = setPresenter();
         presenter.onAttachView(this);
+        initialize();
     }
 
     @Override

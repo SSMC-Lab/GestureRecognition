@@ -1,5 +1,6 @@
 package com.example.monster.airgesture.ui;
 
+import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -8,8 +9,13 @@ import com.example.monster.airgesture.Conditions;
 import com.example.monster.airgesture.GlobalConfig;
 import com.example.monster.airgesture.model.db.CandidateDB;
 import com.example.monster.airgesture.model.db.CandidateWord;
+import com.example.monster.airgesture.utils.FileCopyUtil;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.List;
 
 /**
@@ -20,8 +26,9 @@ public class InputPresenterImpl<V extends InputContract.View> extends BasePresen
 
     //存放编码
     private static StringBuilder coding = new StringBuilder();
+    private Context context;
 
-    private static final String TAG = "InputPresenterImpl";
+    public static final String TAG = "InputPresenterImpl";
 
     private CandidateDB db;
     private Handler handler = new Handler() {
@@ -36,6 +43,10 @@ public class InputPresenterImpl<V extends InputContract.View> extends BasePresen
             }
         }
     };
+
+    public InputPresenterImpl(Context context) {
+        this.context = context;
+    }
 
     @Override
     public void findWord(String coding) {
@@ -77,6 +88,17 @@ public class InputPresenterImpl<V extends InputContract.View> extends BasePresen
 
         GlobalConfig.stPhaseProxy.init();
         GlobalConfig.stPhaseProxy.sendHandler(handler);
+
+        try {
+            copyTemplete("heng2.txt");
+            copyTemplete("shu2.txt");
+            copyTemplete("youhu2.txt");
+            copyTemplete("youxie2.txt");
+            copyTemplete("zuohu2.txt");
+            copyTemplete("zuoxie2.txt");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -92,5 +114,19 @@ public class InputPresenterImpl<V extends InputContract.View> extends BasePresen
         GlobalConfig.stPhaseProxy.destroy();
         GlobalConfig.stWaveFileUtil.destroy();
         GlobalConfig.stWavRecorder.stop();
+    }
+
+    private void copyTemplete(String templeteName) throws IOException {
+        String path = GlobalConfig.sFileTemplatePath + templeteName;
+        File templete = new File(path);
+        if (!templete.exists()) {
+            templete.createNewFile();
+            InputStream inputStream = context.getAssets().open(templeteName);
+            OutputStream outputStream = new FileOutputStream(templete);
+            boolean result = FileCopyUtil.copy(inputStream, outputStream);
+            if (!result) {
+                Log.e(TAG, "copy error : " + templeteName + " failed");
+            }
+        }
     }
 }

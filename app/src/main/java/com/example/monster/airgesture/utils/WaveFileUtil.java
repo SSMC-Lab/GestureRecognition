@@ -93,9 +93,6 @@ public class WaveFileUtil {
         return sFile;
     }
 
-
-
-
     public String getRecordTxtFileName(){
         SimpleDateFormat    sDateFormat    =   new SimpleDateFormat("yyyyMMddhhmmss");
         String    sDate    =    sDateFormat.format(new    java.util.Date());

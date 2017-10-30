@@ -8,7 +8,7 @@ android {
 
     defaultConfig {
         applicationId "com.example.monster.airgesture"
-        minSdkVersion 13
+        minSdkVersion 19
         targetSdkVersion 21
         versionCode 1
         versionName "1.0"

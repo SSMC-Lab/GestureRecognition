@@ -4,6 +4,7 @@ import android.os.Build;
 import android.os.Message;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -27,7 +28,7 @@ import com.example.monster.airgesture.R;
 import com.example.monster.airgesture.model.phase.AudioTrackPlay;
 import com.example.monster.airgesture.GlobalConfig;
 
-public class MainActivity extends ActionBarActivity implements Thread.UncaughtExceptionHandler {
+public class MainActivity extends AppCompatActivity implements Thread.UncaughtExceptionHandler {
     //////////////////UI///////////////////////////////
     public static TextView tv;
     private String sRecordStatus = "Init Record";
@@ -45,9 +46,8 @@ public class MainActivity extends ActionBarActivity implements Thread.UncaughtEx
             SimpleDateFormat fm = new SimpleDateFormat("yyyy/MM/dd HH:mm");
             Date now = new Date();
             types.add(fm.format(now) + ": type :" + iType);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-                listView.deferNotifyDataSetChanged();
-            }
+            listView.deferNotifyDataSetChanged();
+
         }
     };
 
@@ -84,7 +84,6 @@ public class MainActivity extends ActionBarActivity implements Thread.UncaughtEx
         }
 
         //startRecordAction();
-
 
         GlobalConfig.stPhaseProxy.init();
         GlobalConfig.stPhaseProxy.sendHandler(handler);

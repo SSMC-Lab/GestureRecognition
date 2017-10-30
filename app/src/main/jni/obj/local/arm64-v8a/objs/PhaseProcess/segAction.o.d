@@ -1,8 +1,8 @@
-E:\workcode\G4\gama\GestureRecognition_AndroidStudio\shendaGestureRecognition\app\src\main\jni/obj/local/arm64-v8a/objs/PhaseProcess/segAction.o: \
-  E:/workcode/G4/gama/GestureRecognition_AndroidStudio/shendaGestureRecognition/app/src/main/jni/segAction.cpp \
-  E:/workcode/G4/gama/GestureRecognition_AndroidStudio/shendaGestureRecognition/app/src/main/jni/segAction.h \
-  D:/Android/sdk/ndk-bundle/build//../sources/cxx-stl/gnu-libstdc++/4.9/include\vector
+F:\projects\android\GestureRecognitionGit\app\src\main\jni/obj/local/arm64-v8a/objs/PhaseProcess/segAction.o: \
+  F:/projects/android/GestureRecognitionGit/app/src/main/jni/segAction.cpp \
+  F:/projects/android/GestureRecognitionGit/app/src/main/jni/segAction.h \
+  C:/Users/lenovo/AppData/Local/Android/Sdk/ndk-bundle/build//../sources/cxx-stl/gnu-libstdc++/4.9/include\vector
 
-E:/workcode/G4/gama/GestureRecognition_AndroidStudio/shendaGestureRecognition/app/src/main/jni/segAction.h:
+F:/projects/android/GestureRecognitionGit/app/src/main/jni/segAction.h:
 
-D:/Android/sdk/ndk-bundle/build//../sources/cxx-stl/gnu-libstdc++/4.9/include\vector:
+C:/Users/lenovo/AppData/Local/Android/Sdk/ndk-bundle/build//../sources/cxx-stl/gnu-libstdc++/4.9/include\vector:

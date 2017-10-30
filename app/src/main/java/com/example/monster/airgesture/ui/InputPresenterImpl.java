@@ -89,16 +89,12 @@ public class InputPresenterImpl<V extends InputContract.View> extends BasePresen
         GlobalConfig.stPhaseProxy.init();
         GlobalConfig.stPhaseProxy.sendHandler(handler);
 
-        try {
-            copyTemplete("heng2.txt");
-            copyTemplete("shu2.txt");
-            copyTemplete("youhu2.txt");
-            copyTemplete("youxie2.txt");
-            copyTemplete("zuohu2.txt");
-            copyTemplete("zuoxie2.txt");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        copyTemplete("heng2.txt");
+        copyTemplete("shu2.txt");
+        copyTemplete("youhu2.txt");
+        copyTemplete("youxie2.txt");
+        copyTemplete("zuohu2.txt");
+        copyTemplete("zuoxie2.txt");
     }
 
     @Override
@@ -116,17 +112,35 @@ public class InputPresenterImpl<V extends InputContract.View> extends BasePresen
         GlobalConfig.stWavRecorder.stop();
     }
 
-    private void copyTemplete(String templeteName) throws IOException {
+    private void copyTemplete(String templeteName) {
         String path = GlobalConfig.sFileTemplatePath + templeteName;
         File templete = new File(path);
+        InputStream inputStream = null;
+        OutputStream outputStream = null;
         if (!templete.exists()) {
-            templete.createNewFile();
-            InputStream inputStream = context.getAssets().open(templeteName);
-            OutputStream outputStream = new FileOutputStream(templete);
-            boolean result = FileCopyUtil.copy(inputStream, outputStream);
-            if (!result) {
-                Log.e(TAG, "copy error : " + templeteName + " failed");
+            try {
+                templete.createNewFile();
+                inputStream = context.getAssets().open(templeteName);
+                outputStream = new FileOutputStream(templete);
+                boolean result = FileCopyUtil.copy(inputStream, outputStream);
+                if (!result) {
+                    Log.e(TAG, "copy error : " + templeteName + " failed");
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    if (inputStream != null) {
+                        inputStream.close();
+                    }
+                    if (outputStream != null) {
+                        outputStream.close();
+                    }
+                } catch (IOException e2) {
+                    e2.printStackTrace();
+                }
             }
+
         }
     }
 }

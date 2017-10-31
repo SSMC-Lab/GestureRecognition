@@ -79,7 +79,7 @@ public class WavePlayer extends Player {
                         );
                     }
                     writeBytes=audioTrack.write(wave, 0, wave.length);
-                    Log.d(TAG,"play() : writeBytes="+writeBytes);
+//                    Log.d(TAG,"play() : writeBytes="+writeBytes);
                 }
             }
         }).start();

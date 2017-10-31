@@ -161,11 +161,11 @@ public class WaveFileUtil {
     public void writeToTxtFileFast(File fTxtFile, DataOutputStream stDos, byte[] recData){
 
             int iReadSize = recData.length;
-            Log.i("WaveFileUtil ", "|before writetoFile iReadSize:" + iReadSize);
+//            Log.i("WaveFileUtil ", "|before writetoFile iReadSize:" + iReadSize);
             if (iReadSize > 0 && recData != null) {
 
                 if (stDos == null) {
-                    Log.i("record", "resdos is null");
+//                    Log.i("record", "resdos is null");
                     if (fTxtFile != null) {
                         try {
                             stDos = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(fTxtFile)));
@@ -195,11 +195,11 @@ public class WaveFileUtil {
     public void writeToTxtFileFast(File fTxtFile, DataOutputStream stDos, short[] recData){
 
         int iReadSize = recData.length;
-        Log.i("WaveFileUtil ", "|before writetoFile iReadSize:" + iReadSize);
+//        Log.i("WaveFileUtil ", "|before writetoFile iReadSize:" + iReadSize);
         if (iReadSize > 0 && recData != null) {
 
             if (stDos == null) {
-                Log.i("record", "resdos is null");
+//                Log.i("record", "resdos is null");
                 if (fTxtFile != null) {
                     try {
                         stDos = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(fTxtFile)));
@@ -244,7 +244,7 @@ public class WaveFileUtil {
 
     public void writetoFile(short[] sAudioData, int iSize, FileOutputStream fos) {
 
-        Log.i("WaveFileUtil ","| writetoFile iReadSize:"+ iSize);
+//        Log.i("WaveFileUtil ","| writetoFile iReadSize:"+ iSize);
         byte[] bAudiodata = new byte[iSize*2];
 
         for(int i=0; i <iSize; i++){
@@ -864,7 +864,7 @@ public class WaveFileUtil {
             GlobalConfig.bPlayDataReady = true;
         }
 
-        Log.i("play","read finish");
+//        Log.i("play","read finish");
     }
 
 

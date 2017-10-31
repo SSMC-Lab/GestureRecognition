@@ -26,9 +26,9 @@ public class WordAdapter<T extends CandidateWord> extends BaseAdapter<T, WordAda
 
     /** 回调接口 */
     interface AdapterListener {
-        void onClickItem();
+        void onClickItem(CandidateWord word);
 
-        void onLongClickItem();
+        void onLongClickItem(CandidateWord word);
     }
 
     public WordAdapter(List<T> datas, AdapterListener listener) {
@@ -86,13 +86,13 @@ public class WordAdapter<T extends CandidateWord> extends BaseAdapter<T, WordAda
             holder.linearLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    listener.onClickItem();
+                    listener.onClickItem(item);
                 }
             });
             holder.linearLayout.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-                    listener.onLongClickItem();
+                    listener.onLongClickItem(item);
                     return true;
                 }
             });

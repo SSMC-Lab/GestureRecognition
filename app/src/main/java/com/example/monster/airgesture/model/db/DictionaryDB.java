@@ -9,7 +9,6 @@ import java.util.List;
 public interface DictionaryDB {
     /**
      * 从数据库获取编码对应的单词集合
-     *
      * @param coding   编码序列
      * @return 对应编码的单词组成的集合
      */
@@ -23,4 +22,8 @@ public interface DictionaryDB {
      */
     List<CandidateWord> getLetter(String type);
 
+    /**
+     * 得到从0-9的数据
+     */
+    List<CandidateWord> getNum();
 }

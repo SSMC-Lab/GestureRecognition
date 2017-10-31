@@ -96,7 +96,7 @@ public class PhaseProxy {
                     if (iType > 0) {
                         Log.i("actionaction", "cost:" + lCostTime + "|type:" + iType);
                     } else {
-                        Log.i("noaction", "cost:" + lCostTime + "|type:" + iType);
+//                        Log.i("noaction", "cost:" + lCostTime + "|type:" + iType);
                     }
                     if (handler != null && iType > 0.0) {
                         Bundle bundle = new Bundle();
@@ -106,7 +106,7 @@ public class PhaseProxy {
                         handler.sendMessage(message);
                     }
                     long lEndTime = System.currentTimeMillis();
-                    Log.i("cost", "run begin:" + lBeginTime + "|cost:" + (lEndTime - lBeginTime));
+//                    Log.i("cost", "run begin:" + lBeginTime + "|cost:" + (lEndTime - lBeginTime));
                 }
 
             } catch (InterruptedException e) {
@@ -158,11 +158,11 @@ public class PhaseProxy {
     public void writeByte(byte[] recData) {
         if (GlobalConfig.bByte && GlobalConfig.bSaveWavFile) {
             int iReadSize = recData.length;
-            Log.i("WaveFileUtil ", "|before writetoFile iReadSize:" + iReadSize);
+            /*Log.i("WaveFileUtil ", "|before writetoFile iReadSize:" + iReadSize);*/
             if (iReadSize > 0 && recData != null) {
 
                 if (GlobalConfig.recTxtDos == null) {
-                    Log.i("record", "resdos is null");
+                    /*Log.i("record", "resdos is null");*/
                     if (fRecordTxtFile != null) {
                         try {
                             GlobalConfig.recTxtDos = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(fRecordTxtFile)));
@@ -192,7 +192,7 @@ public class PhaseProxy {
     public void writeBytePcm(byte[] recData) {
         {
             int iReadSize = recData.length;
-            Log.i("WaveFileUtil ", "|before writetoFile iReadSize:" + iReadSize);
+            /*Log.i("WaveFileUtil ", "|before writetoFile iReadSize:" + iReadSize);*/
             if (iReadSize > 0 && recData != null) {
 
                 if (GlobalConfig.recDos2 == null) {
@@ -296,7 +296,7 @@ public class PhaseProxy {
                         float[] costArr = new float[iLen];
                         costArr = ppi.doActionRecognitionV2(ppi.nativeSignalProcess, fData, fData.length, GlobalConfig.sFileResultPath, str);
                         long lCostTime = System.currentTimeMillis() - lBeginTime;
-                        Log.i("doActionRecognition", "cost:" + lCostTime + "|type:" + costArr[0]);
+//                        Log.i("doActionRecognition", "cost:" + lCostTime + "|type:" + costArr[0]);
                         //vecSrc.erase(vecSrc.begin(), vecSrc.begin() + SignalProcess_Size);
                     }
                 }

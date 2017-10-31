@@ -28,43 +28,19 @@ public class DictionaryDBImpl implements DictionaryDB {
     private static final String DB_NAME = "dictionary.db";
     private static final String DB_PATH = "/data/data/com.example.monster.airgesture/database";
 
-    private static final CandidateWord[] candidateWords1 = new CandidateWord[]{
-            new CandidateWord("I", 0, "1", 1),
-            new CandidateWord("T", 0, "1", 1),
-            new CandidateWord("Z", 0, "1", 1),
-            new CandidateWord("J", 0, "1", 1)};
-
-    private static final CandidateWord[] candidateWords2 = new CandidateWord[]{
-            new CandidateWord("E", 0, "1", 1),
-            new CandidateWord("F", 0, "1", 1),
-            new CandidateWord("H", 0, "1", 1),
-            new CandidateWord("K", 0, "1", 1),
-            new CandidateWord("L", 0, "1", 1)};
-
-    private static final CandidateWord[] candidateWords3 = new CandidateWord[]{
-            new CandidateWord("A", 0, "1", 1),
-            new CandidateWord("M", 0, "1", 1),
-            new CandidateWord("N", 0, "1", 1)};
-
-    private static final CandidateWord[] candidateWords4 = new CandidateWord[]{
-            new CandidateWord("V", 0, "1", 1),
-            new CandidateWord("W", 0, "1", 1),
-            new CandidateWord("X", 0, "1", 1),
-            new CandidateWord("Y", 0, "1", 1)};
-
-    private static final CandidateWord[] candidateWords5 = new CandidateWord[]{
-            new CandidateWord("C", 0, "1", 1),
-            new CandidateWord("G", 0, "1", 1),
-            new CandidateWord("O", 0, "1", 1),
-            new CandidateWord("Q", 0, "1", 1),
-            new CandidateWord("S", 0, "1", 1),
-            new CandidateWord("U", 0, "1", 1)};
-
-    private static final CandidateWord[] candidateWords6 = new CandidateWord[]{
-            new CandidateWord("B", 0, "1", 1),
-            new CandidateWord("D", 0, "1", 1),
-            new CandidateWord("P", 0, "1", 1),
-            new CandidateWord("R", 0, "1", 1)};
+    private static final List<CandidateWord> candidateWords1 =
+            createLetters(new String[]{"I", "T", "Z", "J"}, "1");
+    private static final List<CandidateWord> candidateWords2 =
+            createLetters(new String[]{"E", "F", "H", "K", "L"}, "2");
+    private static final List<CandidateWord> candidateWords3 =
+            createLetters(new String[]{"A", "M", "N"}, "3");
+    private static final List<CandidateWord> candidateWords4 =
+            createLetters(new String[]{"V", "W", "X", "Y"}, "4");
+    private static final List<CandidateWord> candidateWords5 =
+            createLetters(new String[]{"C", "G", "O", "Q", "S", "U"}, "5");
+    private static final List<CandidateWord> candidateWords6 =
+            createLetters(new String[]{"B", "D", "P", "R"}, "6");
+    private static final List<CandidateWord> num = crateNums();
 
     public DictionaryDBImpl(Context context) {
         Log.i(TAG, "database initial ");
@@ -105,7 +81,7 @@ public class DictionaryDBImpl implements DictionaryDB {
     public List<CandidateWord> getWordList(String coding) {
         Log.i(TAG, "database query");
         Cursor cursor = database.rawQuery("SELECT * FROM dictionary WHERE code LIKE '"
-                + coding + "%' ORDER BY length DESC", null);
+                + coding + "%' ORDER BY length ASC,probability DESC", null);
         CandidateWord candidateWord = null;
         List<CandidateWord> result = new ArrayList<>();
         if (cursor.moveToFirst()) {
@@ -116,8 +92,8 @@ public class DictionaryDBImpl implements DictionaryDB {
                 String code = cursor.getString(cursor.getColumnIndex("code"));
                 candidateWord = new CandidateWord(word, probability, code, length);
                 result.add(candidateWord);
-                Log.d(TAG, "database query : word = " + word + " length = " + length + " code = " + code);
-                Log.d(TAG, "get" + candidateWord.getWord());
+                Log.d(TAG, "database query : word = " + word + " length = " + length
+                        + " code = " + code + "probability = " + probability);
             } while (cursor.moveToNext());
         }
         Log.i(TAG, "finish querying the result length = " + result.size());
@@ -128,18 +104,43 @@ public class DictionaryDBImpl implements DictionaryDB {
     public List<CandidateWord> getLetter(String type) {
         switch (type) {
             case "1":
-                return Arrays.asList(candidateWords1);
+                return candidateWords1;
             case "2":
-                return Arrays.asList(candidateWords2);
+                return candidateWords2;
             case "3":
-                return Arrays.asList(candidateWords3);
+                return candidateWords3;
             case "4":
-                return Arrays.asList(candidateWords4);
+                return candidateWords4;
             case "5":
-                return Arrays.asList(candidateWords5);
+                return candidateWords5;
             case "6":
-                return Arrays.asList(candidateWords6);
+                return candidateWords6;
         }
         return null;
+    }
+
+    @Override
+    public List<CandidateWord> getNum() {
+        return num;
+    }
+
+    private static List<CandidateWord> createLetters(String[] letters, String coding) {
+        List<CandidateWord> result = new ArrayList<>();
+        CandidateWord word;
+        for (String letter : letters) {
+            word = new CandidateWord(letter, 0, coding, 1);
+            result.add(word);
+        }
+        return result;
+    }
+
+    private static List<CandidateWord> crateNums() {
+        List<CandidateWord> result = new ArrayList<>();
+        CandidateWord word;
+        for (int i = 0; i <= 10; i++) {
+            word = new CandidateWord(i + "", 0, "num", 1);
+            result.add(word);
+        }
+        return result;
     }
 }

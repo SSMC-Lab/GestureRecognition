@@ -16,6 +16,8 @@ public interface InputContract {
         /** 和 database 模块的交互 */
         void findWord(String coding);
 
+        void changeNumKeyboard();
+
         void onAttachDB(DictionaryDB db);
 
         void onDetachDB();
@@ -27,6 +29,10 @@ public interface InputContract {
         void startRecording();
 
         void stopRecording();
+
+        void clearStoker();
+
+        void delStoker();
     }
 
     interface View extends BaseContract.View{
@@ -51,5 +57,8 @@ public interface InputContract {
         void setCandidateWord(List<CandidateWord> candidateWord);
 
         void clearCandidateWord();
+
+        /** 访问控制 */
+        boolean isNumKeyboard();
     }
 }

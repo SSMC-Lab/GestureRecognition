@@ -13,6 +13,9 @@
         android:orientation="vertical">
 
         <TextView
+            android:layout_margin="6dp"
+            android:padding="12dp"
+            android:background="@drawable/background"
             android:id="@+id/inputted_area"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -21,6 +24,9 @@
             android:textSize="22sp" />
 
         <TextView
+            android:layout_margin="6dp"
+            android:padding="12dp"
+            android:background="@drawable/background"
             android:id="@+id/input_strokes"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -29,6 +35,9 @@
             android:textSize="22sp" />
 
         <android.support.v7.widget.RecyclerView
+            android:layout_margin="6dp"
+
+            android:background="@drawable/background"
             android:id="@+id/candidate_word"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -56,7 +65,7 @@
             android:text="DEL" />
 
         <Button
-            android:id="@+id/bt_caolock"
+            android:id="@+id/bt_caplock"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"

@@ -16,6 +16,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -24,7 +25,6 @@ import java.util.List;
 
 public class InputPresenterImpl<V extends InputContract.View> extends BasePresenterImpl<V> implements InputContract.Presenter<V> {
 
-    //存放编码
     private static StringBuilder coding = new StringBuilder();
     private Context context;
 
@@ -36,10 +36,14 @@ public class InputPresenterImpl<V extends InputContract.View> extends BasePresen
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case Conditions.MESSAGE_PHASE_MODEL:
-                    int type = (int) msg.getData().getFloat(Conditions.TYPE);
-                    coding.append(type);
-                    findWord(coding.toString());
-                    break;
+                    if (!getView().isNumKeyboard()){
+                        int type = (int) msg.getData().getFloat(Conditions.TYPE);
+                        Log.i(TAG, "receive gesture:" + type);
+                        coding.append(type);
+                        getView().setStroke(type);
+                        findWord(coding.toString());
+                        break;
+                    }
             }
         }
     };
@@ -65,6 +69,15 @@ public class InputPresenterImpl<V extends InputContract.View> extends BasePresen
     }
 
     @Override
+    public void changeNumKeyboard() {
+        if (getView().isNumKeyboard()){
+            getView().setCandidateWord(new ArrayList<CandidateWord>());
+        }else{
+            getView().setCandidateWord(db.getNum());
+        }
+    }
+
+    @Override
     public void onAttachDB(DictionaryDB db) {
         this.db = db;
     }
@@ -80,11 +93,17 @@ public class InputPresenterImpl<V extends InputContract.View> extends BasePresen
         GlobalConfig.fTemplatePath.mkdirs();//创建文件夹
         GlobalConfig.fResultPath.mkdirs();//创建文件夹
 
+        //initIos();
         if (GlobalConfig.bPlayThreadFlag) {
+            //ThreadInstantPlay threadInstantPlay = new ThreadInstantPlay();
+            //Process.setThreadPriority(Process.THREAD_PRIORITY_URGENT_AUDIO);
+            //threadInstantPlay.start();
             GlobalConfig.stWavePlayer.play();
         } else {
             GlobalConfig.isRecording = true;
         }
+
+        //startRecordAction();
 
         GlobalConfig.stPhaseProxy.init();
         GlobalConfig.stPhaseProxy.sendHandler(handler);
@@ -110,6 +129,25 @@ public class InputPresenterImpl<V extends InputContract.View> extends BasePresen
         GlobalConfig.stPhaseProxy.destroy();
         GlobalConfig.stWaveFileUtil.destroy();
         GlobalConfig.stWavRecorder.stop();
+    }
+
+    @Override
+    public void clearStoker() {
+        coding.delete(0, coding.length());
+        getView().setCandidateWord(new ArrayList<CandidateWord>());
+        Log.d(TAG, "clear stoker,now coding = " + coding);
+    }
+
+    @Override
+    public void delStoker() {
+        Log.d(TAG,"coding length:" + coding.length());
+        if (coding.length() > 1) {
+            coding.delete(coding.length() - 1, coding.length());
+            Log.d(TAG, "delete stoker,now coding = " + coding);
+            findWord(coding.toString());
+        }else if (coding.length() == 1){
+            clearStoker();
+        }
     }
 
     private void copyTemplete(String templeteName) {

@@ -6,13 +6,13 @@ package com.example.monster.airgesture.model.db;
 
 public class CandidateWord {
     private String word;
-    private double frequency;
+    private float probability;
     private String coding;
     private int length;
 
-    public CandidateWord(String word, double frequency, String coding, int length) {
+    public CandidateWord(String word, float probability, String coding, int length) {
         this.word = word;
-        this.frequency = frequency;
+        this.probability = probability;
         this.coding = coding;
         this.length = length;
     }
@@ -25,12 +25,12 @@ public class CandidateWord {
         this.word = word;
     }
 
-    public double getFrequency() {
-        return frequency;
+    public float getProbability() {
+        return probability;
     }
 
-    public void setFrequency(double frequency) {
-        this.frequency = frequency;
+    public void setProbability(float probability) {
+        this.probability = probability;
     }
 
     public String getCoding() {

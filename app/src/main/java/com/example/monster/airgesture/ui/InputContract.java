@@ -1,7 +1,8 @@
 package com.example.monster.airgesture.ui;
 
-import com.example.monster.airgesture.model.db.CandidateDB;
+import com.example.monster.airgesture.model.db.DictionaryDB;
 import com.example.monster.airgesture.model.db.CandidateWord;
+
 import java.util.List;
 
 /**
@@ -15,7 +16,7 @@ public interface InputContract {
         /** 和 database 模块的交互 */
         void findWord(String coding);
 
-        void onAttachDB(CandidateDB db);
+        void onAttachDB(DictionaryDB db);
 
         void onDetachDB();
 

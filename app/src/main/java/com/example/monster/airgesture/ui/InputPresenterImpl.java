@@ -7,7 +7,7 @@ import android.util.Log;
 
 import com.example.monster.airgesture.Conditions;
 import com.example.monster.airgesture.GlobalConfig;
-import com.example.monster.airgesture.model.db.CandidateDB;
+import com.example.monster.airgesture.model.db.DictionaryDB;
 import com.example.monster.airgesture.model.db.CandidateWord;
 import com.example.monster.airgesture.utils.FileCopyUtil;
 
@@ -30,7 +30,7 @@ public class InputPresenterImpl<V extends InputContract.View> extends BasePresen
 
     public static final String TAG = "InputPresenterImpl";
 
-    private CandidateDB db;
+    private DictionaryDB db;
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -56,7 +56,7 @@ public class InputPresenterImpl<V extends InputContract.View> extends BasePresen
                 List<CandidateWord> letter = db.getLetter(coding);
                 getView().setCandidateWord(letter);
             } else if (coding.length() > 1) {
-                List<CandidateWord> words = db.getWordList(coding, 0);
+                List<CandidateWord> words = db.getWordList(coding);
                 getView().setCandidateWord(words);
             }
         } else {
@@ -65,7 +65,7 @@ public class InputPresenterImpl<V extends InputContract.View> extends BasePresen
     }
 
     @Override
-    public void onAttachDB(CandidateDB db) {
+    public void onAttachDB(DictionaryDB db) {
         this.db = db;
     }
 

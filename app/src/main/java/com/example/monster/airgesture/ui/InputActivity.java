@@ -7,6 +7,7 @@ import android.support.v4.content.ContextCompat;
 
 import com.example.monster.airgesture.R;
 import com.example.monster.airgesture.model.db.CandidateWord;
+import com.example.monster.airgesture.model.db.DictionaryDBImpl;
 
 import java.util.List;
 
@@ -34,6 +35,8 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
                     android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
         }
         getPresenter().initConfig();
+        getPresenter().onAttachDB(new DictionaryDBImpl(this));
+        getPresenter().findWord("123");
     }
 
     @Override
@@ -53,7 +56,7 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
 
     @Override
     public void setStroke(int type) {
-
+        
     }
 
     @Override

@@ -1,130 +1,136 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal">
+    android:orientation="vertical">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+
+    <Button
+        android:id="@+id/bt_off"
+        android:layout_width="100dp"
+        android:layout_height="@dimen/button_height"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:text="OFF" />
+
+    <Button
+        android:id="@+id/bt_on"
+        android:layout_width="@dimen/button_width"
+        android:layout_height="@dimen/button_height"
+        android:layout_alignParentTop="true"
+        android:layout_toStartOf="@+id/bt_off"
+        android:text="ON" />
+
+    <Button
+        android:id="@+id/bt_clear"
+        android:layout_width="@dimen/button_width"
+        android:layout_height="@dimen/button_height"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@+id/bt_off"
+        android:text="CLEAR" />
+
+    <Button
+        android:id="@+id/bt_del"
+        android:layout_width="@dimen/button_width"
+        android:layout_height="@dimen/button_height"
+        android:text="DEL"
+        android:layout_alignBottom="@+id/bt_clear"
+        android:layout_toEndOf="@+id/inputted_area" />
+
+    <Button
+        android:id="@+id/bt_space"
+        android:layout_width="@dimen/button_width"
+        android:layout_height="@dimen/button_height"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@+id/bt_clear"
+        android:text="SPACE" />
+
+    <Button
+        android:id="@+id/bt_caplock"
+        android:layout_width="@dimen/button_width"
+        android:layout_height="@dimen/button_height"
+
+        android:layout_alignBottom="@+id/bt_space"
+        android:layout_alignStart="@+id/bt_del"
+        android:text="CAPLOCK" />
+
+    <Button
+        android:id="@+id/bt_period"
+        android:layout_width="@dimen/small_button_width"
+        android:layout_height="@dimen/button_height"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@+id/bt_space"
+        android:text="." />
+
+    <Button
+        android:id="@+id/bt_comma"
+        android:layout_width="@dimen/small_button_width"
+        android:layout_height="@dimen/button_height"
+        android:layout_below="@+id/bt_space"
+        android:layout_toStartOf="@+id/bt_period"
+        android:text="," />
+
+    <Button
+        android:id="@+id/bt_num"
+        android:layout_width="@dimen/button_width"
+        android:layout_height="@dimen/button_height"
+        android:layout_alignBottom="@+id/bt_comma"
+        android:layout_toStartOf="@+id/bt_comma"
+        android:text="NUM" />
+
+    <TextView
+        android:id="@+id/input_strokes"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/bt_comma"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="6dp"
+        android:layout_marginRight="6dp"
+        android:layout_toStartOf="@+id/bt_num"
+        android:background="@drawable/background"
+        android:padding="8dp"
+        android:text=""
+        android:textSize="22sp"
+        android:layout_below="@+id/inputted_area" />
+
+    <TextView
+        android:id="@+id/inputted_area"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/bt_comma"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginBottom="5dp"
+        android:layout_marginLeft="6dp"
+        android:layout_marginRight="6dp"
+        android:layout_marginTop="6dp"
+        android:layout_toStartOf="@+id/bt_on"
         android:layout_weight="1"
-        android:orientation="vertical">
+        android:background="@drawable/background"
+        android:gravity="top"
+        android:padding="12dp"
+        android:text=""
+        android:textSize="22sp" />
 
-        <TextView
-            android:layout_margin="6dp"
-            android:padding="12dp"
-            android:background="@drawable/background"
-            android:id="@+id/inputted_area"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="2"
-            android:text=""
-            android:textSize="22sp" />
 
-        <TextView
-            android:layout_margin="6dp"
-            android:padding="12dp"
-            android:background="@drawable/background"
-            android:id="@+id/input_strokes"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="3"
-            android:text=""
-            android:textSize="22sp" />
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/candidate_word"
+        android:scrollbarSize="5dp"
+        android:scrollbarAlwaysDrawHorizontalTrack="true"
+        android:layout_marginLeft="6dp"
+        android:layout_marginRight="3dp"
+        android:layout_marginBottom="6dp"
+        android:background="@drawable/background"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/bt_num"
+        android:scrollbars="horizontal" />
 
-        <android.support.v7.widget.RecyclerView
-            android:layout_margin="6dp"
-
-            android:background="@drawable/background"
-            android:id="@+id/candidate_word"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="3" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="2"
-        android:orientation="vertical">
-
-        <Button
-            android:id="@+id/bt_on"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="ON" />
-
-        <Button
-            android:id="@+id/bt_del"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="DEL" />
-
-        <Button
-            android:id="@+id/bt_caplock"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="CAPLOCK" />
-
-        <Button
-            android:id="@+id/bt_num"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="NUM" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="2"
-        android:orientation="vertical">
-
-        <Button
-            android:id="@+id/bt_off"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="OFF" />
-
-        <Button
-            android:id="@+id/bt_clear"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="CLEAR" />
-
-        <Button
-            android:id="@+id/bt_space"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="SPACE" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/bt_comma"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:text="," />
-
-            <Button
-                android:id="@+id/bt_period"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:text="." />
-        </LinearLayout>
-    </LinearLayout>
-</LinearLayout>
+</RelativeLayout>

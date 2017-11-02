@@ -7,9 +7,11 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.example.monster.airgesture.R;
@@ -20,6 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by WelkinShadow on 2017/10/26.
@@ -29,9 +33,7 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
     private TextView inputtedArea;
     private TextView inputStrokes;
     private RecyclerView candidateWordArea;
-    private
-    @IdRes
-    int[] buttons = {R.id.bt_on, R.id.bt_off, R.id.bt_del, R.id.bt_clear,
+    private @IdRes int[] buttons = {R.id.bt_on, R.id.bt_off, R.id.bt_del, R.id.bt_clear,
             R.id.bt_caplock, R.id.bt_space, R.id.bt_num, R.id.bt_comma, R.id.bt_period};
 
     private boolean isOn = false;
@@ -56,7 +58,7 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
         @Override
         public void onClickItem(CandidateWord word) {
             setWord(word.getWord());
-            if (!isNumKeyboard){
+            if (!isNumKeyboard) {
                 clearStroke();
                 clearCandidateWord();
             }
@@ -134,24 +136,25 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
 
     @Override
     public void delWord() {
-        CharSequence text = inputtedArea.getText();
-        int flag = 0;
-        for (int i = text.length() - 2; ; i--) {
-            if (i == 0) {//只有一个单词的情况
-                inputtedArea.clearComposingText();
-                break;
-            }
-            if (text.charAt(i) == ' ') {
-                text = text.subSequence(0, i);       //截取最后一个单词之前的字符串;
-                inputtedArea.setText(text);
-                break;
-            }
-        }
+        String text = inputtedArea.getText().toString();
+        //删除最后一个单词
+        text = text.replaceAll(" [^ ]+$", "");
+
+        //备用方法，删除最后一个字符
+        /*text = text.substring(0,text.length()-1);*/
+
+        inputtedArea.setText(text);
     }
 
     @Override
     public void setWord(String word) {
-        inputtedArea.append(word + " ");
+        String text = inputtedArea.getText().toString();
+        if (text != null && text.length() > 1) {
+            inputtedArea.append(" " + word);
+        } else {
+            inputtedArea.append(word);
+        }
+
     }
 
     @Override
@@ -269,6 +272,7 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
                     clearInput();
                 }
                 showMessage("已清空");
+                break;
 
             case R.id.bt_comma:
                 setWord(", ");
@@ -283,9 +287,10 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
                     delStroke();
                 } else if (inputText != null && inputText.length() > 0) {
                     delWord();
-                }else{
+                } else {
                     showMessage("已清空");
                 }
+                break;
 
             case R.id.bt_num:
                 clearStroke();

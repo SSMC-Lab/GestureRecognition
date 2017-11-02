@@ -36,7 +36,7 @@ public class InputPresenterImpl<V extends InputContract.View> extends BasePresen
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case Conditions.MESSAGE_PHASE_MODEL:
-                    if (!getView().isNumKeyboard()){
+                    if (!getView().isNumKeyboard()) {
                         int type = (int) msg.getData().getFloat(Conditions.TYPE);
                         Log.i(TAG, "receive gesture:" + type);
                         coding.append(type);
@@ -70,9 +70,9 @@ public class InputPresenterImpl<V extends InputContract.View> extends BasePresen
 
     @Override
     public void changeNumKeyboard() {
-        if (getView().isNumKeyboard()){
+        if (getView().isNumKeyboard()) {
             getView().setCandidateWord(new ArrayList<CandidateWord>());
-        }else{
+        } else {
             getView().setCandidateWord(db.getNum());
         }
     }
@@ -140,14 +140,16 @@ public class InputPresenterImpl<V extends InputContract.View> extends BasePresen
 
     @Override
     public void delStoker() {
-        Log.d(TAG,"coding length:" + coding.length());
-        if (coding.length() > 1) {
+        Log.d(TAG, "coding length:" + coding.length());
+        if (coding.length() > 0) {
             coding.delete(coding.length() - 1, coding.length());
             Log.d(TAG, "delete stoker,now coding = " + coding);
             findWord(coding.toString());
-        }else if (coding.length() == 1){
-            clearStoker();
         }
+
+//        if (coding.length() == 1) {
+//            clearStoker();
+//        }
     }
 
     private void copyTemplete(String templeteName) {

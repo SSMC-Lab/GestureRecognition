@@ -30,16 +30,14 @@ import java.util.regex.Pattern;
  * Created by WelkinShadow on 2017/10/26.
  */
 
-public class InputActivity<T extends InputContract.Presenter> extends BaseActivity<T> implements InputContract.View, View.OnClickListener {
-    private TextView inputtedArea;
+public class InputActivity<T extends InputContract.Presenter> extends BaseActivity<T> implements InputContract.View, View.OnClickListener, Thread.UncaughtExceptionHandler {
+    private EditText inputtedArea;
     private TextView inputStrokes;
     private RecyclerView candidateWordArea;
     private
     @IdRes
     int[] buttons = {R.id.bt_on, R.id.bt_off, R.id.bt_del, R.id.bt_clear,
             R.id.bt_caplock, R.id.bt_space, R.id.bt_num, R.id.bt_comma, R.id.bt_period};
-
-    private int capLock = 0;
 
     private boolean isOn = false;
     private boolean isNumKeyboard = false;
@@ -75,6 +73,11 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
         }
     };
 
+    @Override
+    public void uncaughtException(Thread t, Throwable e) {
+        Log.e(TAG, "Exception : " + e);
+    }
+
 
     private class TimeTask implements Runnable {
 
@@ -84,9 +87,7 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
             do {
                 end = System.currentTimeMillis();
                 time = end - start;
-                Thread.yield();
-                Log.d(TAG, "time is " + time);
-            } while (time < 1500 || adapter.getFirst() == null);
+            } while (time < 1500);
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -94,8 +95,8 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
                         setWord(adapter.getFirst().getWord());
                         clearStroke();
                         clearCandidateWord();
-                        isTiming = false;
                     }
+                    isTiming = false;
                 }
             });
         }
@@ -126,8 +127,11 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
         getPresenter().initConfig();
         getPresenter().onAttachDB(new DictionaryDBImpl(this));
 
+        //在此调用下面方法，才能捕获到线程中的异常
+        Thread.setDefaultUncaughtExceptionHandler(this);
+
         inputStrokes = (TextView) findViewById(R.id.input_strokes);
-        inputtedArea = (TextView) findViewById(R.id.inputted_area);
+        inputtedArea = (EditText) findViewById(R.id.inputted_area);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
@@ -154,19 +158,26 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
     @Override
     public void delWord() {
         String text = inputtedArea.getText().toString();
-        //删除最后一个单词
-        text = text.replaceAll(" [^ ]+$", "");
 
-        //备用方法，删除最后一个字符
+        //删除最后一个单词
+        int lastIndex = text.lastIndexOf(" ");
+        if (lastIndex == -1) {
+            clearInput();
+        } else {
+            text = text.substring(0, text.lastIndexOf(" "));
+            inputtedArea.setText(text);
+            inputtedArea.setSelection(text.length());
+        }
+
+        //删除最后一个字符
         /*text = text.substring(0,text.length()-1);*/
 
-        inputtedArea.setText(text);
     }
 
     @Override
     public void setWord(String word) {
         String text = inputtedArea.getText().toString();
-        if (text != null && text.length() > 1) {
+        if (text != null && text.length() > 0) {
             inputtedArea.append(" " + word);
         } else {
             inputtedArea.append(word);
@@ -176,7 +187,7 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
 
     @Override
     public void clearInput() {
-        inputStrokes.setText("");
+        inputtedArea.setText("");
     }
 
     @Override
@@ -216,14 +227,14 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
             }
             Log.d(TAG, inputStrokes.getText() + "");
         }
-        showMessage("删除笔画");
+//        showMessage("删除笔画");
     }
 
     @Override
     public void clearStroke() {
         inputStrokes.setText("");
         getPresenter().clearStoker();
-        showMessage("清空笔画");
+//        showMessage("清空笔画");
     }
 
     @Override
@@ -322,7 +333,6 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
 
         }
     }
-
 
     @Override
     protected void onDestroy() {

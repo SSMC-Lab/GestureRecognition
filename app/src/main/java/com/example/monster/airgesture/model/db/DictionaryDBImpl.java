@@ -112,19 +112,19 @@ public class DictionaryDBImpl implements DictionaryDB {
                 result.addAll(candidateWords1);
                 break;
             case "2":
-                result.addAll(candidateWords1);
+                result.addAll(candidateWords2);
                 break;
             case "3":
-                result.addAll(candidateWords1);
+                result.addAll(candidateWords3);
                 break;
             case "4":
-                result.addAll(candidateWords1);
+                result.addAll(candidateWords4);
                 break;
             case "5":
-                result.addAll(candidateWords1);
+                result.addAll(candidateWords5);
                 break;
             case "6":
-                result.addAll(candidateWords1);
+                result.addAll(candidateWords6);
 
         }
         return result;

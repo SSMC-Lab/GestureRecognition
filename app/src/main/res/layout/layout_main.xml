@@ -97,7 +97,7 @@
         android:textSize="22sp"
         android:layout_below="@+id/inputted_area" />
 
-    <TextView
+    <EditText
         android:id="@+id/inputted_area"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -109,7 +109,6 @@
         android:layout_marginRight="6dp"
         android:layout_marginTop="6dp"
         android:layout_toStartOf="@+id/bt_on"
-        android:layout_weight="1"
         android:background="@drawable/background"
         android:gravity="top"
         android:padding="12dp"

@@ -28,21 +28,23 @@ public class DictionaryDBImpl implements DictionaryDB {
     private static final String DB_NAME = "dictionary.db";
     private static final String DB_PATH = "/data/data/com.example.monster.airgesture/database";
 
-    private static final List<CandidateWord> candidateWords1 =
-            createLetters(new String[]{"I", "T", "Z", "J"}, "1");
-    private static final List<CandidateWord> candidateWords2 =
-            createLetters(new String[]{"E", "F", "H", "K", "L"}, "2");
-    private static final List<CandidateWord> candidateWords3 =
-            createLetters(new String[]{"A", "M", "N"}, "3");
-    private static final List<CandidateWord> candidateWords4 =
-            createLetters(new String[]{"V", "W", "X", "Y"}, "4");
-    private static final List<CandidateWord> candidateWords5 =
-            createLetters(new String[]{"C", "G", "O", "Q", "S", "U"}, "5");
-    private static final List<CandidateWord> candidateWords6 =
-            createLetters(new String[]{"B", "D", "P", "R"}, "6");
-    private static final List<CandidateWord> num = crateNums();
+    private final List<CandidateWord> candidateWords1;
+    private final List<CandidateWord> candidateWords2;
+    private final List<CandidateWord> candidateWords3;
+    private final List<CandidateWord> candidateWords4;
+    private final List<CandidateWord> candidateWords5;
+    private final List<CandidateWord> candidateWords6;
+    private final List<CandidateWord> num;
 
     public DictionaryDBImpl(Context context) {
+        candidateWords1 = createLetters(new String[]{"I", "T", "Z", "J"}, "1");
+        candidateWords2 = createLetters(new String[]{"E", "F", "H", "K", "L"}, "2");
+        candidateWords3 = createLetters(new String[]{"A", "M", "N"}, "3");
+        candidateWords4 = createLetters(new String[]{"V", "W", "X", "Y"}, "4");
+        candidateWords5 = createLetters(new String[]{"C", "G", "O", "Q", "S", "U"}, "5");
+        candidateWords6 = createLetters(new String[]{"B", "D", "P", "R"}, "6");
+        num = crateNums();
+
         Log.i(TAG, "database initial ");
         this.context = context;
         File dbFile = new File(DB_PATH + DB_NAME);
@@ -102,26 +104,37 @@ public class DictionaryDBImpl implements DictionaryDB {
 
     @Override
     public List<CandidateWord> getLetter(String type) {
+        Log.d(TAG, "find letters and type is " + type);
+        //避免直接传递类变量成员
+        List<CandidateWord> result = new ArrayList<>();
         switch (type) {
             case "1":
-                return candidateWords1;
+                result.addAll(candidateWords1);
+                break;
             case "2":
-                return candidateWords2;
+                result.addAll(candidateWords1);
+                break;
             case "3":
-                return candidateWords3;
+                result.addAll(candidateWords1);
+                break;
             case "4":
-                return candidateWords4;
+                result.addAll(candidateWords1);
+                break;
             case "5":
-                return candidateWords5;
+                result.addAll(candidateWords1);
+                break;
             case "6":
-                return candidateWords6;
+                result.addAll(candidateWords1);
+
         }
-        return null;
+        return result;
     }
 
     @Override
     public List<CandidateWord> getNum() {
-        return num;
+        List<CandidateWord> result = new ArrayList<>();
+        result.addAll(num);
+        return result;
     }
 
     private static List<CandidateWord> createLetters(String[] letters, String coding) {

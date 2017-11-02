@@ -1,6 +1,7 @@
 package com.example.monster.airgesture.ui;
 
 import android.content.pm.PackageManager;
+import android.provider.Settings;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -33,8 +34,12 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
     private TextView inputtedArea;
     private TextView inputStrokes;
     private RecyclerView candidateWordArea;
-    private @IdRes int[] buttons = {R.id.bt_on, R.id.bt_off, R.id.bt_del, R.id.bt_clear,
+    private
+    @IdRes
+    int[] buttons = {R.id.bt_on, R.id.bt_off, R.id.bt_del, R.id.bt_clear,
             R.id.bt_caplock, R.id.bt_space, R.id.bt_num, R.id.bt_comma, R.id.bt_period};
+
+    private int capLock = 0;
 
     private boolean isOn = false;
     private boolean isNumKeyboard = false;
@@ -75,14 +80,26 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
 
         @Override
         public void run() {
+            long time;
             do {
                 end = System.currentTimeMillis();
-            } while (end - start > 1500);
-            setWord(adapter.getFirst().getWord());
-            clearStroke();
-            clearCandidateWord();
-            isTiming = false;
+                time = end - start;
+                Thread.yield();
+                Log.d(TAG, "time is " + time);
+            } while (time < 1500 || adapter.getFirst() == null);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (adapter.getFirst() != null) {
+                        setWord(adapter.getFirst().getWord());
+                        clearStroke();
+                        clearCandidateWord();
+                        isTiming = false;
+                    }
+                }
+            });
         }
+
     }
 
     private ExecutorService pool = Executors.newSingleThreadExecutor();
@@ -194,6 +211,9 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
         if (strokes != null && strokes.length() > 0) {
             inputStrokes.setText(strokes.subSequence(0, strokes.length() - 1));
             getPresenter().delStoker();
+            if (strokes.length() == 1) {
+                clearCandidateWord();
+            }
             Log.d(TAG, inputStrokes.getText() + "");
         }
         showMessage("删除笔画");
@@ -214,15 +234,11 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
         } else {
             adapter.notifyDiff(candidateWords);
         }
-    /*    boolean textAreaIsNotEmpty = inputtedArea.getText() != null && inputtedArea.getText() != ""
-                && inputStrokes.getText() != null && inputStrokes.getText() != "";
-        if (textAreaIsNotEmpty) {
-            start = System.currentTimeMillis();
+        start = System.currentTimeMillis();
+        if (!isTiming) {
             isTiming = true;
-            if (!isTiming) {
-                pool.execute(new TimeTask());
-            }
-        }*/
+            pool.execute(new TimeTask());
+        }
     }
 
     @Override
@@ -231,6 +247,7 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
             adapter.notifyDiff(new ArrayList<CandidateWord>());
         }
     }
+
 
     @Override
     public boolean isNumKeyboard() {
@@ -263,6 +280,7 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
                 break;
 
             case R.id.bt_caplock:
+                showMessage("未实现");
                 break;
 
             case R.id.bt_clear:
@@ -304,6 +322,7 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
 
         }
     }
+
 
     @Override
     protected void onDestroy() {

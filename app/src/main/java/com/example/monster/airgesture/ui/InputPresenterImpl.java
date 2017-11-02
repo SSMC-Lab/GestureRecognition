@@ -143,13 +143,9 @@ public class InputPresenterImpl<V extends InputContract.View> extends BasePresen
         Log.d(TAG, "coding length:" + coding.length());
         if (coding.length() > 0) {
             coding.delete(coding.length() - 1, coding.length());
-            Log.d(TAG, "delete stoker,now coding = " + coding);
+            Log.d(TAG, "delete stoker,now coding = \"" + coding + "\"");
             findWord(coding.toString());
         }
-
-//        if (coding.length() == 1) {
-//            clearStoker();
-//        }
     }
 
     private void copyTemplete(String templeteName) {

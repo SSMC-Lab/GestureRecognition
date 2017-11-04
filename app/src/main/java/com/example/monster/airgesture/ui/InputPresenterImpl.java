@@ -44,6 +44,7 @@ public class InputPresenterImpl<V extends InputContract.View> extends BasePresen
                         findWord(coding.toString());
                         break;
                     }
+                    break;
             }
         }
     };
@@ -89,25 +90,27 @@ public class InputPresenterImpl<V extends InputContract.View> extends BasePresen
 
     @Override
     public void initConfig() {
-        GlobalConfig.fAbsolutepath.mkdirs();//创建文件夹
-        GlobalConfig.fTemplatePath.mkdirs();//创建文件夹
-        GlobalConfig.fResultPath.mkdirs();//创建文件夹
+        if (!Conditions.configInit){
+            GlobalConfig.fAbsolutepath.mkdirs();//创建文件夹
+            GlobalConfig.fTemplatePath.mkdirs();//创建文件夹
+            GlobalConfig.fResultPath.mkdirs();//创建文件夹
 
-        //initIos();
-        if (GlobalConfig.bPlayThreadFlag) {
-            //ThreadInstantPlay threadInstantPlay = new ThreadInstantPlay();
-            //Process.setThreadPriority(Process.THREAD_PRIORITY_URGENT_AUDIO);
-            //threadInstantPlay.start();
-            GlobalConfig.stWavePlayer.play();
-        } else {
-            GlobalConfig.isRecording = true;
+            //initIos();
+            if (GlobalConfig.bPlayThreadFlag) {
+                //ThreadInstantPlay threadInstantPlay = new ThreadInstantPlay();
+                //Process.setThreadPriority(Process.THREAD_PRIORITY_URGENT_AUDIO);
+                //threadInstantPlay.start();
+                GlobalConfig.stWavePlayer.play();
+            } else {
+                GlobalConfig.isRecording = true;
+            }
+
+            //startRecordAction();
+
+            GlobalConfig.stPhaseProxy.init();
+
         }
-
-        //startRecordAction();
-
-        GlobalConfig.stPhaseProxy.init();
         GlobalConfig.stPhaseProxy.sendHandler(handler);
-
         copyTemplete("heng2.txt");
         copyTemplete("shu2.txt");
         copyTemplete("youhu2.txt");

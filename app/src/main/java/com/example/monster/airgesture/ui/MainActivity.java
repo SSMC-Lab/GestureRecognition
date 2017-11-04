@@ -1,5 +1,6 @@
 package com.example.monster.airgesture.ui;
 
+import android.content.Intent;
 import android.os.Build;
 import android.os.Message;
 import android.support.v7.app.ActionBarActivity;
@@ -28,6 +29,7 @@ import com.example.monster.airgesture.R;
 import com.example.monster.airgesture.model.phase.AudioTrackPlay;
 import com.example.monster.airgesture.GlobalConfig;
 
+
 public class MainActivity extends AppCompatActivity implements Thread.UncaughtExceptionHandler {
     //////////////////UI///////////////////////////////
     public static TextView tv;
@@ -41,13 +43,12 @@ public class MainActivity extends AppCompatActivity implements Thread.UncaughtEx
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            float iType = msg.getData().getFloat(Conditions.TYPE);
+            int iType = (int) msg.getData().getFloat(Conditions.TYPE);
             tvType.setText("type :" + iType);
             SimpleDateFormat fm = new SimpleDateFormat("yyyy/MM/dd HH:mm");
             Date now = new Date();
             types.add(fm.format(now) + ": type :" + iType);
             listView.deferNotifyDataSetChanged();
-
         }
     };
 
@@ -69,24 +70,28 @@ public class MainActivity extends AppCompatActivity implements Thread.UncaughtEx
         tvTime100MilliSecond = (TextView) findViewById(R.id.time_100millisecond);
         tvTime100MilliSecond.setText(s100MillSecond);
         tv.setText(sRecordStatus);
-        GlobalConfig.fAbsolutepath.mkdirs();//创建文件夹
-        GlobalConfig.fTemplatePath.mkdirs();//创建文件夹
-        GlobalConfig.fResultPath.mkdirs();//创建文件夹
 
-        //initIos();
-        if (GlobalConfig.bPlayThreadFlag) {
-            //ThreadInstantPlay threadInstantPlay = new ThreadInstantPlay();
-            //Process.setThreadPriority(Process.THREAD_PRIORITY_URGENT_AUDIO);
-            //threadInstantPlay.start();
-            GlobalConfig.stWavePlayer.play();
-        } else {
-            GlobalConfig.isRecording = true;
+        if (!Conditions.configInit) {
+            GlobalConfig.fAbsolutepath.mkdirs();//创建文件夹
+            GlobalConfig.fTemplatePath.mkdirs();//创建文件夹
+            GlobalConfig.fResultPath.mkdirs();//创建文件夹
+            GlobalConfig.stPhaseProxy.init();
+            //initIos();
+            if (GlobalConfig.bPlayThreadFlag) {
+                //ThreadInstantPlay threadInstantPlay = new ThreadInstantPlay();
+                //Process.setThreadPriority(Process.THREAD_PRIORITY_URGENT_AUDIO);
+                //threadInstantPlay.start();
+                GlobalConfig.stWavePlayer.play();
+            } else {
+                GlobalConfig.isRecording = true;
+            }
+            Conditions.configInit = true;
         }
 
         //startRecordAction();
 
-        GlobalConfig.stPhaseProxy.init();
         GlobalConfig.stPhaseProxy.sendHandler(handler);
+
     }
 
     //必须实现接口uncaughtException
@@ -171,7 +176,7 @@ public class MainActivity extends AppCompatActivity implements Thread.UncaughtEx
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        getMenuInflater().inflate(R.menu.menu_test, menu);
         return true;
     }
 
@@ -180,7 +185,10 @@ public class MainActivity extends AppCompatActivity implements Thread.UncaughtEx
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_main) {
+            //跳转到InputActivity
+            Intent intent = new Intent(this, InputActivity.class);
+            startActivity(intent);
             return true;
         }
 

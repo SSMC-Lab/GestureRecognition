@@ -1,5 +1,6 @@
 package com.example.monster.airgesture.ui;
 
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -11,6 +12,8 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -36,8 +39,7 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
     private EditText inputtedArea;
     private TextView inputStrokes;
     private RecyclerView candidateWordArea;
-    private
-    @IdRes int[] buttons = {R.id.bt_on, R.id.bt_off, R.id.bt_del, R.id.bt_clear,
+    private @IdRes int[] buttons = {R.id.bt_on, R.id.bt_off, R.id.bt_del, R.id.bt_clear,
             R.id.bt_space, R.id.bt_num, R.id.bt_comma, R.id.bt_period};
     private Button capLocks;
 
@@ -80,7 +82,13 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
             do {
                 end = System.currentTimeMillis();
                 time = end - start;
-            } while (time < 1500);
+                try {
+                    Thread.sleep(200);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                    break;
+                }
+            } while (time < 2000);
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -236,7 +244,7 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
             adapter.notifyDiff(candidateWords);
         }
         start = System.currentTimeMillis();
-        if (!isTiming&&!isNumKeyboard) {
+        if (!isTiming) {
             isTiming = true;
             pool.submit(new TimeTask());
         }
@@ -324,11 +332,11 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
                 break;
 
             case R.id.bt_comma:
-                setWord(", ");
+                setWord(",");
                 break;
 
             case R.id.bt_period:
-                setWord(". ");
+                setWord(".");
                 break;
 
             case R.id.bt_del:
@@ -373,5 +381,27 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
                 showMessage("拒绝访问sd卡将导致无法识别动作数据");
             }
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_test) {
+            //跳转到InputActivity
+            Intent intent = new Intent(this,MainActivity.class);
+            startActivity(intent);
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }

@@ -51,7 +51,7 @@
         android:id="@+id/bt_caplock"
         android:layout_width="@dimen/button_width"
         android:layout_height="@dimen/button_height"
-
+        android:textAllCaps="false"
         android:layout_alignBottom="@+id/bt_space"
         android:layout_alignStart="@+id/bt_del"
         android:text="CAPLOCK" />

@@ -1,14 +1,15 @@
 package com.example.monster.airgesture.ui;
 
 import android.content.pm.PackageManager;
-import android.provider.Settings;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.support.annotation.ColorRes;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -18,43 +19,40 @@ import android.widget.TextView;
 import com.example.monster.airgesture.R;
 import com.example.monster.airgesture.model.db.CandidateWord;
 import com.example.monster.airgesture.model.db.DictionaryDBImpl;
+import com.example.monster.airgesture.utils.CapLockUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Created by WelkinShadow on 2017/10/26.
  */
 
 public class InputActivity<T extends InputContract.Presenter> extends BaseActivity<T> implements InputContract.View, View.OnClickListener, Thread.UncaughtExceptionHandler {
+    private static final String TAG = "InputActivity";
+
     private EditText inputtedArea;
     private TextView inputStrokes;
     private RecyclerView candidateWordArea;
     private
-    @IdRes
-    int[] buttons = {R.id.bt_on, R.id.bt_off, R.id.bt_del, R.id.bt_clear,
-            R.id.bt_caplock, R.id.bt_space, R.id.bt_num, R.id.bt_comma, R.id.bt_period};
+    @IdRes int[] buttons = {R.id.bt_on, R.id.bt_off, R.id.bt_del, R.id.bt_clear,
+            R.id.bt_space, R.id.bt_num, R.id.bt_comma, R.id.bt_period};
+    private Button capLocks;
 
     private boolean isOn = false;
     private boolean isNumKeyboard = false;
     private boolean isTiming = false;
 
-    private static final String TAG = "InputActivity";
+    private int capStatus = 102;
+    private final int FIRST_CAP = 100;
+    private final int ALL_CAP = 101;
+    private final int NO_CAP = 102;
 
-
- /*   private Button bt_on;
-    private Button bt_del;
-    private Button bt_caolock;
-    private Button bt_num;
-    private Button bt_off;
-    private Button bt_clear;
-    private Button bt_space;
-    private Button bt_comma;
-    private Button bt_period;*/
+    private ExecutorService pool;
+    private long start = 0;
+    private long end = 0;
 
     private WordAdapter<CandidateWord> adapter = null;
     private WordAdapter.AdapterListener listener = new WordAdapter.AdapterListener() {
@@ -72,11 +70,6 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
 
         }
     };
-
-    @Override
-    public void uncaughtException(Thread t, Throwable e) {
-        Log.e(TAG, "Exception : " + e);
-    }
 
 
     private class TimeTask implements Runnable {
@@ -103,9 +96,10 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
 
     }
 
-    private ExecutorService pool = Executors.newSingleThreadExecutor();
-    private long start = 0;
-    private long end = 0;
+    @Override
+    public void uncaughtException(Thread t, Throwable e) {
+        Log.e(TAG, "Exception : " + e);
+    }
 
     @Override
     public T setPresenter() {
@@ -119,6 +113,7 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
 
     @Override
     public void initialize() {
+        pool = Executors.newSingleThreadExecutor();
         if (ContextCompat.checkSelfPermission(this,
                 android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{
@@ -132,6 +127,7 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
 
         inputStrokes = (TextView) findViewById(R.id.input_strokes);
         inputtedArea = (EditText) findViewById(R.id.inputted_area);
+        inputtedArea.setOnClickListener(this);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
@@ -143,16 +139,9 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
             bt.setOnClickListener(this);
         }
 
-        /*
-        bt_caolock = (Button) findViewById(R.id.bt_caplock);
-        bt_clear = (Button) findViewById(R.id.bt_clear);
-        bt_comma = (Button) findViewById(R.id.bt_comma);
-        bt_del = (Button) findViewById(R.id.bt_del);
-        bt_num = (Button) findViewById(R.id.bt_num);
-        bt_on = (Button) findViewById(R.id.bt_on);
-        bt_off = (Button) findViewById(R.id.bt_off);
-        bt_period = (Button) findViewById(R.id.bt_period);
-        bt_space = (Button) findViewById(R.id.bt_space);*/
+        capLocks = (Button) findViewById(R.id.bt_caplock);
+        capLocks.setText("caplocks");
+        capLocks.setOnClickListener(this);
     }
 
     @Override
@@ -176,6 +165,7 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
 
     @Override
     public void setWord(String word) {
+        resetCapLock();
         String text = inputtedArea.getText().toString();
         if (text != null && text.length() > 0) {
             inputtedArea.append(" " + word);
@@ -248,7 +238,7 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
         start = System.currentTimeMillis();
         if (!isTiming) {
             isTiming = true;
-            pool.execute(new TimeTask());
+            pool.submit(new TimeTask());
         }
     }
 
@@ -259,6 +249,36 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
         }
     }
 
+
+    private void transformCaplock() {
+        String text = inputtedArea.getText().toString();
+        int lastWordIndex = text.lastIndexOf(" ") == -1 ? 0 : text.lastIndexOf(" ") + 1;
+        String lastWord = text.substring(lastWordIndex, text.length());
+        String afterTransform = null;
+        capStatus = capStatus == NO_CAP ? FIRST_CAP : capStatus + 1;
+        if (capStatus == NO_CAP) {
+            afterTransform = CapLockUtil.transformNoCapsAll(lastWord);
+            capLocks.setTextColor(ContextCompat.getColor(this, R.color.black));
+            capLocks.setText("caplocks");
+        } else if (capStatus == FIRST_CAP) {
+            afterTransform = CapLockUtil.transformCapsFirst(lastWord);
+            capLocks.setTextColor(ContextCompat.getColor(this, R.color.indigo));
+            capLocks.setText("Caplocks");
+        } else if (capStatus == ALL_CAP) {
+            afterTransform = CapLockUtil.transformCapsAll(lastWord);
+            capLocks.setTextColor(ContextCompat.getColor(this, R.color.indigo));
+            capLocks.setText("CAPLOCKS");
+        }
+        String afterText = text.substring(0, lastWordIndex) + afterTransform;
+        inputtedArea.setText(afterText);
+        inputtedArea.setSelection(afterText.length());
+    }
+
+    private void resetCapLock(){
+        capStatus = NO_CAP;
+        capLocks.setTextColor(ContextCompat.getColor(this, R.color.black));
+        capLocks.setText("caplocks");
+    }
 
     @Override
     public boolean isNumKeyboard() {
@@ -291,7 +311,7 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
                 break;
 
             case R.id.bt_caplock:
-                showMessage("未实现");
+                transformCaplock();
                 break;
 
             case R.id.bt_clear:
@@ -331,12 +351,17 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
                 setWord(" ");
                 break;
 
+            case R.id.inputted_area:
+                resetCapLock();
+                break;
+
         }
     }
 
     @Override
     protected void onDestroy() {
         getPresenter().onDetachDB();
+        pool.shutdown();
         super.onDestroy();
     }
 

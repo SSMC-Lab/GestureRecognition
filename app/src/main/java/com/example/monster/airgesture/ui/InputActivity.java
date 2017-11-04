@@ -236,7 +236,7 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
             adapter.notifyDiff(candidateWords);
         }
         start = System.currentTimeMillis();
-        if (!isTiming) {
+        if (!isTiming&&!isNumKeyboard) {
             isTiming = true;
             pool.submit(new TimeTask());
         }

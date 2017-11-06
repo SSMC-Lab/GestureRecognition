@@ -38,7 +38,7 @@ public class InputPresenterImpl<V extends InputContract.View> extends BasePresen
                 case Conditions.MESSAGE_PHASE_MODEL:
                     if (!getView().isNumKeyboard()) {
                         int type = (int) msg.getData().getFloat(Conditions.TYPE);
-                        Log.i(TAG, "receive gesture:" + type);
+                        Log.i(TAG, "receive gesture : " + type);
                         coding.append(type);
                         getView().setStroke(type);
                         findWord(coding.toString());

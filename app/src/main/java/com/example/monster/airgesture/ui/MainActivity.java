@@ -49,6 +49,7 @@ public class MainActivity extends AppCompatActivity implements Thread.UncaughtEx
             Date now = new Date();
             types.add(fm.format(now) + ": type :" + iType);
             listView.deferNotifyDataSetChanged();
+            listView.setSelection(ListView.FOCUS_DOWN);
         }
     };
 
@@ -62,8 +63,6 @@ public class MainActivity extends AppCompatActivity implements Thread.UncaughtEx
         tvType = (TextView) findViewById(R.id.text_type);
         listView = (ListView) findViewById(R.id.type_listview);
         listView.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_expandable_list_item_1, types));
-
-
         //在此调用下面方法，才能捕获到线程中的异常
         Thread.setDefaultUncaughtExceptionHandler(this);
         //time init
@@ -121,8 +120,6 @@ public class MainActivity extends AppCompatActivity implements Thread.UncaughtEx
         GlobalConfig.stWavRecorder.start();
         sRecordStatus = "-------------start Record-----------------";
         tv.setText(sRecordStatus);
-
-
 
         /*try {
             //创建临时文件,注意这里的格式为.pcm

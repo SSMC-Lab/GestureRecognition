@@ -19,40 +19,42 @@ import java.io.IOException;
  */
 
 public class PhaseAudioRecord {
-    public class WavAudioRecord{
+    public class WavAudioRecord {
         public int audioSource = MediaRecorder.AudioSource.MIC;
         public int sampleRateInHz = GlobalConfig.AUDIO_SAMPLE_RATE;
         public int channelConfig = AudioFormat.CHANNEL_IN_MONO;
         public int audioFormat = AudioFormat.ENCODING_PCM_16BIT;
     }
+
     private int wavCopyChannelNum = 1;//1;//2;//1;
     private short wavCopyBitsPerSample = 16;
     public static long lRecordNum = 0;
     AudioRecord recorder;
-    recordThread stRecordThread = new  recordThread();                                               //录制的Pcm文件名称
+    recordThread stRecordThread = new recordThread(); //录制的Pcm文件名称
     // 录制的PCM文件句柄
     WavAudioRecord stWavAudioRecord = new WavAudioRecord();
-    public static int  offsetInBytes = 0;
-    public static boolean   bFirstSimulatePlay = true;
-    public static boolean   bSimulate = true;
-    public void initRecord(){
+    public static int offsetInBytes = 0;
+    public static boolean bFirstSimulatePlay = true;
+    public static boolean bSimulate = true;
+
+    public void initRecord() {
         int bufferSize = AudioRecord.getMinBufferSize(stWavAudioRecord.sampleRateInHz,
                 stWavAudioRecord.channelConfig, stWavAudioRecord.audioFormat);
 
         recorder = new AudioRecord(stWavAudioRecord.audioSource,
                 stWavAudioRecord.sampleRateInHz, stWavAudioRecord.channelConfig,
-                stWavAudioRecord.audioFormat, bufferSize*10);
-        if(GlobalConfig.bRecordThreadFlag) {
+                stWavAudioRecord.audioFormat, bufferSize * 10);
+        if (GlobalConfig.bRecordThreadFlag) {
             stRecordThread = new recordThread();
             stRecordThread.start();
         }
     }
 
     public void stopRecording() throws IOException {
-        Log.i("timer","audio Stopped");
+        Log.i("timer", "audio Stopped");
         //record release
         GlobalConfig.isRecording = false;
-        if(GlobalConfig.bSaveWavFile) {
+        if (GlobalConfig.bSaveWavFile) {
             String sFile = GlobalConfig.fPcmRecordFile.getAbsolutePath();
             String sWavPath = WaveFileUtil.getWaveFile(sFile);
             int bufferSize = AudioRecord.getMinBufferSize(stWavAudioRecord.sampleRateInHz,
@@ -68,7 +70,7 @@ public class PhaseAudioRecord {
     }
 
 
-    private class recordThread  extends Thread {
+    private class recordThread extends Thread {
 
         @Override
         public void run() {
@@ -77,7 +79,7 @@ public class PhaseAudioRecord {
                     stWavAudioRecord.channelConfig, stWavAudioRecord.audioFormat);
 
             try {
-                if(GlobalConfig.fPcmRecordFile != null){
+                if (GlobalConfig.fPcmRecordFile != null) {
                     GlobalConfig.recDos = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(GlobalConfig.fPcmRecordFile)));
                 }
                 //Log.i("audio","buffersize:"+bufferSize);
@@ -97,10 +99,10 @@ public class PhaseAudioRecord {
                 if (GlobalConfig.bPlayDataReady) {
                     //Process.setThreadPriority(Process.THREAD_PRIORITY_URGENT_AUDIO);
                     byte[] rec = new byte[bufferSize];
-                    int iReadSize = 0;                 
+                    int iReadSize = 0;
                     iReadSize = recorder.read(rec, 0, rec.length);
                     long lNow = System.currentTimeMillis();
-                    lRecordNum = lRecordNum+iReadSize;
+                    lRecordNum = lRecordNum + iReadSize;
                     //Log.i("WaveFileUtil ", "|before writetoFile iReadSize:" + iReadSize);
                     int iMaxData = GlobalConfig.stWaveFileUtil.max(rec, rec.length);
                     //Log.i("speed","record:"+lRecordNum + "|lNow:"+lNow + "|max:"+iMaxData +"|iFrame:" + iFrame);
@@ -118,7 +120,7 @@ public class PhaseAudioRecord {
         }
 
 
-        public void writeByte(byte[] recData){
+        public void writeByte(byte[] recData) {
             if (GlobalConfig.bByte && GlobalConfig.bSaveWavFile) {
                 int iReadSize = recData.length;
                 //Log.i("WaveFileUtil ", "|before writetoFile iReadSize:" + iReadSize);

@@ -21,31 +21,16 @@ public class CandidateWord {
         return word;
     }
 
-    public void setWord(String word) {
-        this.word = word;
-    }
-
     public float getProbability() {
         return probability;
-    }
-
-    public void setProbability(float probability) {
-        this.probability = probability;
     }
 
     public String getCoding() {
         return coding;
     }
 
-    public void setCoding(String coding) {
-        this.coding = coding;
-    }
-
     public int getLength() {
         return length;
     }
 
-    public void setLength(int length) {
-        this.length = length;
-    }
 }

@@ -88,7 +88,7 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
                     e.printStackTrace();
                     break;
                 }
-            } while (time < 2000);
+            } while (time < 1500);
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {

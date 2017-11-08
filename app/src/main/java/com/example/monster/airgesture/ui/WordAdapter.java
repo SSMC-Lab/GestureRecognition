@@ -11,7 +11,9 @@ import android.widget.TextView;
 import com.example.monster.airgesture.R;
 import com.example.monster.airgesture.model.db.CandidateWord;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by WelkinShadow on 2017/10/31.

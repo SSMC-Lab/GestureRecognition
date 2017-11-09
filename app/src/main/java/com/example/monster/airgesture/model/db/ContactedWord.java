@@ -5,19 +5,19 @@ package com.example.monster.airgesture.model.db;
  */
 
 public class ContactedWord {
-    private int id;
+    private long id;
     private long frequency;
     private String word;
     private String contacrtedWord;
 
-    public ContactedWord(int id, long frequency, String word, String contacrtedWord) {
+    public ContactedWord(long id, long frequency, String word, String contacrtedWord) {
         this.id = id;
         this.frequency = frequency;
         this.word = word;
         this.contacrtedWord = contacrtedWord;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 

@@ -7,13 +7,7 @@ import android.util.Log;
 
 import com.example.monster.airgesture.utils.FileCopyUtil;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -23,9 +17,13 @@ import java.util.List;
 public class DictionaryDBImpl implements DictionaryDB {
 
     private Context context;
-    private SQLiteDatabase database;
+    private SQLiteDatabase dictionary;
+    private SQLiteDatabase contacted;
+
     private static final String TAG = "DictionaryDBImpl";
-    private static final String DB_NAME = "dictionary.db";
+
+    private static final String DB_NAME_DICTIONARY = "dictionary.db";
+    private static final String DB_NAME_CONTACTED = "2gram.db";
     private static final String DB_PATH = "/data/data/com.example.monster.airgesture/database";
 
     private final List<CandidateWord> candidateWords1;
@@ -37,6 +35,9 @@ public class DictionaryDBImpl implements DictionaryDB {
     private final List<CandidateWord> num;
 
     public DictionaryDBImpl(Context context) {
+        this.context = context;
+
+        //初始化变量
         candidateWords1 = createLetters(new String[]{"I", "T", "Z", "J"}, "1");
         candidateWords2 = createLetters(new String[]{"E", "F", "H", "K", "L"}, "2");
         candidateWords3 = createLetters(new String[]{"A", "M", "N"}, "3");
@@ -45,56 +46,35 @@ public class DictionaryDBImpl implements DictionaryDB {
         candidateWords6 = createLetters(new String[]{"B", "D", "P", "R"}, "6");
         num = crateNums();
 
+        //初始化数据库
         Log.i(TAG, "database initial ");
-        this.context = context;
-        File dbFile = new File(DB_PATH + DB_NAME);
-        InputStream inputStream = null;
-        OutputStream outputStream = null;
-        if (!dbFile.exists()) {
-            Log.i(TAG, "copy database from assets");
-            try {
-                dbFile.createNewFile();
-                inputStream = context.getAssets().open(DB_NAME);
-                outputStream = new FileOutputStream(dbFile);
-                boolean result = FileCopyUtil.copy(inputStream, outputStream);
-                if (!result) {
-                    Log.e(TAG, "fail to copy database");
-                }
-                Log.i(TAG, "copy right");
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                try {
-                    if (inputStream != null) {
-                        inputStream.close();
-                    }
-                    if (outputStream != null) {
-                        outputStream.close();
-                    }
-                } catch (IOException e2) {
-                    e2.printStackTrace();
-                }
-            }
-        }
-        database = SQLiteDatabase.openOrCreateDatabase(DB_PATH + DB_NAME, null);
+        boolean successful;
+        successful = FileCopyUtil.databaseCopy(context, DB_NAME_DICTIONARY);
+        if (!successful)
+            Log.e(TAG, "dictionnary copy failed!");
+        successful = FileCopyUtil.databaseCopy(context, DB_NAME_CONTACTED);
+        if (!successful)
+            Log.e(TAG, "2gram copy failed!");
+        dictionary = SQLiteDatabase.openOrCreateDatabase(DB_PATH + DB_NAME_DICTIONARY, null);
+        contacted = SQLiteDatabase.openOrCreateDatabase(DB_PATH + DB_NAME_CONTACTED, null);
     }
 
     @Override
     public List<CandidateWord> getWordList(String coding) {
         Log.i(TAG, "database query");
-        Cursor cursor = database.rawQuery("SELECT * FROM dictionary WHERE code LIKE '"
+        Cursor cursor = dictionary.rawQuery("SELECT * FROM dictionary WHERE code LIKE '"
                 + coding + "%' ORDER BY length ASC,probability DESC", null);
         CandidateWord candidateWord = null;
         List<CandidateWord> result = new ArrayList<>();
         if (cursor.moveToFirst()) {
             do {
                 String word = cursor.getString(cursor.getColumnIndex("word"));
-                float probability = cursor.getFloat(cursor.getColumnIndex("probability"));
-                int length = cursor.getInt(cursor.getColumnIndex("length"));
+                Float probability = cursor.getFloat(cursor.getColumnIndex("probability"));
+                Integer length = cursor.getInt(cursor.getColumnIndex("length"));
                 String code = cursor.getString(cursor.getColumnIndex("code"));
                 candidateWord = new CandidateWord(word, probability, code, length);
                 result.add(candidateWord);
-                Log.d(TAG, "database query : word = " + word + " length = " + length
+                Log.i(TAG, "database query : word = " + word + " length = " + length
                         + " code = " + code + "probability = " + probability);
             } while (cursor.moveToNext());
         }
@@ -105,7 +85,7 @@ public class DictionaryDBImpl implements DictionaryDB {
     @Override
     public List<CandidateWord> getLetter(String type) {
         Log.d(TAG, "find letters and type is " + type);
-        //避免直接传递类变量成员
+        //避免引用传递导致的bug
         List<CandidateWord> result = new ArrayList<>();
         switch (type) {
             case "1":
@@ -137,22 +117,40 @@ public class DictionaryDBImpl implements DictionaryDB {
         return result;
     }
 
-    private static List<CandidateWord> createLetters(String[] letters, String coding) {
+    @Override
+    public List<ContactedWord> getContacted(String word) {
+        Log.i(TAG, "database query");
+        Cursor cursor = contacted.rawQuery("SELECT * FROM 2gramtable WHERE word = \""
+                + word + "\" ORDER BY id ASC", null);
+        List<ContactedWord> result = new ArrayList<>();
+        ContactedWord contactedWord = null;
+        if (cursor.moveToFirst()) {
+            do {
+                Long id = cursor.getLong(cursor.getColumnIndex("id"));
+                Long frequency = cursor.getLong(cursor.getColumnIndex("frequency"));
+                String wordInDB = cursor.getString(cursor.getColumnIndex("word"));
+                String s2gram = cursor.getString(cursor.getColumnIndex("2gram"));
+                contactedWord = new ContactedWord(id, frequency, wordInDB, s2gram);
+                result.add(contactedWord);
+                Log.i(TAG, "database query : id = " + id + " frequency = " + frequency + " word = " + wordInDB + "2gram = " + s2gram);
+            } while (cursor.moveToNext());
+        }
+        Log.i(TAG, "finish querying the result length = " + result.size());
+        return result;
+    }
+
+    private List<CandidateWord> createLetters(String[] letters, String coding) {
         List<CandidateWord> result = new ArrayList<>();
-        CandidateWord word;
         for (String letter : letters) {
-            word = new CandidateWord(letter, 0, coding, 1);
-            result.add(word);
+            result.add(new CandidateWord(letter, 0, coding, 1));
         }
         return result;
     }
 
-    private static List<CandidateWord> crateNums() {
+    private List<CandidateWord> crateNums() {
         List<CandidateWord> result = new ArrayList<>();
-        CandidateWord word;
         for (int i = 0; i <= 10; i++) {
-            word = new CandidateWord(i + "", 0, "num", 1);
-            result.add(word);
+            result.add(new CandidateWord(i + "", 0, "num", 1));
         }
         return result;
     }

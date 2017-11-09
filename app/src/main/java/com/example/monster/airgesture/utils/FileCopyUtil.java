@@ -1,5 +1,9 @@
 package com.example.monster.airgesture.utils;
 
+import android.content.Context;
+import android.util.Log;
+
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -11,6 +15,8 @@ import java.io.OutputStream;
  */
 
 public class FileCopyUtil {
+
+    private static final String DB_PATH = "/data/data/com.example.monster.airgesture/database";
 
     public static boolean copy(String src, String des) {
         try {
@@ -38,5 +44,34 @@ public class FileCopyUtil {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public static boolean databaseCopy(Context context,String dbName){
+        File dbFile = new File(DB_PATH + dbName);
+        InputStream inputStream = null;
+        OutputStream outputStream = null;
+        boolean result = false;
+        if (!dbFile.exists()) {
+            try {
+                dbFile.createNewFile();
+                inputStream = context.getAssets().open(dbName);
+                outputStream = new FileOutputStream(dbFile);
+                result = FileCopyUtil.copy(inputStream, outputStream);
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    if (inputStream != null) {
+                        inputStream.close();
+                    }
+                    if (outputStream != null) {
+                        outputStream.close();
+                    }
+                } catch (IOException e2) {
+                    e2.printStackTrace();
+                }
+            }
+        }
+        return result;
     }
 }

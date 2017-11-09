@@ -19,7 +19,6 @@ import java.util.Map;
  * Created by WelkinShadow on 2017/10/31.
  */
 
-
 public class WordAdapter<T extends CandidateWord> extends BaseAdapter<T, WordAdapter.ViewHolder> {
 
     private final List<T> datas;

@@ -3,10 +3,11 @@ package com.example.monster.airgesture.model.db;
 import java.util.List;
 
 /**
+ * 数据库管理接口，负责和数据库的创建和查询
  * Created by WelkinShadow on 2017/10/26.
  */
 
-public interface DictionaryDB {
+public interface DatabaseQueryManager {
     /**
      * 从数据库获取编码对应的单词集合
      * @param coding 编码序列

@@ -2,9 +2,6 @@ package com.example.monster.airgesture.ui;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
-import android.support.annotation.ColorRes;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -21,7 +18,7 @@ import android.widget.TextView;
 
 import com.example.monster.airgesture.R;
 import com.example.monster.airgesture.model.db.CandidateWord;
-import com.example.monster.airgesture.model.db.DictionaryDBImpl;
+import com.example.monster.airgesture.model.db.DatabaseQueryManagerImpl;
 import com.example.monster.airgesture.utils.CapLockUtil;
 
 import java.util.ArrayList;
@@ -30,6 +27,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
+ * 负责展示数据的 View 层
+ * 本 Activity 负责输入的主要界面
  * Created by WelkinShadow on 2017/10/26.
  */
 
@@ -57,6 +56,7 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
     private long end = 0;
 
     private WordAdapter<CandidateWord> adapter = null;
+    //WordAdapter的回调接口，实现item的点击事件
     private WordAdapter.AdapterListener listener = new WordAdapter.AdapterListener() {
         @Override
         public void onClickItem(CandidateWord word) {
@@ -73,7 +73,7 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
         }
     };
 
-
+    //计时任务
     private class TimeTask implements Runnable {
 
         @Override
@@ -105,6 +105,79 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
     }
 
     @Override
+    public void onClick(View view) {
+        String strokeText = inputStrokes.getText().toString();
+        String inputText = inputtedArea.getText().toString();
+        switch (view.getId()) {
+            case R.id.bt_on:
+                if (!isOn) {
+                    getPresenter().startRecording();
+                    showMessage("开始读取手势");
+                    isOn = true;
+                } else {
+                    showMessage("已经开启手势读取");
+                }
+                break;
+
+            case R.id.bt_off:
+                if (isOn) {
+                    getPresenter().stopRecording();
+                    showMessage("关闭识别功能");
+                    isOn = false;
+                } else {
+                    showMessage("已经关闭");
+                }
+                break;
+
+            case R.id.bt_caplock:
+                transformCaplock();
+                break;
+
+            case R.id.bt_clear:
+                if (strokeText != null && strokeText.length() > 0) {
+                    clearStroke();
+                } else if (inputText != null && inputText.length() > 0) {
+                    clearInput();
+                }
+                showMessage("已清空");
+                break;
+
+            case R.id.bt_comma:
+                setWord(",");
+                break;
+
+            case R.id.bt_period:
+                setWord(".");
+                break;
+
+            case R.id.bt_del:
+                if (strokeText != null && strokeText.length() > 0) {
+                    delStroke();
+                } else if (inputText != null && inputText.length() > 0) {
+                    delWord();
+                } else {
+                    showMessage("已清空");
+                }
+                break;
+
+            case R.id.bt_num:
+                clearStroke();
+                getPresenter().changeNumKeyboard();
+                isNumKeyboard = !isNumKeyboard;
+                break;
+
+            case R.id.bt_space:
+                setWord(" ");
+                break;
+
+            case R.id.inputted_area:
+                resetCapLock();
+                break;
+
+        }
+    }
+
+    @Override
     public void uncaughtException(Thread t, Throwable e) {
         Log.e(TAG, "Exception : " + e);
     }
@@ -128,7 +201,7 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
                     android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
         }
         getPresenter().initConfig();
-        getPresenter().onAttachDB(new DictionaryDBImpl(this));
+        getPresenter().onAttachDB(new DatabaseQueryManagerImpl(this));
 
         //在此调用下面方法，才能捕获到线程中的异常
         Thread.setDefaultUncaughtExceptionHandler(this);
@@ -257,7 +330,6 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
         }
     }
 
-
     private void transformCaplock() {
         String text = inputtedArea.getText().toString();
         int lastWordIndex = text.lastIndexOf(" ") == -1 ? 0 : text.lastIndexOf(" ") + 1;
@@ -294,85 +366,11 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
     }
 
     @Override
-    public void onClick(View view) {
-        String strokeText = inputStrokes.getText().toString();
-        String inputText = inputtedArea.getText().toString();
-        switch (view.getId()) {
-            case R.id.bt_on:
-                if (!isOn) {
-                    getPresenter().startRecording();
-                    showMessage("开始读取手势");
-                    isOn = true;
-                } else {
-                    showMessage("已经开启手势读取");
-                }
-                break;
-
-            case R.id.bt_off:
-                if (isOn) {
-                    getPresenter().stopRecording();
-                    showMessage("关闭识别功能");
-                    isOn = false;
-                } else {
-                    showMessage("已经关闭");
-                }
-                break;
-
-            case R.id.bt_caplock:
-                transformCaplock();
-                break;
-
-            case R.id.bt_clear:
-                if (strokeText != null && strokeText.length() > 0) {
-                    clearStroke();
-                } else if (inputText != null && inputText.length() > 0) {
-                    clearInput();
-                }
-                showMessage("已清空");
-                break;
-
-            case R.id.bt_comma:
-                setWord(",");
-                break;
-
-            case R.id.bt_period:
-                setWord(".");
-                break;
-
-            case R.id.bt_del:
-                if (strokeText != null && strokeText.length() > 0) {
-                    delStroke();
-                } else if (inputText != null && inputText.length() > 0) {
-                    delWord();
-                } else {
-                    showMessage("已清空");
-                }
-                break;
-
-            case R.id.bt_num:
-                clearStroke();
-                getPresenter().changeNumKeyboard();
-                isNumKeyboard = !isNumKeyboard;
-                break;
-
-            case R.id.bt_space:
-                setWord(" ");
-                break;
-
-            case R.id.inputted_area:
-                resetCapLock();
-                break;
-
-        }
-    }
-
-    @Override
     protected void onDestroy() {
         getPresenter().onDetachDB();
         pool.shutdown();
         super.onDestroy();
     }
-
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {

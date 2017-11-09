@@ -1,6 +1,7 @@
 package com.example.monster.airgesture.model.db;
 
 /**
+ * 可选词的实体类封装
  * Created by WelkinShadow on 2017/10/27.
  */
 

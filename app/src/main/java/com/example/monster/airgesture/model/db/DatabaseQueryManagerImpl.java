@@ -11,16 +11,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * DictionaryDB的实现类，负责和数据库的创建和查询
  * Created by WelkinShadow on 2017/10/27.
  */
 
-public class DictionaryDBImpl implements DictionaryDB {
+public class DatabaseQueryManagerImpl implements DatabaseQueryManager {
 
     private Context context;
     private SQLiteDatabase dictionary;
     private SQLiteDatabase contacted;
 
-    private static final String TAG = "DictionaryDBImpl";
+    private static final String TAG = "DatabaseQueryManagerImpl";
 
     private static final String DB_NAME_DICTIONARY = "dictionary.db";
     private static final String DB_NAME_CONTACTED = "2gram.db";
@@ -34,7 +35,7 @@ public class DictionaryDBImpl implements DictionaryDB {
     private final List<CandidateWord> candidateWords6;
     private final List<CandidateWord> num;
 
-    public DictionaryDBImpl(Context context) {
+    public DatabaseQueryManagerImpl(Context context) {
         this.context = context;
 
         //初始化变量

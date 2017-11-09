@@ -1,7 +1,8 @@
 package com.example.monster.airgesture.model.db;
 
 /**
- * Created by lenovo on 2017/11/8.
+ * 联系词的实体类封装
+ * Created by WelkinShadow on 2017/11/8.
  */
 
 public class ContactedWord {

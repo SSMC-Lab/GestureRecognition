@@ -7,7 +7,7 @@ import android.util.Log;
 
 import com.example.monster.airgesture.Conditions;
 import com.example.monster.airgesture.GlobalConfig;
-import com.example.monster.airgesture.model.db.DictionaryDB;
+import com.example.monster.airgesture.model.db.DatabaseQueryManager;
 import com.example.monster.airgesture.model.db.CandidateWord;
 import com.example.monster.airgesture.utils.FileCopyUtil;
 
@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Presenter实现类
+ * 处理和View层和后台的逻辑交互
  * Created by WelkinShadow on 2017/10/26.
  */
 
@@ -30,7 +32,7 @@ public class InputPresenterImpl<V extends InputContract.View> extends BasePresen
 
     public static final String TAG = "InputPresenterImpl";
 
-    private DictionaryDB db;
+    private DatabaseQueryManager db;
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -79,7 +81,7 @@ public class InputPresenterImpl<V extends InputContract.View> extends BasePresen
     }
 
     @Override
-    public void onAttachDB(DictionaryDB db) {
+    public void onAttachDB(DatabaseQueryManager db) {
         this.db = db;
     }
 

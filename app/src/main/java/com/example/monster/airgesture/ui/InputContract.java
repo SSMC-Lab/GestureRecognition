@@ -1,11 +1,13 @@
 package com.example.monster.airgesture.ui;
 
-import com.example.monster.airgesture.model.db.DictionaryDB;
+import com.example.monster.airgesture.model.db.DatabaseQueryManager;
 import com.example.monster.airgesture.model.db.CandidateWord;
 
 import java.util.List;
 
 /**
+ * MVP架构接口部分
+ * 该接口规定了主界面/输入界面的执行接口
  * Created by WelkinShadow on 2017/10/26.
  */
 
@@ -18,7 +20,7 @@ public interface InputContract {
 
         void changeNumKeyboard();
 
-        void onAttachDB(DictionaryDB db);
+        void onAttachDB(DatabaseQueryManager db);
 
         void onDetachDB();
 
@@ -44,14 +46,12 @@ public interface InputContract {
 
         void clearInput();
 
-
         /** input strokes */
         void setStroke(int type);
 
         void delStroke();
 
         void clearStroke();
-
 
         /** candidate word **/
         void setCandidateWord(List<CandidateWord> candidateWord);

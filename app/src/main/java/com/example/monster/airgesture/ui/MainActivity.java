@@ -29,7 +29,9 @@ import com.example.monster.airgesture.R;
 import com.example.monster.airgesture.model.phase.AudioTrackPlay;
 import com.example.monster.airgesture.GlobalConfig;
 
-
+/**
+ *  这个 activity 被用来测试 phase 模块
+ */
 public class MainActivity extends AppCompatActivity implements Thread.UncaughtExceptionHandler {
     //////////////////UI///////////////////////////////
     public static TextView tv;

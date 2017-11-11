@@ -50,7 +50,7 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    if (adapter.getFirst() != null && !isTouchRecycler) {
+                    if (adapter.getFirst() != null && !isTouchRecycler && !(adapter.getFirst() instanceof ContactedWord)) {
                         setWord(adapter.getFirst().getWord());
                     }
                     isTiming = false;
@@ -75,7 +75,6 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
     private long end;
     private boolean isTouchRecycler = false;
     private boolean isTiming = false;//正在计时
-    private boolean isContacted = true;//允许计时
 
     private int capStatus = 102;
     private final int FIRST_CAP = 100;
@@ -189,7 +188,7 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
         resetCapLock();
         String text = inputtedArea.getText().toString();
         String appendText;
-        appendText = text != null && text.length() > 0&&!isNumKeyboard ? " " + word : word;
+        appendText = text != null && text.length() > 0 && !isNumKeyboard ? " " + word : word;
         inputtedArea.append(appendText);
         //数字键盘不需要清空和查找关联词
         if (!isNumKeyboard) {
@@ -274,14 +273,6 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
             candidateWordArea.setAdapter(adapter);
         } else {
             adapter.notifyDiff(words);
-        }
-
-        //如果是联系词则不不允许自动填写首单词
-        if (words != null && words.size() > 0 && words.get(0) instanceof ContactedWord) {
-            isContacted = true;
-            Log.i(TAG, "is contacted word,don't allow timing");
-        } else {
-            isContacted = false;
         }
         submitAutoSetWord();
     }
@@ -405,9 +396,9 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
 
             case R.id.bt_num:
                 bt = (Button) findViewById(R.id.bt_num);
-                if (isNumKeyboard){
+                if (isNumKeyboard) {
                     bt.setTextColor(ContextCompat.getColor(this, R.color.black));
-                }else {
+                } else {
                     bt.setTextColor(ContextCompat.getColor(this, R.color.indigo));
                 }
                 clearStroke();
@@ -429,7 +420,7 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
     private void submitAutoSetWord() {
         Log.i(TAG, "submit auto set word");
         start = System.currentTimeMillis();
-        if (!isTiming && !isContacted) {
+        if (!isTiming) {
             Log.i(TAG, "submit task");
             isTiming = true;
             pool.submit(new AutoSetWordTask());

@@ -60,6 +60,9 @@ public class WordQueryImpl implements WordQuery {
         contacted = SQLiteDatabase.openOrCreateDatabase(DB_PATH + DB_NAME_CONTACTED, null);
     }
 
+    /**
+     * @see WordQuery#getWordList(String)
+     */
     @Override
     public List<Word> getWordList(String coding) {
         Log.i(TAG, "database query");
@@ -83,6 +86,9 @@ public class WordQueryImpl implements WordQuery {
         return result;
     }
 
+    /**
+     * @see WordQuery#getLetter(String)
+     */
     @Override
     public List<Word> getLetter(String type) {
         Log.d(TAG, "find letters and type is " + type);
@@ -111,6 +117,9 @@ public class WordQueryImpl implements WordQuery {
         return result;
     }
 
+    /**
+     * @see WordQuery#getNum()
+     */
     @Override
     public List<Word> getNum() {
         List<Word> result = new ArrayList<>();
@@ -118,6 +127,9 @@ public class WordQueryImpl implements WordQuery {
         return result;
     }
 
+    /**
+     * @see WordQuery#getContacted(String)
+     */
     @Override
     public List<Word> getContacted(String word) {
         Log.i(TAG, "database query");

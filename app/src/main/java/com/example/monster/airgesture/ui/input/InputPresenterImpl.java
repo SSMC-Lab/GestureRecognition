@@ -1,4 +1,4 @@
-package com.example.monster.airgesture.ui;
+package com.example.monster.airgesture.ui.input;
 
 import android.content.Context;
 import android.os.Handler;
@@ -7,8 +7,9 @@ import android.util.Log;
 
 import com.example.monster.airgesture.Conditions;
 import com.example.monster.airgesture.GlobalConfig;
-import com.example.monster.airgesture.model.db.DatabaseQueryManager;
-import com.example.monster.airgesture.model.db.CandidateWord;
+import com.example.monster.airgesture.model.db.WordQuery;
+import com.example.monster.airgesture.model.db.Word;
+import com.example.monster.airgesture.ui.base.BasePresenterImpl;
 import com.example.monster.airgesture.utils.FileCopyUtil;
 
 import java.io.File;
@@ -27,25 +28,19 @@ import java.util.List;
 
 public class InputPresenterImpl<V extends InputContract.View> extends BasePresenterImpl<V> implements InputContract.Presenter<V> {
 
-    private static StringBuilder coding = new StringBuilder();
-    private Context context;
-
     public static final String TAG = "InputPresenterImpl";
 
-    private DatabaseQueryManager db;
+    private boolean isNumKeyboard = false;
+
+    private StringBuilder coding = new StringBuilder();
+    private Context context;
+    private WordQuery db;
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case Conditions.MESSAGE_PHASE_MODEL:
-                    if (!getView().isNumKeyboard()) {
-                        int type = (int) msg.getData().getFloat(Conditions.TYPE);
-                        Log.i(TAG, "receive gesture : " + type);
-                        coding.append(type);
-                        getView().setStroke(type);
-                        findWord(coding.toString());
-                        break;
-                    }
+                    receiveWord((int) msg.getData().getFloat(Conditions.TYPE));
                     break;
             }
         }
@@ -57,13 +52,14 @@ public class InputPresenterImpl<V extends InputContract.View> extends BasePresen
 
     @Override
     public void findWord(String coding) {
+        Log.i(TAG, "find word");
         if (coding != null) {
             Log.i(TAG, "Coding : " + coding);
             if (coding.length() == 1) {
-                List<CandidateWord> letter = db.getLetter(coding);
+                List<Word> letter = db.getLetter(coding);
                 getView().setCandidateWord(letter);
             } else if (coding.length() > 1) {
-                List<CandidateWord> words = db.getWordList(coding);
+                List<Word> words = db.getWordList(coding);
                 getView().setCandidateWord(words);
             }
         } else {
@@ -72,16 +68,36 @@ public class InputPresenterImpl<V extends InputContract.View> extends BasePresen
     }
 
     @Override
-    public void changeNumKeyboard() {
-        if (getView().isNumKeyboard()) {
-            getView().setCandidateWord(new ArrayList<CandidateWord>());
-        } else {
-            getView().setCandidateWord(db.getNum());
+    public void findContacted(String word) {
+        if (word != null) {
+            List<Word> words = db.getContacted(word);
+            getView().setCandidateWord(words);
+            Log.i(TAG, "set contacted word，size = " + words.size());
+        }
+    }
+
+    private void receiveWord(int type) {
+        if (!isNumKeyboard) {
+            getView().setStroke(type);
+            coding.append(type);
+            findWord(coding.toString());
+            Log.i(TAG, "receive gesture : " + type);
         }
     }
 
     @Override
-    public void onAttachDB(DatabaseQueryManager db) {
+    public void changeNumKeyboard() {
+        Log.i(TAG, "change num keyboard ");
+        if (isNumKeyboard) {
+            getView().setCandidateWord(new ArrayList<Word>());
+        } else {
+            getView().setCandidateWord(db.getNum());
+        }
+        isNumKeyboard = !isNumKeyboard;
+    }
+
+    @Override
+    public void onAttachDB(WordQuery db) {
         this.db = db;
     }
 
@@ -92,7 +108,7 @@ public class InputPresenterImpl<V extends InputContract.View> extends BasePresen
 
     @Override
     public void initConfig() {
-        if (!Conditions.configInit){
+        if (!Conditions.configInit) {
             GlobalConfig.fAbsolutepath.mkdirs();//创建文件夹
             GlobalConfig.fTemplatePath.mkdirs();//创建文件夹
             GlobalConfig.fResultPath.mkdirs();//创建文件夹
@@ -139,7 +155,7 @@ public class InputPresenterImpl<V extends InputContract.View> extends BasePresen
     @Override
     public void clearStoker() {
         coding.delete(0, coding.length());
-        getView().setCandidateWord(new ArrayList<CandidateWord>());
+        getView().setCandidateWord(new ArrayList<Word>());
         Log.d(TAG, "clear stoker,now coding = " + coding);
     }
 
@@ -148,8 +164,8 @@ public class InputPresenterImpl<V extends InputContract.View> extends BasePresen
         Log.d(TAG, "coding length:" + coding.length());
         if (coding.length() > 0) {
             coding.delete(coding.length() - 1, coding.length());
-            Log.d(TAG, "delete stoker,now coding = \"" + coding + "\"");
             findWord(coding.toString());
+            Log.d(TAG, "delete stoker,now coding = \"" + coding + "\"");
         }
     }
 
@@ -158,30 +174,19 @@ public class InputPresenterImpl<V extends InputContract.View> extends BasePresen
         File templete = new File(path);
         InputStream inputStream = null;
         OutputStream outputStream = null;
-        if (!templete.exists()) {
+        try {
+            inputStream = context.getAssets().open(templeteName);
+            outputStream = new FileOutputStream(templete);
+            FileCopyUtil.copy(inputStream, outputStream);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
             try {
-                templete.createNewFile();
-                inputStream = context.getAssets().open(templeteName);
-                outputStream = new FileOutputStream(templete);
-                boolean result = FileCopyUtil.copy(inputStream, outputStream);
-                if (!result) {
-                    Log.e(TAG, "copy error : " + templeteName + " failed");
-                }
+                inputStream.close();
+                outputStream.close();
             } catch (IOException e) {
                 e.printStackTrace();
-            } finally {
-                try {
-                    if (inputStream != null) {
-                        inputStream.close();
-                    }
-                    if (outputStream != null) {
-                        outputStream.close();
-                    }
-                } catch (IOException e2) {
-                    e2.printStackTrace();
-                }
             }
-
         }
     }
 }

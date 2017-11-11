@@ -1,9 +1,7 @@
-package com.example.monster.airgesture.ui;
+package com.example.monster.airgesture.ui.test;
 
 import android.content.Intent;
-import android.os.Build;
 import android.os.Message;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -28,6 +26,7 @@ import com.example.monster.airgesture.Conditions;
 import com.example.monster.airgesture.R;
 import com.example.monster.airgesture.model.phase.AudioTrackPlay;
 import com.example.monster.airgesture.GlobalConfig;
+import com.example.monster.airgesture.ui.input.InputActivity;
 
 /**
  *  这个 activity 被用来测试 phase 模块

@@ -1,7 +1,8 @@
-package com.example.monster.airgesture.ui;
+package com.example.monster.airgesture.ui.input;
 
-import com.example.monster.airgesture.model.db.DatabaseQueryManager;
-import com.example.monster.airgesture.model.db.CandidateWord;
+import com.example.monster.airgesture.model.db.WordQuery;
+import com.example.monster.airgesture.model.db.Word;
+import com.example.monster.airgesture.ui.base.BaseContract;
 
 import java.util.List;
 
@@ -18,9 +19,11 @@ public interface InputContract {
         /** 和 database 模块的交互 */
         void findWord(String coding);
 
+        void findContacted(String word);
+
         void changeNumKeyboard();
 
-        void onAttachDB(DatabaseQueryManager db);
+        void onAttachDB(WordQuery db);
 
         void onDetachDB();
 
@@ -40,25 +43,14 @@ public interface InputContract {
     interface View extends BaseContract.View{
 
         /** input area */
-        void delWord();
-
         void setWord(String word);
-
-        void clearInput();
 
         /** input strokes */
         void setStroke(int type);
 
-        void delStroke();
-
-        void clearStroke();
-
         /** candidate word **/
-        void setCandidateWord(List<CandidateWord> candidateWord);
+        void setCandidateWord(List<Word> candidateWord);
 
         void clearCandidateWord();
-
-        /** 访问控制 */
-        boolean isNumKeyboard();
     }
 }

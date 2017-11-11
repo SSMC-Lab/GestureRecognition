@@ -1,4 +1,4 @@
-package com.example.monster.airgesture.ui;
+package com.example.monster.airgesture.ui.base;
 
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;

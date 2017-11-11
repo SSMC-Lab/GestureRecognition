@@ -1,4 +1,4 @@
-package com.example.monster.airgesture.ui;
+package com.example.monster.airgesture.ui.base;
 
 import android.app.ProgressDialog;
 import android.os.Bundle;

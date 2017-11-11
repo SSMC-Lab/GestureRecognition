@@ -1,4 +1,4 @@
-package com.example.monster.airgesture.ui;
+package com.example.monster.airgesture.ui.input;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -9,17 +9,16 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.monster.airgesture.R;
-import com.example.monster.airgesture.model.db.CandidateWord;
+import com.example.monster.airgesture.model.db.Word;
+import com.example.monster.airgesture.ui.base.BaseAdapter;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by WelkinShadow on 2017/10/31.
  */
 
-public class WordAdapter<T extends CandidateWord> extends BaseAdapter<T, WordAdapter.ViewHolder> {
+public class WordAdapter<T extends Word> extends BaseAdapter<T, WordAdapter.ViewHolder> {
 
     private final List<T> datas;
     private final AdapterListener listener;
@@ -27,9 +26,9 @@ public class WordAdapter<T extends CandidateWord> extends BaseAdapter<T, WordAda
 
     /** 回调接口 */
     interface AdapterListener {
-        void onClickItem(CandidateWord word);
+        void onClickItem(Word word);
 
-        void onLongClickItem(CandidateWord word);
+        void onLongClickItem(Word word);
     }
 
     public WordAdapter(List<T> datas, AdapterListener listener) {

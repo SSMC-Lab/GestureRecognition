@@ -1,4 +1,4 @@
-package com.example.monster.airgesture.ui;
+package com.example.monster.airgesture.ui.base;
 
 /**
  * Created by WelkinShadow on 2017/10/26.

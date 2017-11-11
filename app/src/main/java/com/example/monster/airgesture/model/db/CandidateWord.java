@@ -5,24 +5,19 @@ package com.example.monster.airgesture.model.db;
  * Created by WelkinShadow on 2017/10/27.
  */
 
-public class CandidateWord {
-    private String word;
-    private float probability;
+public class CandidateWord extends Word {
     private String coding;
+    private double probability;
     private int length;
 
-    public CandidateWord(String word, float probability, String coding, int length) {
+    public CandidateWord(String word, double probability, String coding, int length) {
         this.word = word;
         this.probability = probability;
         this.coding = coding;
         this.length = length;
     }
 
-    public String getWord() {
-        return word;
-    }
-
-    public float getProbability() {
+    public double getProbability() {
         return probability;
     }
 

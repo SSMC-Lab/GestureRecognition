@@ -35,6 +35,10 @@ public class InputPresenterImpl<V extends InputContract.View> extends BasePresen
     private StringBuilder coding = new StringBuilder();
     private Context context;
     private WordQuery db;
+
+    /**
+     * 这个handler会回传phase模块解析出的手势，并递交给presenter内部处理
+     */
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -169,6 +173,7 @@ public class InputPresenterImpl<V extends InputContract.View> extends BasePresen
         }
     }
 
+    //拷贝用于解析的模板数据
     private void copyTemplete(String templeteName) {
         String path = GlobalConfig.sFileTemplatePath + templeteName;
         File templete = new File(path);

@@ -31,8 +31,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * 负责展示数据的 View 层
- * 本 Activity 负责输入的主要界面
+ * 负责展示数据的View层{@link InputContract}，处理数据的展示。ui的主要交互逻辑见onClick方法{@link InputActivity#onClick(View)}
+ * 手势识别的部分的交互见对应的presenter实现类{@link InputPresenterImpl}
  * Created by WelkinShadow on 2017/10/26.
  */
 
@@ -395,6 +395,12 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
                 break;
 
             case R.id.bt_num:
+                Button bt = (Button) findViewById(R.id.bt_num);
+                if (isNumKeyboard){
+                    bt.setTextColor(ContextCompat.getColor(this, R.color.indigo));
+                }else {
+                    bt.setTextColor(ContextCompat.getColor(this, R.color.black));
+                }
                 clearStroke();
                 getPresenter().changeNumKeyboard();
                 isNumKeyboard = !isNumKeyboard;

@@ -189,7 +189,7 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
         resetCapLock();
         String text = inputtedArea.getText().toString();
         String appendText;
-        appendText = text != null && text.length() > 0 ? " " + word : word;
+        appendText = text != null && text.length() > 0&&!isNumKeyboard ? " " + word : word;
         inputtedArea.append(appendText);
         //数字键盘不需要清空和查找关联词
         if (!isNumKeyboard) {
@@ -342,9 +342,14 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
     public void onClick(View view) {
         String strokeText = inputStrokes.getText().toString();
         String inputText = inputtedArea.getText().toString();
+        Button bt;
         switch (view.getId()) {
             case R.id.bt_on:
                 if (!isOn) {
+                    bt = (Button) findViewById(R.id.bt_on);
+                    bt.setTextColor(ContextCompat.getColor(this, R.color.indigo));
+                    bt = (Button) findViewById(R.id.bt_off);
+                    bt.setTextColor(ContextCompat.getColor(this, R.color.black));
                     getPresenter().startRecording();
                     showMessage("开始读取手势");
                     isOn = true;
@@ -355,6 +360,10 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
 
             case R.id.bt_off:
                 if (isOn) {
+                    bt = (Button) findViewById(R.id.bt_on);
+                    bt.setTextColor(ContextCompat.getColor(this, R.color.black));
+                    bt = (Button) findViewById(R.id.bt_off);
+                    bt.setTextColor(ContextCompat.getColor(this, R.color.indigo));
                     getPresenter().stopRecording();
                     showMessage("关闭识别功能");
                     isOn = false;
@@ -395,11 +404,11 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
                 break;
 
             case R.id.bt_num:
-                Button bt = (Button) findViewById(R.id.bt_num);
+                bt = (Button) findViewById(R.id.bt_num);
                 if (isNumKeyboard){
-                    bt.setTextColor(ContextCompat.getColor(this, R.color.indigo));
-                }else {
                     bt.setTextColor(ContextCompat.getColor(this, R.color.black));
+                }else {
+                    bt.setTextColor(ContextCompat.getColor(this, R.color.indigo));
                 }
                 clearStroke();
                 getPresenter().changeNumKeyboard();

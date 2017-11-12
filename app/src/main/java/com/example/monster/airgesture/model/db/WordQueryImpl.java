@@ -64,25 +64,77 @@ public class WordQueryImpl implements WordQuery {
      * @see WordQuery#getWordList(String)
      */
     @Override
-    public List<Word> getWordList(String coding) {
+    public List<Word> getWordList(String seq) {
         Log.i(TAG, "database query");
-        Cursor cursor = dictionary.rawQuery("SELECT * FROM dictionary WHERE code LIKE '"
-                + coding + "%' ORDER BY length ASC,probability DESC", null);
-        CandidateWord candidateWord = null;
+        List<ProbCode> probCodes = getCandidatedCode(seq);
+        List<Word> result = query(probCodes,seq);
+        return result;
+    }
+
+    /**
+     * 计算出所有误判的可能的集合
+     */
+    private List<ProbCode> getCandidatedCode(String seq) {
+        // TODO: 2017/11/12 通过矩阵计算出ProbCode集合
+        return null;
+    }
+
+    private List<Word> query(List<ProbCode> probCodes, String seq) {
+        if (probCodes == null) {
+            Log.e(TAG, "error: probCodes is null");
+            return null;
+        }
+
+        Cursor cursor = null;
         List<Word> result = new ArrayList<>();
+        CandidateWord candidateWord = null;
+
+        if (probCodes.size() > 1) {
+            Log.i(TAG,"create table seq,result");
+            dictionary.execSQL("create table seq(" +
+                    "id int primary key autoincrement, " +
+                    "strokes varchar(255), " +
+                    "bayesProb varchar(255))");
+            dictionary.execSQL("create table result (" +
+                    "word TEXT(120), " +
+                    "probability DOUBLE," +
+                    "length INTEGER, " +
+                    "code TEXT(120))");
+            Log.i(TAG,"insert into seq");
+            for (ProbCode probCode : probCodes) {
+                dictionary.execSQL("insert into seq(strokes,bayesProb) values ('" + probCode.getSeq() + "'," + probCode.getWrongProb() + ")");
+            }
+            String length = seq.length() + "";
+            Log.i(TAG,"insert into result");
+            dictionary.execSQL("insert into result(word,probability,length,code) " +
+                    "select word,probability,length,code " +
+                    "from dictionary " +
+                    "where substr('" + seq + "',1," + length + "+)");
+
+            Log.i(TAG,"query table : result");
+            cursor = dictionary.rawQuery("SELECT * FROM result ORDER BY length ASC,probability DESC", null);
+        } else {
+            Log.i(TAG,"query table : dictionary");
+            cursor = dictionary.rawQuery("SELECT * FROM dictionary WHERE code LIKE '"
+                    + seq + "%' ORDER BY length ASC,probability DESC", null);
+        }
+
         if (cursor.moveToFirst()) {
             do {
                 double probability = cursor.getDouble(cursor.getColumnIndex("probability"));
-                int length = cursor.getInt(cursor.getColumnIndex("length"));
+                int wordLength = cursor.getInt(cursor.getColumnIndex("length"));
                 String word = cursor.getString(cursor.getColumnIndex("word"));
-                String code = cursor.getString(cursor.getColumnIndex("code"));
-                candidateWord = new CandidateWord(word, probability, code, length);
+                String wordCode = cursor.getString(cursor.getColumnIndex("code"));
+                candidateWord = new CandidateWord(word, probability, wordCode, wordLength);
                 result.add(candidateWord);
-                Log.i(TAG, "database query : word = " + word + " length = " + length
-                        + " code = " + code + " probability = " + probability);
+                Log.i(TAG, "database query : word = " + word + " length = " + wordLength
+                        + " code = " + seq + " probability = " + probability);
             } while (cursor.moveToNext());
         }
         Log.i(TAG, "querying result length = " + result.size());
+
+        dictionary.execSQL("drop table seq");
+        dictionary.execSQL("drop table result");
         return result;
     }
 

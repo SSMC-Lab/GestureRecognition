@@ -218,19 +218,19 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
                 stroke = "一";
                 break;
             case 2:
-                stroke = "丨";
+                stroke = "|";
                 break;
             case 3:
-                stroke = "丿";
+                stroke = "/";
                 break;
             case 4:
-                stroke = "㇏";
+                stroke = "\\";
                 break;
             case 5:
-                stroke = "(";
+                stroke = "（";
                 break;
             case 6:
-                stroke = ")";
+                stroke = "）";
                 break;
         }
         inputStrokes.append(stroke);

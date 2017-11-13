@@ -1,5 +1,6 @@
 package com.example.monster.airgesture.model.db;
-
+import java.io.*;
+import java.util.*;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -64,19 +65,105 @@ public class WordQueryImpl implements WordQuery {
      * @see WordQuery#getWordList(String)
      */
     @Override
-    public List<Word> getWordList(String seq) {
+    public List<Word> getWordList(String seq)  {
         Log.i(TAG, "database query");
         List<ProbCode> probCodes = getCandidatedCode(seq);
         List<Word> result = query(probCodes,seq);
         return result;
     }
 
+
     /**
      * 计算出所有误判的可能的集合
      */
-    private List<ProbCode> getCandidatedCode(String seq) {
-        // TODO: 2017/11/12 通过矩阵计算出ProbCode集合
-        return null;
+
+
+    private List<ProbCode> getCandidatedCode(String seq){
+
+        double [][] probMatrix= new double[0][];
+        try {
+            probMatrix = ProbTable.createProbMatrix(context);
+        } catch (IOException e) {
+            Log.e(TAG,"txt文件未找到");
+            e.printStackTrace();
+        }
+        LinkedList<ProbCode> list=new LinkedList<ProbCode>();
+        double prob=1;
+
+        prob=ProbTable.calculateCorrectProb(seq,probMatrix);
+        ProbCode firstProbCode=new ProbCode(seq,prob);
+        list.add(firstProbCode);
+
+        if(!ProbTable.checkStr(seq)) {
+            return list;
+        }
+
+        int i=0;
+        while(i<seq.length()) {
+            if(seq.charAt(i)=='1') {
+                String seqCopy=ProbTable.replaceIndex(i,seq,"2");
+                prob=1;
+                for(int j=0;j<seqCopy.length();j++) {
+                    if(j==i)
+                        prob*=probMatrix[1][0];
+                    else {
+                        String s=String.valueOf(seqCopy.charAt(j));
+                        int temp=Integer.parseInt(s);
+                        prob*=probMatrix[temp-1][temp-1];
+                    }
+                }
+                ProbCode probCode=new ProbCode(seqCopy,prob);
+                list.add(probCode);
+            }
+            if(seq.charAt(i)=='1') {
+                String seqCopy=ProbTable.replaceIndex(i,seq,"4");
+                prob=1;
+                for(int j=0;j<seqCopy.length();j++) {
+                    if(j==i)
+                        prob*=probMatrix[3][0];
+                    else {
+                        String s=String.valueOf(seqCopy.charAt(j));
+                        int temp=Integer.parseInt(s);
+                        prob*=probMatrix[temp-1][temp-1];
+                    }
+                }
+                ProbCode probCode=new ProbCode(seqCopy,prob);
+                list.add(probCode);
+            }
+            if(seq.charAt(i)=='2') {
+                String seqCopy=ProbTable.replaceIndex(i,seq,"5");
+                prob=1;
+                for(int j=0;j<seqCopy.length();j++) {
+                    if(j==i)
+                        prob*=probMatrix[4][1];
+                    else {
+                        String s=String.valueOf(seqCopy.charAt(j));
+                        int temp=Integer.parseInt(s);
+                        prob*=probMatrix[temp-1][temp-1];
+                    }
+                }
+                ProbCode probCode=new ProbCode(seqCopy,prob);
+                list.add(probCode);
+            }
+
+            if(seq.charAt(i)=='6') {
+                prob=1;
+                String seqCopy=ProbTable.replaceIndex(i,seq,"5");
+                for(int j=0;j<seqCopy.length();j++) {
+                    if(j==i)
+                        prob*=probMatrix[4][5];
+                    else {
+                        String s=String.valueOf(seqCopy.charAt(j));
+                        int temp=Integer.parseInt(s);
+                        prob*=probMatrix[temp-1][temp-1];
+                    }
+                }
+                ProbCode probCode=new ProbCode(seqCopy,prob);
+                list.add(probCode);
+            }
+            i++;
+        }
+        return list;
     }
 
     private List<Word> query(List<ProbCode> probCodes, String seq) {

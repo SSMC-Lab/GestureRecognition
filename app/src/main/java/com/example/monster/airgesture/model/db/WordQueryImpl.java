@@ -13,6 +13,8 @@ import com.example.monster.airgesture.utils.FileCopyUtil;
 import java.util.ArrayList;
 import java.util.List;
 
+// TODO: 2017/11/14 数据库版本管理
+
 /**
  * DictionaryDB的实现类，负责和数据库的创建和查询
  * Created by WelkinShadow on 2017/10/27.
@@ -157,7 +159,7 @@ public class WordQueryImpl implements WordQuery {
             dictionary.execSQL(CREATE_SEQ);
             dictionary.execSQL(CREATE_RESULT);
 
-            Log.i(TAG, "database query :  insert into seq");
+            Log.i(TAG, "database query : insert into seq");
             Iterator<ProbCode> iterator = probCodes.iterator();
             ProbCode probCode;
             while (iterator.hasNext()) {
@@ -166,7 +168,7 @@ public class WordQueryImpl implements WordQuery {
                         + probCode.getSeq() + "'," + probCode.getWrongProb() + ")");
             }
 
-            Log.i(TAG, "database query :  insert into result");
+            Log.i(TAG, "database query : insert into result");
             String length = String.valueOf(seq.length());
             dictionary.execSQL("insert into result(word,probability,length,code) " +
                     "select word,probability,length,code " +
@@ -174,7 +176,7 @@ public class WordQueryImpl implements WordQuery {
                     "where substr(code,1," + length + ") in (select strokes from seq) " +
                     "limit 100");
 
-            Log.i(TAG, "database query :  query table : result");
+            Log.i(TAG, "database query : query table : result");
             cursor = dictionary.rawQuery("SELECT * FROM result ORDER BY length ASC,probability DESC ", null);
         } else {
             Log.i(TAG, "database query :  query table : dictionary");

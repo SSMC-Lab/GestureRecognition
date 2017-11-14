@@ -118,6 +118,7 @@
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/candidate_word"
+        android:descendantFocusability="blocksDescendants"
         android:scrollbarSize="5dp"
         android:scrollbarAlwaysDrawHorizontalTrack="true"
         android:layout_marginLeft="6dp"

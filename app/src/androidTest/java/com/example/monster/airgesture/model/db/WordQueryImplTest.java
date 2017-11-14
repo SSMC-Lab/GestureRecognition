@@ -28,9 +28,9 @@ public class WordQueryImplTest {
 
     @Test
     public void getWordList() throws Exception {
-        List<Word> words = query.getWords("1311");
-        CandidateWord candidateWord = null;
-        String target = "wait";
+        List<Word> words = query.getWords("42");
+        CandidateWord candidateWord;
+        String target = "call";
         String text;
         boolean isContainTarget = false;
         for (int i = 0, len = words.size(); i < len; i++) {

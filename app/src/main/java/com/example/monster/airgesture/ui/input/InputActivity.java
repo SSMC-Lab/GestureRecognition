@@ -50,7 +50,10 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    if (adapter.getFirst() != null && !isTouchRecycler && !(adapter.getFirst() instanceof ContactedWord)) {
+                    if (adapter != null
+                            && adapter.getFirst() != null
+                            && !(adapter.getFirst() instanceof ContactedWord)
+                            && !isTouchRecycler) {
                         setWord(adapter.getFirst().getWord());
                     }
                     isTiming = false;
@@ -132,10 +135,15 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
         candidateWordArea = (RecyclerView) findViewById(R.id.candidate_word);
         candidateWordArea.setLayoutManager(layoutManager);
 
+        Button bt;
         for (int id : buttons) {
-            Button bt = (Button) findViewById(id);
+            bt = (Button) findViewById(id);
             bt.setOnClickListener(this);
         }
+
+        bt = (Button) findViewById(R.id.bt_off);
+        bt.setTextColor(ContextCompat.getColor(this, R.color.indigo));
+
         capLocks = (Button) findViewById(R.id.bt_caplock);
         capLocks.setText("caplocks");
         capLocks.setOnClickListener(this);
@@ -143,13 +151,23 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
         candidateWordArea.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                switch (event.getAction()) {
+                switch (event.getActionMasked()) {
                     case MotionEvent.ACTION_DOWN:
                         isTouchRecycler = true;
+                        Log.i(TAG, "TOUCH : true ACTION_DOWN");
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        if (!isTouchRecycler) {
+                            isTouchRecycler = true;
+                            Log.i(TAG, "TOUCH : true ACTION_MOVE");
+                        }
                         break;
                     case MotionEvent.ACTION_UP:
                         isTouchRecycler = false;
-                        submitAutoSetWord();
+                        if (adapter != null) {
+                            submitAutoSetWord();
+                        }
+                        Log.i(TAG, "TOUCH : false ACTION_UP");
                         break;
                 }
                 return false;
@@ -218,19 +236,19 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
                 stroke = "一";
                 break;
             case 2:
-                stroke = "|";
+                stroke = " |";
                 break;
             case 3:
-                stroke = "/";
+                stroke = " /";
                 break;
             case 4:
-                stroke = "\\";
+                stroke = " \\";
                 break;
             case 5:
-                stroke = "（";
+                stroke = "⊂";
                 break;
             case 6:
-                stroke = "）";
+                stroke = "⊃";
                 break;
         }
         inputStrokes.append(stroke);

@@ -30,6 +30,9 @@ public class WordQueryImpl implements WordQuery {
     private static final String DB_NAME_CONTACTED = "2gram.db";
     private static final String DB_PATH = "/data/data/com.example.monster.airgesture/database";
 
+    private static final String CREATE_SEQ = "create table if not exists seq (id INTEGER primary key autoincrement, strokes varchar(255), bayesProb varchar(255))";
+    private static final String CREATE_RESULT = "create table if not exists result (word TEXT(120), probability DOUBLE, length INTEGER, code TEXT(120))";
+
     private final List<Word> candidateWords1;
     private final List<Word> candidateWords2;
     private final List<Word> candidateWords3;
@@ -55,10 +58,10 @@ public class WordQueryImpl implements WordQuery {
         boolean successful;
         successful = FileCopyUtil.databaseCopy(context, DB_NAME_DICTIONARY);
         if (!successful)
-            Log.e(TAG, "dictionnary copy failed!");
+            Log.e(TAG, "dictionary wasn't copied");
         successful = FileCopyUtil.databaseCopy(context, DB_NAME_CONTACTED);
         if (!successful)
-            Log.e(TAG, "2gram copy failed!");
+            Log.e(TAG, "2gram wasn't copied");
         dictionary = SQLiteDatabase.openOrCreateDatabase(DB_PATH + DB_NAME_DICTIONARY, null);
         contacted = SQLiteDatabase.openOrCreateDatabase(DB_PATH + DB_NAME_CONTACTED, null);
     }
@@ -176,18 +179,12 @@ public class WordQueryImpl implements WordQuery {
         List<Word> result = new ArrayList<>();
         CandidateWord candidateWord = null;
         Log.i(TAG, "query");
+        StringBuilder sql;
         if (probCodes.size() > 1) {
 
             Log.i(TAG, "create table seq,result");
-            dictionary.execSQL("create table if not exists seq (" +
-                    "id INTEGER primary key autoincrement, " +
-                    "strokes varchar(255), " +
-                    "bayesProb varchar(255))");
-            dictionary.execSQL("create table if not exists result (" +
-                    "word TEXT(120), " +
-                    "probability DOUBLE," +
-                    "length INTEGER, " +
-                    "code TEXT(120))");
+            dictionary.execSQL(CREATE_SEQ);
+            dictionary.execSQL(CREATE_RESULT);
             Log.i(TAG, "insert into seq");
             for (ProbCode probCode : probCodes) {
                 dictionary.execSQL("insert into seq(strokes,bayesProb) values ('" + probCode.getSeq() + "'," + probCode.getWrongProb() + ")");
@@ -198,7 +195,7 @@ public class WordQueryImpl implements WordQuery {
             dictionary.execSQL("insert into result(word,probability,length,code) " +
                     "select word,probability,length,code " +
                     "from dictionary " +
-                    "where code like '" + seq + "%' " +
+                    "where substr(code,1," + length + ") in (select strokes from seq) " +
                     "limit 100");
 
             Log.i(TAG, "query table : result");
@@ -218,7 +215,7 @@ public class WordQueryImpl implements WordQuery {
                 candidateWord = new CandidateWord(word, probability, wordCode, wordLength);
                 result.add(candidateWord);
                 Log.i(TAG, "database query : word = " + word + " length = " + wordLength
-                        + " code = " + seq + " probability = " + probability);
+                        + " code = " + wordCode + " probability = " + probability);
             } while (cursor.moveToNext());
         }
         Log.i(TAG, "querying result length = " + result.size());

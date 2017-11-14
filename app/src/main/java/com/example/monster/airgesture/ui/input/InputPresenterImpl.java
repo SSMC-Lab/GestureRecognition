@@ -19,6 +19,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Presenter实现类
@@ -36,6 +38,8 @@ public class InputPresenterImpl<V extends InputContract.View> extends BasePresen
     private Context context;
     private WordQuery db;
 
+    private ExecutorService pool;
+
     /**
      * 这个handler会回传phase模块解析出的手势，并递交给presenter内部处理
      */
@@ -52,6 +56,7 @@ public class InputPresenterImpl<V extends InputContract.View> extends BasePresen
 
     public InputPresenterImpl(Context context) {
         this.context = context;
+        pool = Executors.newSingleThreadExecutor();
     }
 
     @Override

@@ -19,13 +19,12 @@ public class FileCopyUtil {
     private static final String DB_PATH = "/data/data/com.example.monster.airgesture/database";
 
     public static boolean copy(String src, String des) {
+        OutputStream outputStream;
+        InputStream inputStream;
         try {
-            OutputStream outputStream = new FileOutputStream(des);
-            InputStream inputStream = new FileInputStream(src);
-            boolean result = copy(inputStream,outputStream);
-            inputStream.close();
-            outputStream.close();
-            return result;
+            outputStream = new FileOutputStream(des);
+            inputStream = new FileInputStream(src);
+            return copy(inputStream, outputStream);
         } catch (IOException e) {
             e.printStackTrace();
             return false;
@@ -43,10 +42,21 @@ public class FileCopyUtil {
         } catch (IOException e) {
             e.printStackTrace();
             return false;
+        } finally {
+        try {
+            if (src != null) {
+                src.close();
+            }
+            if (des != null) {
+                des.close();
+            }
+        } catch (IOException e2) {
+            e2.printStackTrace();
         }
     }
+    }
 
-    public static boolean databaseCopy(Context context,String dbName){
+    public static boolean databaseCopy(Context context, String dbName) {
         File dbFile = new File(DB_PATH + dbName);
         InputStream inputStream = null;
         OutputStream outputStream = null;

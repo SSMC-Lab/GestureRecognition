@@ -15,8 +15,6 @@ import com.example.monster.airgesture.utils.FileCopyUtil;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -30,7 +28,7 @@ import java.util.concurrent.Executors;
 
 public class InputPresenterImpl<V extends InputContract.View> extends BasePresenterImpl<V> implements InputContract.Presenter<V> {
 
-    public static final String TAG = "InputPresenterImpl";
+    private static final String TAG = "InputPresenterImpl";
 
     private boolean isNumKeyboard = false;
 
@@ -135,12 +133,12 @@ public class InputPresenterImpl<V extends InputContract.View> extends BasePresen
 
         }
         GlobalConfig.stPhaseProxy.sendHandler(handler);
-        copyTemplete("heng2.txt");
-        copyTemplete("shu2.txt");
-        copyTemplete("youhu2.txt");
-        copyTemplete("youxie2.txt");
-        copyTemplete("zuohu2.txt");
-        copyTemplete("zuoxie2.txt");
+        copyTemplate("heng2.txt");
+        copyTemplate("shu2.txt");
+        copyTemplate("youhu2.txt");
+        copyTemplate("youxie2.txt");
+        copyTemplate("zuohu2.txt");
+        copyTemplate("zuoxie2.txt");
     }
 
     @Override
@@ -176,24 +174,13 @@ public class InputPresenterImpl<V extends InputContract.View> extends BasePresen
     }
 
     //拷贝用于解析的模板数据
-    private void copyTemplete(String templeteName) {
-        String path = GlobalConfig.sFileTemplatePath + templeteName;
-        File templete = new File(path);
-        InputStream inputStream = null;
-        OutputStream outputStream = null;
+    private void copyTemplate(String templateName) {
+        File template = new File(GlobalConfig.sFileTemplatePath + templateName);
         try {
-            inputStream = context.getAssets().open(templeteName);
-            outputStream = new FileOutputStream(templete);
-            FileCopyUtil.copy(inputStream, outputStream);
+            FileCopyUtil.copy(context.getAssets().open(templateName), new FileOutputStream(template));
         } catch (IOException e) {
             e.printStackTrace();
-        } finally {
-            try {
-                inputStream.close();
-                outputStream.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
+
     }
 }

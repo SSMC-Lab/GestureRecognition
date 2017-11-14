@@ -2,7 +2,6 @@ package com.example.monster.airgesture.ui.input;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -65,8 +64,7 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
     private EditText inputtedArea;
     private TextView inputStrokes;
     private RecyclerView candidateWordArea;
-    private @IdRes
-    int[] buttons = {R.id.bt_on, R.id.bt_off, R.id.bt_del, R.id.bt_clear,
+    private int[] buttons = {R.id.bt_on, R.id.bt_off, R.id.bt_del, R.id.bt_clear,
             R.id.bt_space, R.id.bt_num, R.id.bt_comma, R.id.bt_period};
     private Button capLocks;
 
@@ -89,6 +87,7 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
     private WordAdapter.AdapterListener listener;
 
     @Override
+    @SuppressWarnings("unchecked")
     public T setPresenter() {
         return (T) new InputPresenterImpl(this);
     }
@@ -99,6 +98,7 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
     }
 
     @Override
+    @SuppressWarnings("all")
     public void initialize() {
         pool = Executors.newSingleThreadExecutor();
 
@@ -145,7 +145,7 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
         bt.setTextColor(ContextCompat.getColor(this, R.color.indigo));
 
         capLocks = (Button) findViewById(R.id.bt_caplock);
-        capLocks.setText("caplocks");
+        capLocks.setText(getString(R.string.no_cap));
         capLocks.setOnClickListener(this);
 
         candidateWordArea.setOnTouchListener(new View.OnTouchListener() {
@@ -153,13 +153,10 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
             public boolean onTouch(View v, MotionEvent event) {
                 switch (event.getActionMasked()) {
                     case MotionEvent.ACTION_DOWN:
-                        isTouchRecycler = true;
-                        Log.i(TAG, "TOUCH : true ACTION_DOWN");
-                        break;
                     case MotionEvent.ACTION_MOVE:
                         if (!isTouchRecycler) {
                             isTouchRecycler = true;
-                            Log.i(TAG, "TOUCH : true ACTION_MOVE");
+                            Log.i(TAG, "TOUCH : true");
                         }
                         break;
                     case MotionEvent.ACTION_UP:
@@ -167,7 +164,7 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
                         if (adapter != null) {
                             submitAutoSetWord();
                         }
-                        Log.i(TAG, "TOUCH : false ACTION_UP");
+                        Log.i(TAG, "TOUCH : false");
                         break;
                 }
                 return false;
@@ -206,7 +203,7 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
         resetCapLock();
         String text = inputtedArea.getText().toString();
         String appendText;
-        appendText = text != null && text.length() > 0 && !isNumKeyboard ? " " + word : word;
+        appendText = text.length() > 0 && !isNumKeyboard ? " " + word : word;
         inputtedArea.append(appendText);
         //数字键盘不需要清空和查找关联词
         if (!isNumKeyboard) {
@@ -260,7 +257,7 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
     public void delStroke() {
         Log.i(TAG, "delete stroke");
         String strokes = inputStrokes.getText().toString();
-        if (strokes != null && strokes.length() > 0) {
+        if (strokes.length() > 0) {
             inputStrokes.setText(strokes.subSequence(0, strokes.length() - 1));
             getPresenter().delStoker();
             if (strokes.length() == 1) {
@@ -284,6 +281,7 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
      * 设置候选词
      */
     @Override
+    @SuppressWarnings("unchecked")
     public void setCandidateWord(List<Word> words) {
         Log.i(TAG, "set candidate word");
         if (adapter == null) {
@@ -320,17 +318,17 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
             case NO_CAP:
                 afterTransform = CapLockUtil.transformNoCapsAll(lastWord);
                 capLocks.setTextColor(ContextCompat.getColor(this, R.color.black));
-                capLocks.setText("caplocks");
+                capLocks.setText(getString(R.string.no_cap));
                 break;
             case FIRST_CAP:
                 afterTransform = CapLockUtil.transformCapsFirst(lastWord);
                 capLocks.setTextColor(ContextCompat.getColor(this, R.color.indigo));
-                capLocks.setText("Caplocks");
+                capLocks.setText(getString(R.string.first_cap));
                 break;
             case ALL_CAP:
                 afterTransform = CapLockUtil.transformCapsAll(lastWord);
                 capLocks.setTextColor(ContextCompat.getColor(this, R.color.indigo));
-                capLocks.setText("CAPLOCKS");
+                capLocks.setText(getString(R.string.all_cap));
                 break;
         }
         String afterText = text.substring(0, lastWordIndex) + afterTransform;
@@ -344,7 +342,7 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
     private void resetCapLock() {
         capStatus = NO_CAP;
         capLocks.setTextColor(ContextCompat.getColor(this, R.color.black));
-        capLocks.setText("caplocks");
+        capLocks.setText(getString(R.string.no_cap));
     }
 
     @Override
@@ -386,9 +384,9 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
                 break;
 
             case R.id.bt_clear:
-                if (strokeText != null && strokeText.length() > 0) {
+                if (strokeText.length() > 0) {
                     clearStroke();
-                } else if (inputText != null && inputText.length() > 0) {
+                } else if (inputText.length() > 0) {
                     clearInput();
                 }
                 showMessage("已清空");
@@ -403,9 +401,9 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
                 break;
 
             case R.id.bt_del:
-                if (strokeText != null && strokeText.length() > 0) {
+                if (strokeText.length() > 0) {
                     delStroke();
-                } else if (inputText != null && inputText.length() > 0) {
+                } else if (inputText.length() > 0) {
                     delWord();
                 } else {
                     showMessage("已清空");

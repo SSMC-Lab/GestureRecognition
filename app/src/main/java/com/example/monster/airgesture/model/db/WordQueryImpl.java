@@ -41,6 +41,8 @@ public class WordQueryImpl implements WordQuery {
     private final List<Word> candidateWords6;
     private final List<Word> num;
 
+    private double[][] probMatrix;
+
     public WordQueryImpl(Context context) {
         this.context = context;
 
@@ -54,7 +56,7 @@ public class WordQueryImpl implements WordQuery {
         num = crateNums();
 
         //初始化数据库
-        Log.i(TAG, "database initial ");
+        Log.i(TAG, "initialize database ");
         boolean successful;
         successful = FileCopyUtil.databaseCopy(context, DB_NAME_DICTIONARY);
         if (!successful)
@@ -67,106 +69,77 @@ public class WordQueryImpl implements WordQuery {
     }
 
     /**
-     * @see WordQuery#getWordList(String)
+     * @see WordQuery#getWords(String)
      */
     @Override
-    public List<Word> getWordList(String seq) {
-        Log.i(TAG, "database query");
-        List<ProbCode> probCodes = getCandidatedCode(seq);
-        List<Word> result = query(probCodes, seq);
+    public List<Word> getWords(String seq) {
+        Log.i(TAG, "query database");
+        List<Word> result;
+        if (seq.length() > 1) {
+            List<ProbCode> probCodes = getCandidatedCode(seq);
+            result = query(probCodes, seq);
+        } else {
+            result = getLetter(seq);
+        }
         return result;
     }
 
 
     /**
-     * 计算出所有误判的可能的集合
+     * 计算出所有误识别手势的可能的序列组合
      */
     private List<ProbCode> getCandidatedCode(String seq) {
 
-        double[][] probMatrix = new double[0][];
+        probMatrix = new double[0][];
         try {
             probMatrix = ProbTable.createProbMatrix(context);
         } catch (IOException e) {
             Log.e(TAG, "txt文件未找到");
             e.printStackTrace();
         }
-        LinkedList<ProbCode> list = new LinkedList<ProbCode>();
-        double prob = 1;
+        LinkedList<ProbCode> result = new LinkedList();
+        double prob;
 
         prob = ProbTable.calculateCorrectProb(seq, probMatrix);
         ProbCode firstProbCode = new ProbCode(seq, prob);
-        list.add(firstProbCode);
+        result.add(firstProbCode);
 
         if (!ProbTable.checkStr(seq)) {
-            return list;
+            return result;
         }
 
-        int i = 0;
-        while (i < seq.length()) {
-            if (seq.charAt(i) == '1') {
-                String seqCopy = ProbTable.replaceIndex(i, seq, "2");
-                prob = 1;
-                for (int j = 0; j < seqCopy.length(); j++) {
-                    if (j == i)
-                        prob *= probMatrix[1][0];
-                    else {
-                        String s = String.valueOf(seqCopy.charAt(j));
-                        int temp = Integer.parseInt(s);
-                        prob *= probMatrix[temp - 1][temp - 1];
-                    }
-                }
-                ProbCode probCode = new ProbCode(seqCopy, prob);
-                list.add(probCode);
+        for (int i = 0, length = seq.length(); i < length; i++) {
+            switch (seq.charAt(i)) {
+                case '1':
+                    result.add(createProbCode(i, seq, "2", probMatrix[1][0]));
+                    result.add(createProbCode(i, seq, "4", probMatrix[3][0]));
+                    break;
+                case '2':
+                    result.add(createProbCode(i, seq, "5", probMatrix[4][1]));
+                    break;
+                case '6':
+                    result.add(createProbCode(i, seq, "5", probMatrix[4][5]));
+                    break;
+                default:
+                    break;
             }
-            if (seq.charAt(i) == '1') {
-                String seqCopy = ProbTable.replaceIndex(i, seq, "4");
-                prob = 1;
-                for (int j = 0; j < seqCopy.length(); j++) {
-                    if (j == i)
-                        prob *= probMatrix[3][0];
-                    else {
-                        String s = String.valueOf(seqCopy.charAt(j));
-                        int temp = Integer.parseInt(s);
-                        prob *= probMatrix[temp - 1][temp - 1];
-                    }
-                }
-                ProbCode probCode = new ProbCode(seqCopy, prob);
-                list.add(probCode);
-            }
-            if (seq.charAt(i) == '2') {
-                String seqCopy = ProbTable.replaceIndex(i, seq, "5");
-                prob = 1;
-                for (int j = 0; j < seqCopy.length(); j++) {
-                    if (j == i)
-                        prob *= probMatrix[4][1];
-                    else {
-                        String s = String.valueOf(seqCopy.charAt(j));
-                        int temp = Integer.parseInt(s);
-                        prob *= probMatrix[temp - 1][temp - 1];
-                    }
-                }
-                ProbCode probCode = new ProbCode(seqCopy, prob);
-                list.add(probCode);
-            }
-
-            if (seq.charAt(i) == '6') {
-                prob = 1;
-                String seqCopy = ProbTable.replaceIndex(i, seq, "5");
-                for (int j = 0; j < seqCopy.length(); j++) {
-                    if (j == i)
-                        prob *= probMatrix[4][5];
-                    else {
-                        String s = String.valueOf(seqCopy.charAt(j));
-                        int temp = Integer.parseInt(s);
-                        prob *= probMatrix[temp - 1][temp - 1];
-                    }
-                }
-                ProbCode probCode = new ProbCode(seqCopy, prob);
-                list.add(probCode);
-            }
-            i++;
         }
-        return list;
+        return result;
+    }
+
+    private ProbCode createProbCode(int index, String res, String str, double probValue) {
+        String seqCopy = ProbTable.replaceIndex(index, res, str);
+        double prob = 1;
+        for (int j = 0; j < seqCopy.length(); j++) {
+            if (j == index)
+                prob *= probValue;
+            else {
+                String s = String.valueOf(seqCopy.charAt(j));
+                int temp = Integer.parseInt(s);
+                prob *= probMatrix[temp - 1][temp - 1];
+            }
+        }
+        return new ProbCode(seqCopy, prob);
     }
 
     private List<Word> query(List<ProbCode> probCodes, String seq) {
@@ -175,62 +148,67 @@ public class WordQueryImpl implements WordQuery {
             return null;
         }
 
-        Cursor cursor = null;
-        List<Word> result = new ArrayList<>();
-        CandidateWord candidateWord = null;
-        Log.i(TAG, "query");
-        StringBuilder sql;
+        Cursor cursor;
+        Log.i(TAG, "database query word");
+        //如果存在可能误判的序列组合
         if (probCodes.size() > 1) {
 
-            Log.i(TAG, "create table seq,result");
+            Log.i(TAG, "database query : create table seq,result");
             dictionary.execSQL(CREATE_SEQ);
             dictionary.execSQL(CREATE_RESULT);
-            Log.i(TAG, "insert into seq");
-            for (ProbCode probCode : probCodes) {
-                dictionary.execSQL("insert into seq(strokes,bayesProb) values ('" + probCode.getSeq() + "'," + probCode.getWrongProb() + ")");
-            }
-            String length = String.valueOf(seq.length());
-            Log.i(TAG, "insert into result");
 
+            Log.i(TAG, "database query :  insert into seq");
+            Iterator<ProbCode> iterator = probCodes.iterator();
+            ProbCode probCode;
+            while (iterator.hasNext()) {
+                probCode = iterator.next();
+                dictionary.execSQL("insert into seq(strokes,bayesProb) values ('"
+                        + probCode.getSeq() + "'," + probCode.getWrongProb() + ")");
+            }
+
+            Log.i(TAG, "database query :  insert into result");
+            String length = String.valueOf(seq.length());
             dictionary.execSQL("insert into result(word,probability,length,code) " +
                     "select word,probability,length,code " +
                     "from dictionary " +
                     "where substr(code,1," + length + ") in (select strokes from seq) " +
                     "limit 100");
 
-            Log.i(TAG, "query table : result");
+            Log.i(TAG, "database query :  query table : result");
             cursor = dictionary.rawQuery("SELECT * FROM result ORDER BY length ASC,probability DESC ", null);
         } else {
-            Log.i(TAG, "query table : dictionary");
+            Log.i(TAG, "database query :  query table : dictionary");
             cursor = dictionary.rawQuery("SELECT * FROM dictionary WHERE code LIKE '"
                     + seq + "%' ORDER BY length ASC,probability DESC", null);
         }
 
+        List<Word> result = new LinkedList<>();
+        CandidateWord candidateWord;
+        double probability;
+        int wordLength;
+        String word;
+        String wordCode;
         if (cursor.moveToFirst()) {
             do {
-                double probability = cursor.getDouble(cursor.getColumnIndex("probability"));
-                int wordLength = cursor.getInt(cursor.getColumnIndex("length"));
-                String word = cursor.getString(cursor.getColumnIndex("word"));
-                String wordCode = cursor.getString(cursor.getColumnIndex("code"));
+                word = cursor.getString(cursor.getColumnIndex("word"));
+                wordLength = cursor.getInt(cursor.getColumnIndex("length"));
+                wordCode = cursor.getString(cursor.getColumnIndex("code"));
+                probability = cursor.getDouble(cursor.getColumnIndex("probability"));
                 candidateWord = new CandidateWord(word, probability, wordCode, wordLength);
                 result.add(candidateWord);
                 Log.i(TAG, "database query : word = " + word + " length = " + wordLength
                         + " code = " + wordCode + " probability = " + probability);
             } while (cursor.moveToNext());
         }
-        Log.i(TAG, "querying result length = " + result.size());
+        Log.i(TAG, "database query : querying result length = " + result.size());
 
         dictionary.execSQL("drop table if exists seq");
         dictionary.execSQL("drop table if exists result");
 
-        return result;
+        return new ArrayList<>(result);
     }
 
-    /**
-     * @see WordQuery#getLetter(String)
-     */
-    @Override
-    public List<Word> getLetter(String type) {
+    private List<Word> getLetter(String type) {
         Log.d(TAG, "find letters and type is " + type);
         //避免引用传递导致的bug
         List<Word> result = new ArrayList<>();
@@ -272,17 +250,21 @@ public class WordQueryImpl implements WordQuery {
      */
     @Override
     public List<Word> getContacted(String word) {
-        Log.i(TAG, "database query");
+        Log.i(TAG, "database query contacted");
         Cursor cursor = contacted.rawQuery("SELECT * FROM gramtable WHERE word = '"
                 + word + "' ORDER BY id ASC", null);
         List<Word> result = new ArrayList<>();
-        ContactedWord contactedWord = null;
+        ContactedWord contactedWord;
+        long id;
+        long frequency;
+        String wordInDB;
+        String s2gram;
         if (cursor.moveToFirst()) {
             do {
-                long id = cursor.getLong(cursor.getColumnIndex("id"));
-                long frequency = cursor.getLong(cursor.getColumnIndex("frequency"));
-                String wordInDB = cursor.getString(cursor.getColumnIndex("word"));
-                String s2gram = cursor.getString(cursor.getColumnIndex("2gram"));
+                id = cursor.getLong(cursor.getColumnIndex("id"));
+                frequency = cursor.getLong(cursor.getColumnIndex("frequency"));
+                wordInDB = cursor.getString(cursor.getColumnIndex("word"));
+                s2gram = cursor.getString(cursor.getColumnIndex("2gram"));
                 contactedWord = new ContactedWord(id, frequency, s2gram, wordInDB);
                 result.add(contactedWord);
                 Log.i(TAG, "database query : id = " + id + " frequency = " + frequency + " word = " + wordInDB + " 2gram = " + s2gram);

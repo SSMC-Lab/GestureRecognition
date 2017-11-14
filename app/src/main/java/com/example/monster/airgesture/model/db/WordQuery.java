@@ -12,13 +12,7 @@ public interface WordQuery {
      * 从数据库获取编码对应的单词集
      * @param coding 编码序列
      */
-    List<Word> getWordList(String coding);
-
-    /**
-     * 当编码序列中笔画小于2时，返回对应编码的字母集
-     * @param type 编码类型
-     */
-    List<Word> getLetter(String type);
+    List<Word> getWords(String coding);
 
     /**
      * 得到从0-9的单词集

@@ -64,11 +64,8 @@ public class InputPresenterImpl<V extends InputContract.View> extends BasePresen
         Log.i(TAG, "find word");
         if (coding != null) {
             Log.i(TAG, "Coding : " + coding);
-            if (coding.length() == 1) {
-                List<Word> letter = db.getLetter(coding);
-                getView().setCandidateWord(letter);
-            } else if (coding.length() > 1) {
-                List<Word> words = db.getWordList(coding);
+            if (coding.length() > 0) {
+                List<Word> words = db.getWords(coding);
                 getView().setCandidateWord(words);
             }
         } else {

@@ -17,9 +17,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.example.monster.airgesture.R;
-import com.example.monster.airgesture.model.db.ContactedWord;
-import com.example.monster.airgesture.model.db.WordQueryImpl;
-import com.example.monster.airgesture.model.db.Word;
+import com.example.monster.airgesture.model.db.module.ContactedWord;
+import com.example.monster.airgesture.model.db.module.Word;
 import com.example.monster.airgesture.ui.test.MainActivity;
 import com.example.monster.airgesture.ui.base.BaseActivity;
 import com.example.monster.airgesture.utils.CapLockUtil;
@@ -30,8 +29,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * 负责展示数据的View层{@link InputContract}，处理数据的展示。ui的主要交互逻辑见onClick方法{@link InputActivity#onClick(View)}
- * 手势识别的部分的交互见对应的presenter实现类{@link InputPresenterImpl}
+ * 负责展示数据的View层，处理数据的展示{@link InputContract.View}
+ * 主要交互逻辑见onClick方法{@link InputActivity#onClick(View)}
+ * 手势识别和数据库的交互见对应的presenter实现类{@link InputPresenterImpl}
  * Created by WelkinShadow on 2017/10/26.
  */
 
@@ -109,7 +109,6 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
                     android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
         }
         getPresenter().initConfig();
-        getPresenter().onAttachDB(new WordQueryImpl(this));
 
         //回调接口设置
         listener = new WordAdapter.AdapterListener() {
@@ -445,7 +444,6 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
 
     @Override
     protected void onDestroy() {
-        getPresenter().onDetachDB();
         pool.shutdown();
         super.onDestroy();
     }

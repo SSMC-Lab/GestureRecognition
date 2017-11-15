@@ -8,7 +8,8 @@ import android.util.Log;
 import com.example.monster.airgesture.Conditions;
 import com.example.monster.airgesture.GlobalConfig;
 import com.example.monster.airgesture.model.db.WordQuery;
-import com.example.monster.airgesture.model.db.Word;
+import com.example.monster.airgesture.model.db.WordQueryImpl;
+import com.example.monster.airgesture.model.db.module.Word;
 import com.example.monster.airgesture.ui.base.BasePresenterImpl;
 import com.example.monster.airgesture.utils.FileCopyUtil;
 
@@ -55,8 +56,13 @@ public class InputPresenterImpl<V extends InputContract.View> extends BasePresen
     public InputPresenterImpl(Context context) {
         this.context = context;
         pool = Executors.newSingleThreadExecutor();
+        db = new WordQueryImpl();
     }
 
+    /**
+     * 从dictionary中查找序列对应的单词
+     * @param coding 待查找序列
+     */
     @Override
     public void findWord(String coding) {
         Log.i(TAG, "find word");
@@ -71,6 +77,10 @@ public class InputPresenterImpl<V extends InputContract.View> extends BasePresen
         }
     }
 
+    /**
+     * 查找单词对应的关联词
+     * @param word 待查找关联词的原单词
+     */
     @Override
     public void findContacted(String word) {
         if (word != null) {
@@ -80,6 +90,10 @@ public class InputPresenterImpl<V extends InputContract.View> extends BasePresen
         }
     }
 
+    /**
+     * 接收到手势信息，递交处理
+     * @param type 手势类型
+     */
     private void receiveWord(int type) {
         if (!isNumKeyboard) {
             getView().setStroke(type);
@@ -89,6 +103,9 @@ public class InputPresenterImpl<V extends InputContract.View> extends BasePresen
         }
     }
 
+    /**
+     * 数字键盘转换处理
+     */
     @Override
     public void changeNumKeyboard() {
         Log.i(TAG, "change num keyboard ");
@@ -100,16 +117,9 @@ public class InputPresenterImpl<V extends InputContract.View> extends BasePresen
         isNumKeyboard = !isNumKeyboard;
     }
 
-    @Override
-    public void onAttachDB(WordQuery db) {
-        this.db = db;
-    }
-
-    @Override
-    public void onDetachDB() {
-        db = null;
-    }
-
+    /**
+     * 初始化解析模块
+     */
     @Override
     public void initConfig() {
         if (!Conditions.configInit) {
@@ -156,6 +166,9 @@ public class InputPresenterImpl<V extends InputContract.View> extends BasePresen
         GlobalConfig.stWavRecorder.stop();
     }
 
+    /**
+     * 清空序列
+     */
     @Override
     public void clearStoker() {
         coding.delete(0, coding.length());
@@ -163,6 +176,9 @@ public class InputPresenterImpl<V extends InputContract.View> extends BasePresen
         Log.d(TAG, "clear stoker,now coding = " + coding);
     }
 
+    /**
+     * 删除序列最后一个字符
+     */
     @Override
     public void delStoker() {
         Log.d(TAG, "coding length:" + coding.length());
@@ -173,7 +189,9 @@ public class InputPresenterImpl<V extends InputContract.View> extends BasePresen
         }
     }
 
-    //拷贝用于解析的模板数据
+    /**
+     * 拷贝用于解析的模板数据
+     */
     private void copyTemplate(String templateName) {
         File template = new File(GlobalConfig.sFileTemplatePath + templateName);
         try {

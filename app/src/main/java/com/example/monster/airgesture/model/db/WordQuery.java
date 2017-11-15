@@ -1,5 +1,6 @@
 package com.example.monster.airgesture.model.db;
 
+import com.example.monster.airgesture.model.db.module.Word;
 import java.util.List;
 
 /**
@@ -15,13 +16,15 @@ public interface WordQuery {
     List<Word> getWords(String coding);
 
     /**
-     * 得到从0-9的单词集
-     */
-    List<Word> getNum();
-
-    /**
      * 获取关联词集
      * @param word 要查找的单词
      */
     List<Word> getContacted(String word);
+
+    /**
+     * 得到从0-9的单词集
+     */
+    List<Word> getNum();
+
+
 }

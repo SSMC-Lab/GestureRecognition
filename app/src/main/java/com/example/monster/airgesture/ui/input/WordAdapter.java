@@ -9,12 +9,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.monster.airgesture.R;
-import com.example.monster.airgesture.model.db.Word;
+import com.example.monster.airgesture.model.db.module.Word;
 import com.example.monster.airgesture.ui.base.BaseAdapter;
 
 import java.util.List;
 
 /**
+ * Word的适配器
  * Created by WelkinShadow on 2017/10/31.
  */
 

@@ -8,12 +8,14 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
-import com.example.monster.airgesture.utils.FileCopyUtil;
+import com.example.monster.airgesture.model.db.module.CandidateWord;
+import com.example.monster.airgesture.model.db.module.ContactedWord;
+import com.example.monster.airgesture.model.db.module.ProbCode;
+import com.example.monster.airgesture.model.db.module.Word;
+import com.example.monster.airgesture.ui.base.BaseApplication;
 
 import java.util.ArrayList;
 import java.util.List;
-
-// TODO: 2017/11/14 数据库版本管理
 
 /**
  * DictionaryDB的实现类，负责和数据库的创建和查询
@@ -22,15 +24,11 @@ import java.util.List;
 
 public class WordQueryImpl implements WordQuery {
 
-    private Context context;
+    private Context mContext;
     private SQLiteDatabase dictionary;
     private SQLiteDatabase contacted;
 
     private static final String TAG = "WordQueryImpl";
-
-    private static final String DB_NAME_DICTIONARY = "dictionary.db";
-    private static final String DB_NAME_CONTACTED = "2gram.db";
-    private static final String DB_PATH = "/data/data/com.example.monster.airgesture/database";
 
     private static final String CREATE_SEQ = "create table if not exists seq (id INTEGER primary key autoincrement, strokes varchar(255), bayesProb varchar(255))";
     private static final String CREATE_RESULT = "create table if not exists result (word TEXT(120), probability DOUBLE, length INTEGER, code TEXT(120))";
@@ -45,8 +43,8 @@ public class WordQueryImpl implements WordQuery {
 
     private double[][] probMatrix;
 
-    public WordQueryImpl(Context context) {
-        this.context = context;
+    public WordQueryImpl() {
+        this.mContext = BaseApplication.getContext();
 
         //初始化变量
         candidateWords1 = createLetters(new String[]{"I", "T", "Z", "J"}, "1");
@@ -55,19 +53,12 @@ public class WordQueryImpl implements WordQuery {
         candidateWords4 = createLetters(new String[]{"V", "W", "X", "Y"}, "4");
         candidateWords5 = createLetters(new String[]{"C", "G", "O", "Q", "S", "U"}, "5");
         candidateWords6 = createLetters(new String[]{"B", "D", "P", "R"}, "6");
-        num = crateNums();
+        num = createNums();
 
         //初始化数据库
-        Log.i(TAG, "initialize database ");
-        boolean successful;
-        successful = FileCopyUtil.databaseCopy(context, DB_NAME_DICTIONARY);
-        if (!successful)
-            Log.e(TAG, "dictionary wasn't copied");
-        successful = FileCopyUtil.databaseCopy(context, DB_NAME_CONTACTED);
-        if (!successful)
-            Log.e(TAG, "2gram wasn't copied");
-        dictionary = SQLiteDatabase.openOrCreateDatabase(DB_PATH + DB_NAME_DICTIONARY, null);
-        contacted = SQLiteDatabase.openOrCreateDatabase(DB_PATH + DB_NAME_CONTACTED, null);
+        DatabaseManager manager = DatabaseManager.getmInstance();
+        dictionary = manager.getDatabase(DatabaseConfig.DB_NAME_DICTIONARY);
+        contacted = manager.getDatabase(DatabaseConfig.DB_NAME_CONTACTED);
     }
 
     /**
@@ -78,8 +69,7 @@ public class WordQueryImpl implements WordQuery {
         Log.i(TAG, "query database");
         List<Word> result;
         if (seq.length() > 1) {
-            List<ProbCode> probCodes = getCandidatedCode(seq);
-            result = query(probCodes, seq);
+            result = query(getProbCodes(seq), seq);
         } else {
             result = getLetter(seq);
         }
@@ -88,18 +78,18 @@ public class WordQueryImpl implements WordQuery {
 
 
     /**
-     * 计算出所有误识别手势的可能的序列组合
+     * 计算出所有误识别手势的可能的纠错序列组合
      */
-    private List<ProbCode> getCandidatedCode(String seq) {
+    private List<ProbCode> getProbCodes(String seq) {
 
         probMatrix = new double[0][];
         try {
-            probMatrix = ProbTable.createProbMatrix(context);
+            probMatrix = ProbTable.createProbMatrix(mContext);
         } catch (IOException e) {
             Log.e(TAG, "txt文件未找到");
             e.printStackTrace();
         }
-        LinkedList<ProbCode> result = new LinkedList();
+        List<ProbCode> result = new LinkedList<>();
         double prob;
 
         prob = ProbTable.calculateCorrectProb(seq, probMatrix);
@@ -129,6 +119,9 @@ public class WordQueryImpl implements WordQuery {
         return result;
     }
 
+    /**
+     * 改写编码，创建出纠错序列，这个序列应该是原序列的可能出现误判的序列
+     */
     private ProbCode createProbCode(int index, String res, String str, double probValue) {
         String seqCopy = ProbTable.replaceIndex(index, res, str);
         double prob = 1;
@@ -144,6 +137,11 @@ public class WordQueryImpl implements WordQuery {
         return new ProbCode(seqCopy, prob);
     }
 
+    /**
+     * 数据库查询所有符合序列的单词，如果原序列存在其他的纠错序列，则查询所有符合纠错序列集的单词
+     * @param probCodes 包含原序列的纠错序列集
+     * @param seq       原序列
+     */
     private List<Word> query(List<ProbCode> probCodes, String seq) {
         if (probCodes == null) {
             Log.e(TAG, "error: probCodes is null");
@@ -186,30 +184,26 @@ public class WordQueryImpl implements WordQuery {
 
         List<Word> result = new LinkedList<>();
         CandidateWord candidateWord;
-        double probability;
-        int wordLength;
-        String word;
-        String wordCode;
         if (cursor.moveToFirst()) {
             do {
-                word = cursor.getString(cursor.getColumnIndex("word"));
-                wordLength = cursor.getInt(cursor.getColumnIndex("length"));
-                wordCode = cursor.getString(cursor.getColumnIndex("code"));
-                probability = cursor.getDouble(cursor.getColumnIndex("probability"));
-                candidateWord = new CandidateWord(word, probability, wordCode, wordLength);
+                candidateWord = new CandidateWord(cursor);
                 result.add(candidateWord);
-                Log.i(TAG, "database query : word = " + word + " length = " + wordLength
-                        + " code = " + wordCode + " probability = " + probability);
+                Log.i(TAG, "database query : word = " + candidateWord.getWord() + " length = " + candidateWord.getLength()
+                        + " code = " + candidateWord.getCoding() + " probability = " + candidateWord.getProbability());
             } while (cursor.moveToNext());
         }
         Log.i(TAG, "database query : querying result length = " + result.size());
 
         dictionary.execSQL("drop table if exists seq");
         dictionary.execSQL("drop table if exists result");
-
+        cursor.close();
         return new ArrayList<>(result);
     }
 
+    /**
+     * 返回各个type对应的字母
+     * @param type 长度为1的序列
+     */
     private List<Word> getLetter(String type) {
         Log.d(TAG, "find letters and type is " + type);
         //避免引用传递导致的bug
@@ -257,25 +251,22 @@ public class WordQueryImpl implements WordQuery {
                 + word + "' ORDER BY id ASC", null);
         List<Word> result = new ArrayList<>();
         ContactedWord contactedWord;
-        long id;
-        long frequency;
-        String wordInDB;
-        String s2gram;
         if (cursor.moveToFirst()) {
             do {
-                id = cursor.getLong(cursor.getColumnIndex("id"));
-                frequency = cursor.getLong(cursor.getColumnIndex("frequency"));
-                wordInDB = cursor.getString(cursor.getColumnIndex("word"));
-                s2gram = cursor.getString(cursor.getColumnIndex("2gram"));
-                contactedWord = new ContactedWord(id, frequency, s2gram, wordInDB);
+                contactedWord = new ContactedWord(cursor);
                 result.add(contactedWord);
-                Log.i(TAG, "database query : id = " + id + " frequency = " + frequency + " word = " + wordInDB + " 2gram = " + s2gram);
+                Log.i(TAG, "database query : word = " + contactedWord.getWord() + " frequency = "
+                        + contactedWord.getFrequency() + " contacted word = " + contactedWord.getContactedWord());
             } while (cursor.moveToNext());
         }
+        cursor.close();
         Log.i(TAG, "result length = " + result.size());
         return result;
     }
 
+    /**
+     * 创建单词表
+     */
     private List<Word> createLetters(String[] letters, String coding) {
         List<Word> result = new ArrayList<>();
         for (String letter : letters) {
@@ -284,7 +275,10 @@ public class WordQueryImpl implements WordQuery {
         return result;
     }
 
-    private List<Word> crateNums() {
+    /**
+     * 创建数字键盘表
+     */
+    private List<Word> createNums() {
         List<Word> result = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
             result.add(new CandidateWord(i + "", 0, "num", 1));

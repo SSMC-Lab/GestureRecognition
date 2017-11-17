@@ -1,4 +1,4 @@
-package com.example.monster.airgesture.model.db;
+package com.example.monster.airgesture.model.db.module;
 
 /**
  * Created by WelkinShadow on 2017/11/10.

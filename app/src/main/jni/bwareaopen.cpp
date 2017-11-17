@@ -145,14 +145,14 @@ void dopshift(Mat& srcImage, vector<int>& vecPointY, int centreBin)
 		if (numPoint > 0)
 		{
 			int avgPoint = sumPoint/numPoint;
-			if (avgPoint >= 81)
+			if (avgPoint >= 51)
 			{
-				int tmp = maxPoint + centreBin - 81;
+				int tmp = maxPoint + centreBin - 51;
 				vecPointY.push_back(tmp);
 			}
 			else
 			{
-				int tmp = minPoint + centreBin - 81;
+				int tmp = minPoint + centreBin - 51;
 				vecPointY.push_back(tmp);
 			}
 		}

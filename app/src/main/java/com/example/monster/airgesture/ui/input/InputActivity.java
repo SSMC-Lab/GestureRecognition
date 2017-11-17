@@ -290,7 +290,7 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
         } else {
             adapter.notifyDiff(words);
         }
-        submitAutoSetWord();
+        //submitAutoSetWord();
     }
 
     /**

@@ -1,7 +1,7 @@
 package com.example.monster.airgesture.ui.input;
 
-import com.example.monster.airgesture.model.db.WordQuery;
-import com.example.monster.airgesture.model.db.module.Word;
+import com.example.monster.airgesture.data.WordQuery;
+import com.example.monster.airgesture.data.bean.Word;
 import com.example.monster.airgesture.ui.base.BaseContract;
 
 import java.util.List;
@@ -23,6 +23,10 @@ public interface InputContract {
 
         void changeNumKeyboard();
 
+        void attachQueryModel(WordQuery wordQuery);
+
+        void dettachQueryModel();
+
         /** 和 phase 模块的交互 */
         void initConfig();
 
@@ -39,7 +43,7 @@ public interface InputContract {
     interface View extends BaseContract.View{
 
         /** input area */
-        void setWord(String word);
+        void enterWord(String word);
 
         /** input strokes */
         void setStroke(int type);

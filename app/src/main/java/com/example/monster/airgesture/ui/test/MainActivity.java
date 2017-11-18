@@ -24,7 +24,7 @@ import android.os.Handler;
 
 import com.example.monster.airgesture.Conditions;
 import com.example.monster.airgesture.R;
-import com.example.monster.airgesture.model.phase.AudioTrackPlay;
+import com.example.monster.airgesture.phase.AudioTrackPlay;
 import com.example.monster.airgesture.GlobalConfig;
 import com.example.monster.airgesture.ui.input.InputActivity;
 

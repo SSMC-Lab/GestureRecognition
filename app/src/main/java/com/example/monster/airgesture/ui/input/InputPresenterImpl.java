@@ -7,19 +7,15 @@ import android.util.Log;
 
 import com.example.monster.airgesture.Conditions;
 import com.example.monster.airgesture.GlobalConfig;
-import com.example.monster.airgesture.model.db.WordQuery;
-import com.example.monster.airgesture.model.db.WordQueryImpl;
-import com.example.monster.airgesture.model.db.module.Word;
+import com.example.monster.airgesture.data.WordQuery;
+import com.example.monster.airgesture.data.WordQueryImpl;
+import com.example.monster.airgesture.data.bean.Word;
 import com.example.monster.airgesture.ui.base.BasePresenterImpl;
 import com.example.monster.airgesture.utils.FileCopyUtil;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * Presenter实现类
@@ -34,14 +30,10 @@ public class InputPresenterImpl<V extends InputContract.View> extends BasePresen
     private boolean isNumKeyboard = false;
 
     private StringBuilder coding = new StringBuilder();
-    private Context context;
+
     private WordQuery db;
 
-    private ExecutorService pool;
-
-    /**
-     * 这个handler会回传phase模块解析出的手势，并递交给presenter内部处理
-     */
+    //这个handler会回传phase模块解析出的手势，并递交给presenter内部处理
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -53,14 +45,10 @@ public class InputPresenterImpl<V extends InputContract.View> extends BasePresen
         }
     };
 
-    public InputPresenterImpl(Context context) {
-        this.context = context;
-        pool = Executors.newSingleThreadExecutor();
-        db = new WordQueryImpl();
-    }
 
     /**
-     * 从dictionary中查找序列对应的单词
+     * 访问数据模块查找序列对应的单词
+     *
      * @param coding 待查找序列
      */
     @Override
@@ -79,6 +67,7 @@ public class InputPresenterImpl<V extends InputContract.View> extends BasePresen
 
     /**
      * 查找单词对应的关联词
+     *
      * @param word 待查找关联词的原单词
      */
     @Override
@@ -92,6 +81,7 @@ public class InputPresenterImpl<V extends InputContract.View> extends BasePresen
 
     /**
      * 接收到手势信息，递交处理
+     *
      * @param type 手势类型
      */
     private void receiveWord(int type) {
@@ -115,6 +105,16 @@ public class InputPresenterImpl<V extends InputContract.View> extends BasePresen
             getView().setCandidateWord(db.getNum());
         }
         isNumKeyboard = !isNumKeyboard;
+    }
+
+    @Override
+    public void attachQueryModel(WordQuery wordQuery) {
+        db = wordQuery;
+    }
+
+    @Override
+    public void dettachQueryModel() {
+        db = null;
     }
 
     /**
@@ -193,12 +193,6 @@ public class InputPresenterImpl<V extends InputContract.View> extends BasePresen
      * 拷贝用于解析的模板数据
      */
     private void copyTemplate(String templateName) {
-        File template = new File(GlobalConfig.sFileTemplatePath + templateName);
-        try {
-            FileCopyUtil.copy(context.getAssets().open(templateName), new FileOutputStream(template));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
+        FileCopyUtil.copyInAssets(templateName, GlobalConfig.sFileTemplatePath + templateName);
     }
 }

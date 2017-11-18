@@ -2,9 +2,13 @@ package com.example.monster.airgesture.ui.base;
 
 import android.app.ProgressDialog;
 import android.os.Bundle;
+import android.support.annotation.IdRes;
 import android.support.annotation.LayoutRes;
+import android.support.annotation.MenuRes;
 import android.support.annotation.StringRes;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.View;
 import android.widget.Toast;
 
 /**
@@ -18,13 +22,29 @@ public abstract class BaseActivity<T extends BaseContract.Presenter>
     private ProgressDialog mProgressDialog = null;
     private T presenter;
 
+    protected abstract T setPresenter();
+
+    protected abstract @LayoutRes int setLayout();
+
+    protected abstract @MenuRes int getMenuId();
+
+    protected T getPresenter() {
+        return presenter;
+    }
+
+    protected abstract void initViews();
+
+    protected <T extends View> T findView(@IdRes int id) {
+        return (T) findViewById(id);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(setLayout());
         presenter = setPresenter();
         presenter.onAttachView(this);
-        initialize();
+        initViews();
     }
 
     @Override
@@ -57,6 +77,15 @@ public abstract class BaseActivity<T extends BaseContract.Presenter>
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        if (getMenuId() != 0) {
+            getMenuInflater().inflate(getMenuId(), menu);
+            return true;
+        }
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
     public void showMessage(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
@@ -67,13 +96,5 @@ public abstract class BaseActivity<T extends BaseContract.Presenter>
         super.onDestroy();
     }
 
-    public abstract T setPresenter();
 
-    public abstract @LayoutRes int setLayout();
-
-    public T getPresenter() {
-        return presenter;
-    }
-
-    public abstract void initialize();
 }

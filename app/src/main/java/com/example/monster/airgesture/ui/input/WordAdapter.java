@@ -9,7 +9,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.monster.airgesture.R;
-import com.example.monster.airgesture.model.db.module.Word;
+import com.example.monster.airgesture.data.bean.Word;
 import com.example.monster.airgesture.ui.base.BaseAdapter;
 
 import java.util.List;
@@ -22,17 +22,17 @@ import java.util.List;
 public class WordAdapter<T extends Word> extends BaseAdapter<T, WordAdapter.ViewHolder> {
 
     private final List<T> datas;
-    private final AdapterListener listener;
+    private final OnItemClickListener listener;
     private Context mContext;
 
     /** 回调接口 */
-    interface AdapterListener {
+    interface OnItemClickListener {
         void onClickItem(Word word);
 
         void onLongClickItem(Word word);
     }
 
-    public WordAdapter(List<T> datas, AdapterListener listener) {
+    public WordAdapter(List<T> datas, OnItemClickListener listener) {
         super(datas);
         this.datas = datas;
         this.listener = listener;

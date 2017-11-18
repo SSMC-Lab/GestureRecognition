@@ -19,23 +19,23 @@
         <uses-library android:name="android.test.runner"/>
 
         <activity
+            android:launchMode="singleTask"
             android:name=".ui.test.MainActivity"
             android:label="" >
+
+        </activity>
+
+        <activity
+            android:launchMode="singleTask"
+            android:name=".ui.input.InputActivity"
+            android:label=""
+            android:screenOrientation="landscape">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <activity
-            android:name=".ui.input.InputActivity"
-            android:label=""
-            android:screenOrientation="landscape">
-
-        </activity>
-
     </application>
-
-
 
 </manifest>

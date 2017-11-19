@@ -53,7 +53,7 @@ public class WordQueryImpl implements WordQuery {
         candidateWords4 = createLetters(new String[]{"V", "W", "X", "Y"}, "4");
         candidateWords5 = createLetters(new String[]{"C", "G", "O", "Q", "S", "U"}, "5");
         candidateWords6 = createLetters(new String[]{"B", "D", "P", "R"}, "6");
-        num = createNums();
+        num = createNumList();
 
         //初始化数据库
         DatabaseManager manager = DatabaseManager.getmInstance();
@@ -182,7 +182,7 @@ public class WordQueryImpl implements WordQuery {
                     + seq + "%' ORDER BY length ASC,probability DESC", null);
         }
 
-        List<Word> result = createQuertResult(cursor);
+        List<Word> result = createQueryResult(cursor);
         dictionary.execSQL("drop table if exists seq");
         dictionary.execSQL("drop table if exists result");
         return new ArrayList<>(result);
@@ -191,7 +191,7 @@ public class WordQueryImpl implements WordQuery {
     /**
      * 从数据读取的数据构建返回的单词表
      */
-    private List<Word> createQuertResult(Cursor cursor){
+    private List<Word> createQueryResult(Cursor cursor){
         List<Word> result = new LinkedList<>();
         CandidateWord candidateWord;
         if (cursor.moveToFirst()) {
@@ -286,7 +286,7 @@ public class WordQueryImpl implements WordQuery {
     /**
      * 创建数字键盘表
      */
-    private List<Word> createNums() {
+    private List<Word> createNumList() {
         List<Word> result = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
             result.add(new CandidateWord(i + "", 0, "num", 1));

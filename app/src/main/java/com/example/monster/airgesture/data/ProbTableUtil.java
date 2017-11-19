@@ -17,7 +17,7 @@ class ProbTableUtil {
     /**
      * 读取assets下的转移矩阵
      */
-    public static double[][] createProbMatrix(Context context) throws IOException {
+    static double[][] createProbMatrix(Context context) throws IOException {
         double[][] probMatrix = new double[6][6];
         InputStream inputStream = context.getAssets().open("probMatrix.txt");
         BufferedReader in = new BufferedReader(new InputStreamReader(inputStream));
@@ -34,26 +34,24 @@ class ProbTableUtil {
     }
 
     /**
-     *检查传入的序列是否存在纠错序列，不存在纠错序列返回false
+     * 检查传入的序列是否存在纠错序列，不存在纠错序列返回false
      */
-    public static boolean checkStr(String seq) {
-        if (seq.indexOf('1') != -1 || seq.indexOf('6') != -1 || seq.indexOf('2') != -1)
-            return true;
-        else
-            return false;
+    static boolean checkStr(String seq) {
+        return seq.indexOf('1') != -1 || seq.indexOf('6') != -1 || seq.indexOf('2') != -1;
     }
 
-    public static String replaceIndex(int index, String res, String str) {
+    static String replaceIndex(int index, String res, String str) {
         return res.substring(0, index) + str + res.substring(index + 1);
     }
 
     /**
      * 计算出纠错序列
-     * @param seq 待纠错序列
+     *
+     * @param seq        待纠错序列
      * @param probMatrix 转移矩阵
      * @return 纠错序列
      */
-    public static double calculateCorrectProb(String seq, double[][] probMatrix) {
+    static double calculateCorrectProb(String seq, double[][] probMatrix) {
         double prob = 1;
         for (int i = 0; i < seq.length(); i++) {
             String s = String.valueOf(seq.charAt(i));

@@ -1,6 +1,5 @@
 package com.example.monster.airgesture.ui.input;
 
-import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -8,10 +7,11 @@ import android.util.Log;
 import com.example.monster.airgesture.Conditions;
 import com.example.monster.airgesture.GlobalConfig;
 import com.example.monster.airgesture.data.WordQuery;
-import com.example.monster.airgesture.data.WordQueryImpl;
 import com.example.monster.airgesture.data.bean.Word;
 import com.example.monster.airgesture.ui.base.BasePresenterImpl;
 import com.example.monster.airgesture.utils.FileCopyUtil;
+import com.example.monster.airgesture.utils.HandlerUtil;
+import com.example.monster.airgesture.utils.StringUtil;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -23,28 +23,16 @@ import java.util.List;
  * Created by WelkinShadow on 2017/10/26.
  */
 
-public class InputPresenterImpl<V extends InputContract.View> extends BasePresenterImpl<V> implements InputContract.Presenter<V> {
+public class InputPresenterImpl<V extends InputContract.View> extends BasePresenterImpl<V>
+        implements InputContract.Presenter<V>, HandlerUtil.OnReceiveMessageListener {
 
     private static final String TAG = "InputPresenterImpl";
-
     private boolean isNumKeyboard = false;
-
     private StringBuilder coding = new StringBuilder();
-
     private WordQuery db;
 
     //这个handler会回传phase模块解析出的手势，并递交给presenter内部处理
-    private Handler handler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case Conditions.MESSAGE_PHASE_MODEL:
-                    receiveWord((int) msg.getData().getFloat(Conditions.TYPE));
-                    break;
-            }
-        }
-    };
-
+    private Handler handler = new HandlerUtil.HandlerHolder(this);
 
     /**
      * 访问数据模块查找序列对应的单词
@@ -54,12 +42,9 @@ public class InputPresenterImpl<V extends InputContract.View> extends BasePresen
     @Override
     public void findWord(String coding) {
         Log.i(TAG, "find word");
-        if (coding != null) {
-            Log.i(TAG, "Coding : " + coding);
-            if (coding.length() > 0) {
-                List<Word> words = db.getWords(coding);
-                getView().setCandidateWord(words);
-            }
+        if (!StringUtil.isEmpty(coding)) {
+            List<Word> words = db.getWords(coding);
+            getView().setCandidateWord(words);
         } else {
             Log.i(TAG, "Coding is null");
         }
@@ -72,7 +57,7 @@ public class InputPresenterImpl<V extends InputContract.View> extends BasePresen
      */
     @Override
     public void findContacted(String word) {
-        if (word != null) {
+        if (!StringUtil.isEmpty(word)) {
             List<Word> words = db.getContacted(word);
             getView().setCandidateWord(words);
             Log.i(TAG, "set contacted word，size = " + words.size());
@@ -99,11 +84,8 @@ public class InputPresenterImpl<V extends InputContract.View> extends BasePresen
     @Override
     public void changeNumKeyboard() {
         Log.i(TAG, "change num keyboard ");
-        if (isNumKeyboard) {
-            getView().setCandidateWord(new ArrayList<Word>());
-        } else {
-            getView().setCandidateWord(db.getNum());
-        }
+        List<Word> words = isNumKeyboard ? new ArrayList<Word>() : db.getNum();
+        getView().setCandidateWord(words);
         isNumKeyboard = !isNumKeyboard;
     }
 
@@ -113,7 +95,7 @@ public class InputPresenterImpl<V extends InputContract.View> extends BasePresen
     }
 
     @Override
-    public void dettachQueryModel() {
+    public void detachQueryModel() {
         db = null;
     }
 
@@ -173,7 +155,7 @@ public class InputPresenterImpl<V extends InputContract.View> extends BasePresen
     public void clearStoker() {
         coding.delete(0, coding.length());
         getView().setCandidateWord(new ArrayList<Word>());
-        Log.d(TAG, "clear stoker,now coding = " + coding);
+        Log.d(TAG, "clear stoker");
     }
 
     /**
@@ -181,7 +163,6 @@ public class InputPresenterImpl<V extends InputContract.View> extends BasePresen
      */
     @Override
     public void delStoker() {
-        Log.d(TAG, "coding length:" + coding.length());
         if (coding.length() > 0) {
             coding.delete(coding.length() - 1, coding.length());
             findWord(coding.toString());
@@ -194,5 +175,14 @@ public class InputPresenterImpl<V extends InputContract.View> extends BasePresen
      */
     private void copyTemplate(String templateName) {
         FileCopyUtil.copyInAssets(templateName, GlobalConfig.sFileTemplatePath + templateName);
+    }
+
+    @Override
+    public void handlerMessage(Message msg) {
+        switch (msg.what) {
+            case Conditions.MESSAGE_PHASE_MODEL:
+                receiveWord((int) msg.getData().getFloat(Conditions.TYPE));
+                break;
+        }
     }
 }

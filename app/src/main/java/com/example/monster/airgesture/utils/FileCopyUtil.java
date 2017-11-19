@@ -58,6 +58,7 @@ public class FileCopyUtil {
 
     /**
      * 从Assets下拷贝文件到指定目录
+     *
      * @param src assets目录下文件名
      * @param des 需要拷贝到的目录
      */
@@ -68,9 +69,8 @@ public class FileCopyUtil {
             isSuccessful = copy(context.getAssets().open(src), new FileOutputStream(des));
         } catch (IOException e) {
             e.printStackTrace();
-        } finally {
-            return isSuccessful;
         }
+        return isSuccessful;
     }
 
 }

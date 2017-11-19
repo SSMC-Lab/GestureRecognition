@@ -12,11 +12,11 @@ import java.util.List;
 
 public abstract class BaseAdapter<T,V extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<V> {
     protected List<T> temp;//保存数据源副本
-    protected List<T> datas;//数据源
+    protected List<T> data;//数据源
 
-    public BaseAdapter(List<T> datas) {
-        this.datas = datas;
-        temp = new ArrayList<>(datas);
+    public BaseAdapter(List<T> data) {
+        this.data = data;
+        temp = new ArrayList<>(data);
     }
 
     protected abstract boolean areItemsTheSame(T oldItem, T newItem);
@@ -25,12 +25,12 @@ public abstract class BaseAdapter<T,V extends RecyclerView.ViewHolder> extends R
 
     @Override
     public int getItemCount() {
-        return datas.size();
+        return data.size();
     }
 
     public void notifyDiff(List<T> newDatas) {
-        datas.clear();
-        datas.addAll(newDatas);
+        data.clear();
+        data.addAll(newDatas);
         DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new DiffUtil.Callback() {
             @Override
             public int getOldListSize() {
@@ -38,22 +38,22 @@ public abstract class BaseAdapter<T,V extends RecyclerView.ViewHolder> extends R
             }
             @Override
             public int getNewListSize() {
-                return datas.size();
+                return data.size();
             }
             // 需要刷新整个 layout 时返回 true
             @Override
             public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-                return BaseAdapter.this.areItemsTheSame(temp.get(oldItemPosition), datas.get(newItemPosition));
+                return BaseAdapter.this.areItemsTheSame(temp.get(oldItemPosition), data.get(newItemPosition));
             }
             // 需要刷新个别 item 时返回 true
             @Override
             public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
-                return BaseAdapter.this.areContentsTheSame(temp.get(oldItemPosition), datas.get(newItemPosition));
+                return BaseAdapter.this.areContentsTheSame(temp.get(oldItemPosition), data.get(newItemPosition));
             }
         });
         diffResult.dispatchUpdatesTo(this);
         // 通知刷新了之后，要更新副本数据到最新
         temp.clear();
-        temp.addAll(datas);
+        temp.addAll(data);
     }
 }

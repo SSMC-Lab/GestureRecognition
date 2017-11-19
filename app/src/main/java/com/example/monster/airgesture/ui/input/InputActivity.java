@@ -38,7 +38,7 @@ import java.util.List;
  */
 
 public class InputActivity<T extends InputContract.Presenter> extends BaseActivity<T> implements
-        InputContract.View, View.OnClickListener {
+        InputContract.View, View.OnClickListener, View.OnTouchListener {
 
     private static final String TAG = "InputActivity";
 
@@ -49,26 +49,26 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
             R.id.bt_space, R.id.bt_num, R.id.bt_comma, R.id.bt_period};
     private Button capLocks;
 
+    //定时器管理
     private TimerHelper timerHelper;
 
-    //自动输入定时时间
+    //自动输入功能的定时时间
     private final int AUTO_INPUT_MILLI = 1500;
 
-    private boolean isOn = false;
-    private boolean isNumKeyboard = false;
-    private boolean isTouchRecycler = false;
-    private boolean isTiming = false;
+    private boolean isOn = false;//识别开关是否打开
+    private boolean isNumKeyboard = false;//数字键盘是否在显示
+    private boolean isTouchRecycler = false;//候选词区域是否正被触摸
+    private boolean isTiming = false;//计时器是否正在工作
 
     //大小写状态位
-    private int capStatus = 102;
     private final int FIRST_CAP = 100;
     private final int ALL_CAP = 101;
     private final int NO_CAP = 102;
+    private int capStatus = NO_CAP;
 
-    private WordAdapter<Word> candidateWordAdapter = null;
+    private WordAdapter<Word> candidateWordAdapter;
 
     @Override
-    @SuppressWarnings("unchecked")
     public T setPresenter() {
         return (T) new InputPresenterImpl();
     }
@@ -113,7 +113,6 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
     }
 
     @Override
-    @SuppressWarnings("all")
     public void initViews() {
         inputStrokes = findView(R.id.input_strokes);
         inputtedArea = findView(R.id.inputted_area);
@@ -122,10 +121,9 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
         layoutManager.setSmoothScrollbarEnabled(true);
-
         candidateWordArea = findView(R.id.candidate_word);
         candidateWordArea.setLayoutManager(layoutManager);
-        candidateWordAdapter = new WordAdapter(new ArrayList(), new WordAdapter.OnItemClickListener() {
+        candidateWordAdapter = new WordAdapter<>(new ArrayList<Word>(), new WordAdapter.OnItemClickListener() {
             @Override
             public void onClickItem(Word word) {
                 enterWord(word.getWord());
@@ -136,24 +134,9 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
             }
         });
         candidateWordArea.setAdapter(candidateWordAdapter);
-        candidateWordArea.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                switch (event.getActionMasked()) {
-                    case MotionEvent.ACTION_DOWN:
-                    case MotionEvent.ACTION_MOVE:
-                        isTouchRecycler = true;
-                        break;
-                    case MotionEvent.ACTION_UP:
-                        isTouchRecycler = false;
-                        setWordByAuto();
-                        break;
-                }
-                return false;
-            }
-        });
+        candidateWordArea.setOnTouchListener(this);
 
-        Button bt = null;
+        Button bt;
         for (int id : buttons) {
             bt = findView(id);
             bt.setOnClickListener(this);
@@ -292,20 +275,30 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
         int lastWordIndex = text.lastIndexOf(" ") == -1 ? 0 : text.lastIndexOf(" ") + 1;
         String lastWord = text.substring(lastWordIndex, text.length());
         String afterTransform = null;
-        capStatus = capStatus == NO_CAP ? FIRST_CAP : capStatus + 1;
         switch (capStatus) {
             case NO_CAP:
-                afterTransform = StringUtil.transformNoCapsAll(lastWord);
+                capStatus = FIRST_CAP;
+                break;
+            case FIRST_CAP:
+                capStatus = ALL_CAP;
+                break;
+            case ALL_CAP:
+                capStatus = NO_CAP;
+                break;
+        }
+        switch (capStatus) {
+            case NO_CAP:
+                afterTransform = StringUtil.lowerText(lastWord);
                 capLocks.setTextColor(ContextCompat.getColor(this, R.color.black));
                 capLocks.setText(getString(R.string.no_cap));
                 break;
             case FIRST_CAP:
-                afterTransform = StringUtil.transformCapsFirst(lastWord);
+                afterTransform = StringUtil.upperFirstLetter(lastWord);
                 capLocks.setTextColor(ContextCompat.getColor(this, R.color.colorAccent));
                 capLocks.setText(getString(R.string.first_cap));
                 break;
             case ALL_CAP:
-                afterTransform = StringUtil.transformCapsAll(lastWord);
+                afterTransform = StringUtil.upperText(lastWord);
                 capLocks.setTextColor(ContextCompat.getColor(this, R.color.colorAccent));
                 capLocks.setText(getString(R.string.all_cap));
                 break;
@@ -442,5 +435,23 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        if (v.getId() == R.id.candidate_word) {
+            switch (event.getActionMasked()) {
+                case MotionEvent.ACTION_DOWN:
+                case MotionEvent.ACTION_MOVE:
+                    isTouchRecycler = true;
+                    break;
+                case MotionEvent.ACTION_UP:
+                    isTouchRecycler = false;
+                    setWordByAuto();
+                    break;
+            }
+        }
+        v.performClick();
+        return false;
     }
 }

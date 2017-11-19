@@ -25,7 +25,7 @@ public interface InputContract {
 
         void attachQueryModel(WordQuery wordQuery);
 
-        void dettachQueryModel();
+        void detachQueryModel();
 
         /** 和 phase 模块的交互 */
         void initConfig();

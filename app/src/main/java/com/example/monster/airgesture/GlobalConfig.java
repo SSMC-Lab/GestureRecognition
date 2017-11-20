@@ -3,10 +3,10 @@ package com.example.monster.airgesture;
 import android.app.Application;
 import android.media.AudioFormat;
 
-import com.example.monster.airgesture.model.phase.PhaseAudioRecord;
-import com.example.monster.airgesture.model.phase.PhaseProxy;
-import com.example.monster.airgesture.model.phase.WavRecorder;
-import com.example.monster.airgesture.model.phase.WavePlayer;
+import com.example.monster.airgesture.phase.PhaseAudioRecord;
+import com.example.monster.airgesture.phase.PhaseProxy;
+import com.example.monster.airgesture.phase.WavRecorder;
+import com.example.monster.airgesture.phase.WavePlayer;
 import com.example.monster.airgesture.utils.WaveFileUtil;
 
 import java.io.DataInputStream;

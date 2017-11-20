@@ -3,6 +3,8 @@ package com.example.monster.airgesture.utils;
 import android.content.Context;
 import android.util.Log;
 
+import com.example.monster.airgesture.ui.base.BaseApplication;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -16,16 +18,13 @@ import java.io.OutputStream;
 
 public class FileCopyUtil {
 
-    private static final String DB_PATH = "/data/data/com.example.monster.airgesture/database";
-
     public static boolean copy(String src, String des) {
+        OutputStream outputStream;
+        InputStream inputStream;
         try {
-            OutputStream outputStream = new FileOutputStream(des);
-            InputStream inputStream = new FileInputStream(src);
-            boolean result = copy(inputStream,outputStream);
-            inputStream.close();
-            outputStream.close();
-            return result;
+            outputStream = new FileOutputStream(des);
+            inputStream = new FileInputStream(src);
+            return copy(inputStream, outputStream);
         } catch (IOException e) {
             e.printStackTrace();
             return false;
@@ -43,35 +42,35 @@ public class FileCopyUtil {
         } catch (IOException e) {
             e.printStackTrace();
             return false;
+        } finally {
+            try {
+                if (src != null) {
+                    src.close();
+                }
+                if (des != null) {
+                    des.close();
+                }
+            } catch (IOException e2) {
+                e2.printStackTrace();
+            }
         }
     }
 
-    public static boolean databaseCopy(Context context,String dbName){
-        File dbFile = new File(DB_PATH + dbName);
-        InputStream inputStream = null;
-        OutputStream outputStream = null;
-        boolean result = false;
-        if (!dbFile.exists()) {
-            try {
-                dbFile.createNewFile();
-                inputStream = context.getAssets().open(dbName);
-                outputStream = new FileOutputStream(dbFile);
-                result = FileCopyUtil.copy(inputStream, outputStream);
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                try {
-                    if (inputStream != null) {
-                        inputStream.close();
-                    }
-                    if (outputStream != null) {
-                        outputStream.close();
-                    }
-                } catch (IOException e2) {
-                    e2.printStackTrace();
-                }
-            }
+    /**
+     * 从Assets下拷贝文件到指定目录
+     *
+     * @param src assets目录下文件名
+     * @param des 需要拷贝到的目录
+     */
+    public static boolean copyInAssets(String src, String des) {
+        Context context = BaseApplication.getContext();
+        boolean isSuccessful = false;
+        try {
+            isSuccessful = copy(context.getAssets().open(src), new FileOutputStream(des));
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        return result;
+        return isSuccessful;
     }
+
 }

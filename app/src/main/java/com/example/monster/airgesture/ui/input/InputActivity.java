@@ -2,14 +2,13 @@ package com.example.monster.airgesture.ui.input;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.support.annotation.IdRes;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -17,77 +16,61 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.example.monster.airgesture.Conditions;
 import com.example.monster.airgesture.R;
-import com.example.monster.airgesture.model.db.ContactedWord;
-import com.example.monster.airgesture.model.db.WordQueryImpl;
-import com.example.monster.airgesture.model.db.Word;
+import com.example.monster.airgesture.data.WordQueryImpl;
+import com.example.monster.airgesture.data.bean.CandidateWord;
+import com.example.monster.airgesture.data.bean.Word;
+import com.example.monster.airgesture.timer.TimerHelper;
+import com.example.monster.airgesture.timer.TimerProcessor;
 import com.example.monster.airgesture.ui.test.MainActivity;
 import com.example.monster.airgesture.ui.base.BaseActivity;
-import com.example.monster.airgesture.utils.CapLockUtil;
+import com.example.monster.airgesture.utils.StringUtil;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
- * 负责展示数据的View层{@link InputContract}，处理数据的展示。ui的主要交互逻辑见onClick方法{@link InputActivity#onClick(View)}
- * 手势识别的部分的交互见对应的presenter实现类{@link InputPresenterImpl}
+ * 负责展示数据的View层，处理数据的展示{@link InputContract.View}
+ * 主要交互逻辑见onClick方法{@link InputActivity#onClick(View)}
+ * 手势识别和数据库的交互见对应的presenter实现类{@link InputPresenterImpl}
  * Created by WelkinShadow on 2017/10/26.
  */
 
-public class InputActivity<T extends InputContract.Presenter> extends BaseActivity<T> implements InputContract.View, View.OnClickListener, Thread.UncaughtExceptionHandler {
-    private static final String TAG = "InputActivity";
+public class InputActivity<T extends InputContract.Presenter> extends BaseActivity<T> implements
+        InputContract.View, View.OnClickListener, View.OnTouchListener {
 
-    //一段时间后自动填词
-    private class AutoSetWordTask implements Runnable {
-        @Override
-        public void run() {
-            do {
-                end = System.currentTimeMillis();
-                Thread.yield();
-            } while ((end - start) < 1500);
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if (adapter.getFirst() != null && !isTouchRecycler && !(adapter.getFirst() instanceof ContactedWord)) {
-                        setWord(adapter.getFirst().getWord());
-                    }
-                    isTiming = false;
-                }
-            });
-        }
-    }
+    private static final String TAG = "InputActivity";
 
     private EditText inputtedArea;
     private TextView inputStrokes;
     private RecyclerView candidateWordArea;
-    private @IdRes
-    int[] buttons = {R.id.bt_on, R.id.bt_off, R.id.bt_del, R.id.bt_clear,
+    private int[] buttons = {R.id.bt_on, R.id.bt_off, R.id.bt_del, R.id.bt_clear,
             R.id.bt_space, R.id.bt_num, R.id.bt_comma, R.id.bt_period};
     private Button capLocks;
 
-    private boolean isOn = false;
-    private boolean isNumKeyboard = false;
+    //定时器管理
+    private TimerHelper timerHelper;
 
-    private ExecutorService pool;
-    private long start;
-    private long end;
-    private boolean isTouchRecycler = false;
-    private boolean isTiming = false;//正在计时
+    //自动输入功能的定时时间
+    private final int AUTO_INPUT_MILLI = 1500;
 
-    private int capStatus = 102;
+    private boolean isOn = false;//识别开关是否打开
+    private boolean isNumKeyboard = false;//数字键盘是否在显示
+    private boolean isTouchRecycler = false;//候选词区域是否正被触摸
+    private boolean isTiming = false;//计时器是否正在工作
+
+    //大小写状态位
     private final int FIRST_CAP = 100;
     private final int ALL_CAP = 101;
     private final int NO_CAP = 102;
+    private int capStatus = NO_CAP;
 
-    private WordAdapter<Word> adapter = null;
-    //WordAdapter的回调接口，实现item的点击事件
-    private WordAdapter.AdapterListener listener;
+    private WordAdapter<Word> candidateWordAdapter;
 
     @Override
     public T setPresenter() {
-        return (T) new InputPresenterImpl(this);
+        return (T) new InputPresenterImpl();
     }
 
     @Override
@@ -96,9 +79,13 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
     }
 
     @Override
-    public void initialize() {
-        pool = Executors.newSingleThreadExecutor();
+    protected int getMenuId() {
+        return R.menu.menu_main;
+    }
 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         //申请权限拷贝模板数据
         if (ContextCompat.checkSelfPermission(this,
                 android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
@@ -106,55 +93,60 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
                     android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
         }
         getPresenter().initConfig();
-        getPresenter().onAttachDB(new WordQueryImpl(this));
+        getPresenter().attachQueryModel(new WordQueryImpl());
+        timerHelper = new TimerHelper(AUTO_INPUT_MILLI, new TimerProcessor() {
+            @Override
+            public void process() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Word word = candidateWordAdapter.getFirst();
+                        if (word != null && word instanceof CandidateWord
+                                && !isNumKeyboard && !isTouchRecycler) {
+                            isTiming = false;
+                            enterWord(candidateWordAdapter.getFirst().getWord());
+                        }
+                    }
+                });
+            }
+        });
+    }
 
-        //回调接口设置
-        listener = new WordAdapter.AdapterListener() {
+    @Override
+    public void initViews() {
+        inputStrokes = findView(R.id.input_strokes);
+        inputtedArea = findView(R.id.inputted_area);
+        inputtedArea.setOnClickListener(this);
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        layoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
+        layoutManager.setSmoothScrollbarEnabled(true);
+        candidateWordArea = findView(R.id.candidate_word);
+        candidateWordArea.setLayoutManager(layoutManager);
+        candidateWordAdapter = new WordAdapter<>(new ArrayList<Word>(), new WordAdapter.OnItemClickListener() {
             @Override
             public void onClickItem(Word word) {
-                setWord(word.getWord());
+                enterWord(word.getWord());
             }
 
             @Override
             public void onLongClickItem(Word word) {
             }
-        };
+        });
+        candidateWordArea.setAdapter(candidateWordAdapter);
+        candidateWordArea.setOnTouchListener(this);
 
-        //在此调用下面方法，才能捕获到线程中的异常
-        Thread.setDefaultUncaughtExceptionHandler(this);
-
-        inputStrokes = (TextView) findViewById(R.id.input_strokes);
-        inputtedArea = (EditText) findViewById(R.id.inputted_area);
-        inputtedArea.setOnClickListener(this);
-
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-        layoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
-        candidateWordArea = (RecyclerView) findViewById(R.id.candidate_word);
-        candidateWordArea.setLayoutManager(layoutManager);
-
+        Button bt;
         for (int id : buttons) {
-            Button bt = (Button) findViewById(id);
+            bt = findView(id);
             bt.setOnClickListener(this);
         }
-        capLocks = (Button) findViewById(R.id.bt_caplock);
-        capLocks.setText("caplocks");
-        capLocks.setOnClickListener(this);
+        bt = findView(R.id.bt_off);
+        bt.setTextColor(ContextCompat.getColor(this, R.color.colorAccent));
 
-        candidateWordArea.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        isTouchRecycler = true;
-                        break;
-                    case MotionEvent.ACTION_UP:
-                        isTouchRecycler = false;
-                        submitAutoSetWord();
-                        break;
-                }
-                return false;
-            }
-        });
+        capLocks = findView(R.id.bt_caplock);
+        capLocks.setText(getString(R.string.no_cap));
+        capLocks.setOnClickListener(this);
     }
 
     /**
@@ -163,7 +155,6 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
     public void delWord() {
         Log.i(TAG, "delete word");
         String text = inputtedArea.getText().toString();
-
         //删除最后一个单词
         int lastIndex = text.lastIndexOf(" ");
         if (lastIndex == -1) {
@@ -180,29 +171,28 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
     }
 
     /**
-     * 设置单词
+     * 单词输入
      */
     @Override
-    public void setWord(String word) {
-        Log.i(TAG, "set word");
+    public void enterWord(String word) {
+        Log.i(TAG, "input word :" + word);
         resetCapLock();
         String text = inputtedArea.getText().toString();
-        String appendText;
-        appendText = text != null && text.length() > 0 && !isNumKeyboard ? " " + word : word;
+        String appendText = text.length() > 0 && !isNumKeyboard ? " " + word : word;
         inputtedArea.append(appendText);
         //数字键盘不需要清空和查找关联词
         if (!isNumKeyboard) {
             clearStroke();
             clearCandidateWord();
-            Log.i(TAG, "find contacted");
             getPresenter().findContacted(word);
+            Log.i(TAG, "find contacted");
         }
     }
 
     /**
      * 清空输入区
      */
-    public void clearInput() {
+    private void clearInput() {
         Log.i(TAG, "clear input");
         inputtedArea.setText("");
     }
@@ -212,69 +202,57 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
      */
     @Override
     public void setStroke(int type) {
-        String stroke = null;
-        switch (type) {
-            case 1:
-                stroke = "一";
-                break;
-            case 2:
-                stroke = "|";
-                break;
-            case 3:
-                stroke = "/";
-                break;
-            case 4:
-                stroke = "\\";
-                break;
-            case 5:
-                stroke = "（";
-                break;
-            case 6:
-                stroke = "）";
-                break;
-        }
-        inputStrokes.append(stroke);
+        Log.i(TAG, "set stroke");
+        //返回对应type的Stokes字符
+        inputStrokes.append(Conditions.STOKES[type - 1]);
     }
 
     /**
      * 删除笔画
      */
-    public void delStroke() {
+    private void deleteStroke() {
         Log.i(TAG, "delete stroke");
         String strokes = inputStrokes.getText().toString();
-        if (strokes != null && strokes.length() > 0) {
+        if (strokes.length() > 0) {
             inputStrokes.setText(strokes.subSequence(0, strokes.length() - 1));
             getPresenter().delStoker();
             if (strokes.length() == 1) {
                 clearCandidateWord();
             }
         }
-//        showMessage("删除笔画");
     }
 
     /**
      * 清空笔画区
      */
-    public void clearStroke() {
+    private void clearStroke() {
         Log.i(TAG, "clear stroke");
         inputStrokes.setText("");
         getPresenter().clearStoker();
-//        showMessage("清空笔画");
     }
 
     /**
      * 设置候选词
      */
     @Override
+    @SuppressWarnings("unchecked")
     public void setCandidateWord(List<Word> words) {
         Log.i(TAG, "set candidate word");
-        if (adapter == null) {
-            adapter = new WordAdapter(words, listener);
-            candidateWordArea.setAdapter(adapter);
-        } else {
-            adapter.notifyDiff(words);
+        candidateWordAdapter.notifyDiff(words);
+        setWordByAuto();
+    }
+
+    private void setWordByAuto() {
+        cancelCurrentTimerTask();
+        timerHelper.startTimer();
+        isTiming = true;
+    }
+
+    private void cancelCurrentTimerTask() {
+        if (isTiming) {
+            timerHelper.stopTimer();
+            isTiming = false;
         }
-        submitAutoSetWord();
     }
 
     /**
@@ -283,8 +261,8 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
     @Override
     public void clearCandidateWord() {
         Log.i(TAG, "clear candidateWords");
-        if (adapter != null) {
-            adapter.notifyDiff(new ArrayList<Word>());
+        if (candidateWordAdapter != null) {
+            candidateWordAdapter.notifyDiff(new ArrayList<Word>());
         }
     }
 
@@ -297,27 +275,37 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
         int lastWordIndex = text.lastIndexOf(" ") == -1 ? 0 : text.lastIndexOf(" ") + 1;
         String lastWord = text.substring(lastWordIndex, text.length());
         String afterTransform = null;
-        capStatus = capStatus == NO_CAP ? FIRST_CAP : capStatus + 1;
         switch (capStatus) {
             case NO_CAP:
-                afterTransform = CapLockUtil.transformNoCapsAll(lastWord);
-                capLocks.setTextColor(ContextCompat.getColor(this, R.color.black));
-                capLocks.setText("caplocks");
+                capStatus = FIRST_CAP;
                 break;
             case FIRST_CAP:
-                afterTransform = CapLockUtil.transformCapsFirst(lastWord);
-                capLocks.setTextColor(ContextCompat.getColor(this, R.color.indigo));
-                capLocks.setText("Caplocks");
+                capStatus = ALL_CAP;
                 break;
             case ALL_CAP:
-                afterTransform = CapLockUtil.transformCapsAll(lastWord);
-                capLocks.setTextColor(ContextCompat.getColor(this, R.color.indigo));
-                capLocks.setText("CAPLOCKS");
+                capStatus = NO_CAP;
                 break;
         }
-        String afterText = text.substring(0, lastWordIndex) + afterTransform;
-        inputtedArea.setText(afterText);
-        inputtedArea.setSelection(afterText.length());
+        switch (capStatus) {
+            case NO_CAP:
+                afterTransform = StringUtil.lowerText(lastWord);
+                capLocks.setTextColor(ContextCompat.getColor(this, R.color.black));
+                capLocks.setText(getString(R.string.no_cap));
+                break;
+            case FIRST_CAP:
+                afterTransform = StringUtil.upperFirstLetter(lastWord);
+                capLocks.setTextColor(ContextCompat.getColor(this, R.color.colorAccent));
+                capLocks.setText(getString(R.string.first_cap));
+                break;
+            case ALL_CAP:
+                afterTransform = StringUtil.upperText(lastWord);
+                capLocks.setTextColor(ContextCompat.getColor(this, R.color.colorAccent));
+                capLocks.setText(getString(R.string.all_cap));
+                break;
+        }
+        afterTransform = text.substring(0, lastWordIndex) + afterTransform;
+        inputtedArea.setText(afterTransform);
+        inputtedArea.setSelection(afterTransform.length());
     }
 
     /**
@@ -326,7 +314,7 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
     private void resetCapLock() {
         capStatus = NO_CAP;
         capLocks.setTextColor(ContextCompat.getColor(this, R.color.black));
-        capLocks.setText("caplocks");
+        capLocks.setText(getString(R.string.no_cap));
     }
 
     @Override
@@ -335,11 +323,12 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
         String inputText = inputtedArea.getText().toString();
         Button bt;
         switch (view.getId()) {
+            //开启识别
             case R.id.bt_on:
                 if (!isOn) {
-                    bt = (Button) findViewById(R.id.bt_on);
-                    bt.setTextColor(ContextCompat.getColor(this, R.color.indigo));
-                    bt = (Button) findViewById(R.id.bt_off);
+                    bt = findView(R.id.bt_on);
+                    bt.setTextColor(ContextCompat.getColor(this, R.color.colorAccent));
+                    bt = findView(R.id.bt_off);
                     bt.setTextColor(ContextCompat.getColor(this, R.color.black));
                     getPresenter().startRecording();
                     showMessage("开始读取手势");
@@ -349,12 +338,13 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
                 }
                 break;
 
+            //关闭识别
             case R.id.bt_off:
                 if (isOn) {
-                    bt = (Button) findViewById(R.id.bt_on);
+                    bt = findView(R.id.bt_on);
                     bt.setTextColor(ContextCompat.getColor(this, R.color.black));
-                    bt = (Button) findViewById(R.id.bt_off);
-                    bt.setTextColor(ContextCompat.getColor(this, R.color.indigo));
+                    bt = findView(R.id.bt_off);
+                    bt.setTextColor(ContextCompat.getColor(this, R.color.colorAccent));
                     getPresenter().stopRecording();
                     showMessage("关闭识别功能");
                     isOn = false;
@@ -363,43 +353,47 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
                 }
                 break;
 
+            //大小写切换
             case R.id.bt_caplock:
                 transformCaplock();
                 break;
 
+            //clear按钮
             case R.id.bt_clear:
-                if (strokeText != null && strokeText.length() > 0) {
+                if (strokeText.length() > 0) {
                     clearStroke();
-                } else if (inputText != null && inputText.length() > 0) {
+                } else if (inputText.length() > 0) {
                     clearInput();
                 }
                 showMessage("已清空");
                 break;
 
             case R.id.bt_comma:
-                setWord(",");
+                enterWord(",");
                 break;
 
             case R.id.bt_period:
-                setWord(".");
+                enterWord(".");
                 break;
 
+            //删除按钮
             case R.id.bt_del:
-                if (strokeText != null && strokeText.length() > 0) {
-                    delStroke();
-                } else if (inputText != null && inputText.length() > 0) {
+                if (strokeText.length() > 0) {
+                    deleteStroke();
+                } else if (inputText.length() > 0) {
                     delWord();
                 } else {
                     showMessage("已清空");
                 }
                 break;
 
+            //数字键盘
             case R.id.bt_num:
                 bt = (Button) findViewById(R.id.bt_num);
                 if (isNumKeyboard) {
                     bt.setTextColor(ContextCompat.getColor(this, R.color.black));
                 } else {
-                    bt.setTextColor(ContextCompat.getColor(this, R.color.indigo));
+                    bt.setTextColor(ContextCompat.getColor(this, R.color.colorAccent));
                 }
                 clearStroke();
                 getPresenter().changeNumKeyboard();
@@ -407,7 +401,7 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
                 break;
 
             case R.id.bt_space:
-                setWord(" ");
+                enterWord(" ");
                 break;
 
             case R.id.inputted_area:
@@ -417,20 +411,8 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
         }
     }
 
-    private void submitAutoSetWord() {
-        Log.i(TAG, "submit auto set word");
-        start = System.currentTimeMillis();
-        if (!isTiming) {
-            Log.i(TAG, "submit task");
-            isTiming = true;
-            pool.submit(new AutoSetWordTask());
-        }
-    }
-
     @Override
     protected void onDestroy() {
-        getPresenter().onDetachDB();
-        pool.shutdown();
         super.onDestroy();
     }
 
@@ -444,29 +426,32 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_test) {
             //跳转到InputActivity
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
     @Override
-    public void uncaughtException(Thread t, Throwable e) {
-        Log.e(TAG, "Exception : " + e);
+    public boolean onTouch(View v, MotionEvent event) {
+        if (v.getId() == R.id.candidate_word) {
+            switch (event.getActionMasked()) {
+                case MotionEvent.ACTION_DOWN:
+                case MotionEvent.ACTION_MOVE:
+                    isTouchRecycler = true;
+                    break;
+                case MotionEvent.ACTION_UP:
+                    isTouchRecycler = false;
+                    setWordByAuto();
+                    break;
+            }
+        }
+        v.performClick();
+        return false;
     }
 }

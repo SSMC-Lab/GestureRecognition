@@ -1,26 +1,21 @@
 package com.example.monster.airgesture.ui.input;
 
-import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
 import com.example.monster.airgesture.Conditions;
 import com.example.monster.airgesture.GlobalConfig;
-import com.example.monster.airgesture.model.db.WordQuery;
-import com.example.monster.airgesture.model.db.Word;
+import com.example.monster.airgesture.data.WordQuery;
+import com.example.monster.airgesture.data.bean.Word;
 import com.example.monster.airgesture.ui.base.BasePresenterImpl;
 import com.example.monster.airgesture.utils.FileCopyUtil;
+import com.example.monster.airgesture.utils.HandlerUtil;
+import com.example.monster.airgesture.utils.StringUtil;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * Presenter实现类
@@ -28,63 +23,52 @@ import java.util.concurrent.Executors;
  * Created by WelkinShadow on 2017/10/26.
  */
 
-public class InputPresenterImpl<V extends InputContract.View> extends BasePresenterImpl<V> implements InputContract.Presenter<V> {
+public class InputPresenterImpl<V extends InputContract.View> extends BasePresenterImpl<V>
+        implements InputContract.Presenter<V>, HandlerUtil.OnReceiveMessageListener {
 
-    public static final String TAG = "InputPresenterImpl";
-
+    private static final String TAG = "InputPresenterImpl";
     private boolean isNumKeyboard = false;
-
     private StringBuilder coding = new StringBuilder();
-    private Context context;
     private WordQuery db;
 
-    private ExecutorService pool;
+    //这个handler会回传phase模块解析出的手势，并递交给presenter内部处理
+    private Handler handler = new HandlerUtil.HandlerHolder(this);
 
     /**
-     * 这个handler会回传phase模块解析出的手势，并递交给presenter内部处理
+     * 访问数据模块查找序列对应的单词
+     *
+     * @param coding 待查找序列
      */
-    private Handler handler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case Conditions.MESSAGE_PHASE_MODEL:
-                    receiveWord((int) msg.getData().getFloat(Conditions.TYPE));
-                    break;
-            }
-        }
-    };
-
-    public InputPresenterImpl(Context context) {
-        this.context = context;
-        pool = Executors.newSingleThreadExecutor();
-    }
-
     @Override
     public void findWord(String coding) {
         Log.i(TAG, "find word");
-        if (coding != null) {
-            Log.i(TAG, "Coding : " + coding);
-            if (coding.length() == 1) {
-                List<Word> letter = db.getLetter(coding);
-                getView().setCandidateWord(letter);
-            } else if (coding.length() > 1) {
-                List<Word> words = db.getWordList(coding);
-                getView().setCandidateWord(words);
-            }
+        if (!StringUtil.isEmpty(coding)) {
+            List<Word> words = db.getWords(coding);
+            getView().setCandidateWord(words);
         } else {
             Log.i(TAG, "Coding is null");
         }
     }
 
+    /**
+     * 查找单词对应的关联词
+     *
+     * @param word 待查找关联词的原单词
+     */
     @Override
     public void findContacted(String word) {
-        if (word != null) {
+        if (!StringUtil.isEmpty(word)) {
             List<Word> words = db.getContacted(word);
             getView().setCandidateWord(words);
             Log.i(TAG, "set contacted word，size = " + words.size());
         }
     }
 
+    /**
+     * 接收到手势信息，递交处理
+     *
+     * @param type 手势类型
+     */
     private void receiveWord(int type) {
         if (!isNumKeyboard) {
             getView().setStroke(type);
@@ -94,27 +78,30 @@ public class InputPresenterImpl<V extends InputContract.View> extends BasePresen
         }
     }
 
+    /**
+     * 数字键盘转换处理
+     */
     @Override
     public void changeNumKeyboard() {
         Log.i(TAG, "change num keyboard ");
-        if (isNumKeyboard) {
-            getView().setCandidateWord(new ArrayList<Word>());
-        } else {
-            getView().setCandidateWord(db.getNum());
-        }
+        List<Word> words = isNumKeyboard ? new ArrayList<Word>() : db.getNum();
+        getView().setCandidateWord(words);
         isNumKeyboard = !isNumKeyboard;
     }
 
     @Override
-    public void onAttachDB(WordQuery db) {
-        this.db = db;
+    public void attachQueryModel(WordQuery wordQuery) {
+        db = wordQuery;
     }
 
     @Override
-    public void onDetachDB() {
+    public void detachQueryModel() {
         db = null;
     }
 
+    /**
+     * 初始化解析模块
+     */
     @Override
     public void initConfig() {
         if (!Conditions.configInit) {
@@ -138,12 +125,12 @@ public class InputPresenterImpl<V extends InputContract.View> extends BasePresen
 
         }
         GlobalConfig.stPhaseProxy.sendHandler(handler);
-        copyTemplete("heng2.txt");
-        copyTemplete("shu2.txt");
-        copyTemplete("youhu2.txt");
-        copyTemplete("youxie2.txt");
-        copyTemplete("zuohu2.txt");
-        copyTemplete("zuoxie2.txt");
+        copyTemplate("heng2.txt");
+        copyTemplate("shu2.txt");
+        copyTemplate("youhu2.txt");
+        copyTemplate("youxie2.txt");
+        copyTemplate("zuohu2.txt");
+        copyTemplate("zuoxie2.txt");
     }
 
     @Override
@@ -161,16 +148,21 @@ public class InputPresenterImpl<V extends InputContract.View> extends BasePresen
         GlobalConfig.stWavRecorder.stop();
     }
 
+    /**
+     * 清空序列
+     */
     @Override
     public void clearStoker() {
         coding.delete(0, coding.length());
         getView().setCandidateWord(new ArrayList<Word>());
-        Log.d(TAG, "clear stoker,now coding = " + coding);
+        Log.d(TAG, "clear stoker");
     }
 
+    /**
+     * 删除序列最后一个字符
+     */
     @Override
     public void delStoker() {
-        Log.d(TAG, "coding length:" + coding.length());
         if (coding.length() > 0) {
             coding.delete(coding.length() - 1, coding.length());
             findWord(coding.toString());
@@ -178,25 +170,19 @@ public class InputPresenterImpl<V extends InputContract.View> extends BasePresen
         }
     }
 
-    //拷贝用于解析的模板数据
-    private void copyTemplete(String templeteName) {
-        String path = GlobalConfig.sFileTemplatePath + templeteName;
-        File templete = new File(path);
-        InputStream inputStream = null;
-        OutputStream outputStream = null;
-        try {
-            inputStream = context.getAssets().open(templeteName);
-            outputStream = new FileOutputStream(templete);
-            FileCopyUtil.copy(inputStream, outputStream);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                inputStream.close();
-                outputStream.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+    /**
+     * 拷贝用于解析的模板数据
+     */
+    private void copyTemplate(String templateName) {
+        FileCopyUtil.copyInAssets(templateName, GlobalConfig.sFileTemplatePath + templateName);
+    }
+
+    @Override
+    public void handlerMessage(Message msg) {
+        switch (msg.what) {
+            case Conditions.MESSAGE_PHASE_MODEL:
+                receiveWord((int) msg.getData().getFloat(Conditions.TYPE));
+                break;
         }
     }
 }

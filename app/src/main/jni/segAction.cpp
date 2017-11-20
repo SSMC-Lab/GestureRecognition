@@ -8,7 +8,7 @@
 #define ACC_SEG_START_MIN  26
 #define ACC_SEG_END_SHIFT  15
 
-#define ACC_SEG_START_REAL_TIME_MIN  45
+#define ACC_SEG_START_REAL_TIME_MIN  80
 //#define ACC_SEG_END_SHIFT  15
 int segAction::getAccelerate(float * pdata, int iLen, vector<float>& vAcc)
 {
@@ -127,10 +127,10 @@ int segAction::doSegRealTime(float * pAcc, int iLen, int& iMark, int& iThresPoin
 			{
 				for (int n = (iThresPoint); n < iLen; n++)
 				{
-					if ((n + 8) < iLen)
+					if ((n + 10) < iLen)
 					{
 						bool bAllLittle = true;
-						for (int j = n; j < (n + 8); j++)
+						for (int j = n; j < (n + 10); j++)
 						{
 							if (abs(pAcc[j]) >= ACC_SEG_END_SHIFT)
 							{

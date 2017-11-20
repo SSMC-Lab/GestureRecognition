@@ -185,9 +185,9 @@ int    SignalProcess::doProcessV3(short *pSignal, int iLen,  string sResultPath,
 
 			//处理20 KHZ的数据
 			//构造opencv矩阵 161*59
-			iDstColumn = 141;
+			iDstColumn = 101;
 			Mat medianfilterSrcM(iDstColumn, iDstRow, CV_32F);
-			initFloatMat(medianfilterSrcM, logPx, centreBin - 70);
+			initFloatMat(medianfilterSrcM, logPx, centreBin - 55);
 			sResultFile = sResultPath + fileName + "renoisespectrum_vs_" + sIndex + ".txt";
 			//GammaUtil::writeDataToFile(sResultFile, medianfilterSrcM);
 

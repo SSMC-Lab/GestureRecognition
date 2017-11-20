@@ -24,35 +24,26 @@ import android.os.Handler;
 
 import com.example.monster.airgesture.Conditions;
 import com.example.monster.airgesture.R;
-import com.example.monster.airgesture.model.phase.AudioTrackPlay;
+import com.example.monster.airgesture.phase.AudioTrackPlay;
 import com.example.monster.airgesture.GlobalConfig;
 import com.example.monster.airgesture.ui.input.InputActivity;
+import com.example.monster.airgesture.utils.HandlerUtil;
 
 /**
- *  这个 activity 被用来测试 phase 模块
+ * 这个 activity 被用来测试 phase 模块
  */
-public class MainActivity extends AppCompatActivity implements Thread.UncaughtExceptionHandler {
+public class MainActivity extends AppCompatActivity
+        implements Thread.UncaughtExceptionHandler, HandlerUtil.OnReceiveMessageListener {
     //////////////////UI///////////////////////////////
-    public static TextView tv;
+    public TextView tv;
     private String sRecordStatus = "Init Record";
-    public static TextView tvTime100MilliSecond;
+    public TextView tvTime100MilliSecond;
     private static String INIT_100_MILL_SECOND = "00:00:0";
     private String s100MillSecond = INIT_100_MILL_SECOND;
     private TextView tvType;
     private ListView listView;
     private List<String> types = new ArrayList<>();
-    private Handler handler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            int iType = (int) msg.getData().getFloat(Conditions.TYPE);
-            tvType.setText("type :" + iType);
-            SimpleDateFormat fm = new SimpleDateFormat("yyyy/MM/dd HH:mm");
-            Date now = new Date();
-            types.add(fm.format(now) + ": type :" + iType);
-            listView.deferNotifyDataSetChanged();
-            listView.setSelection(ListView.FOCUS_DOWN);
-        }
-    };
+    private Handler handler = new HandlerUtil.HandlerHolder(this);
 
     //////////////////////////////////////////////////////
 
@@ -101,6 +92,17 @@ public class MainActivity extends AppCompatActivity implements Thread.UncaughtEx
         Log.i("AAA", "uncaughtException   " + arg1);
     }
 
+    @Override
+    public void handlerMessage(Message msg) {
+        int iType = (int) msg.getData().getFloat(Conditions.TYPE);
+        tvType.setText("type :" + iType);
+        SimpleDateFormat fm = new SimpleDateFormat("yyyy/MM/dd HH:mm");
+        Date now = new Date();
+        types.add(fm.format(now) + ": type :" + iType);
+        listView.deferNotifyDataSetChanged();
+        listView.setSelection(ListView.FOCUS_DOWN);
+    }
+
     class ThreadInstantPlay extends Thread {
         @Override
         public void run() {
@@ -109,7 +111,7 @@ public class MainActivity extends AppCompatActivity implements Thread.UncaughtEx
             GlobalConfig.isRecording = true;
             Player.play();
 
-            while (GlobalConfig.isRecording == true) {
+            while (GlobalConfig.isRecording) {
             }
             Player.stop();
         }

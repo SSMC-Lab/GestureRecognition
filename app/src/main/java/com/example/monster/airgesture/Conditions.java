@@ -13,4 +13,6 @@ public class Conditions {
 
     //Bundle keys
     public static final String TYPE ="type";
+
+    public static final String[] STOKES={"一", " |"," /"," \\", "⊂","⊃"};
 }

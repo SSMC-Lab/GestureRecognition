@@ -1,6 +1,5 @@
 package com.example.monster.airgesture.ui.input;
 
-import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,29 +8,29 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.monster.airgesture.R;
-import com.example.monster.airgesture.model.db.Word;
+import com.example.monster.airgesture.data.bean.Word;
 import com.example.monster.airgesture.ui.base.BaseAdapter;
 
 import java.util.List;
 
 /**
+ * Word的适配器
  * Created by WelkinShadow on 2017/10/31.
  */
 
 public class WordAdapter<T extends Word> extends BaseAdapter<T, WordAdapter.ViewHolder> {
 
     private final List<T> datas;
-    private final AdapterListener listener;
-    private Context mContext;
+    private final OnItemClickListener listener;
 
     /** 回调接口 */
-    interface AdapterListener {
+    interface OnItemClickListener {
         void onClickItem(Word word);
 
         void onLongClickItem(Word word);
     }
 
-    public WordAdapter(List<T> datas, AdapterListener listener) {
+    WordAdapter(List<T> datas, OnItemClickListener listener) {
         super(datas);
         this.datas = datas;
         this.listener = listener;
@@ -42,7 +41,7 @@ public class WordAdapter<T extends Word> extends BaseAdapter<T, WordAdapter.View
         LinearLayout linearLayout;
         TextView textView;
 
-        public ViewHolder(View itemView) {
+         ViewHolder(View itemView) {
             super(itemView);
             linearLayout = (LinearLayout) itemView.findViewById(R.id.item_layout);
             textView = (TextView) itemView.findViewById(R.id.item_text);
@@ -73,9 +72,7 @@ public class WordAdapter<T extends Word> extends BaseAdapter<T, WordAdapter.View
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         final View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_item, parent, false);
-        final ViewHolder viewHolder = new ViewHolder(view);
-        mContext = parent.getContext();
-        return viewHolder;
+        return new ViewHolder(view);
     }
 
     @Override

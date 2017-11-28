@@ -36,6 +36,7 @@ public:
 	static void  writeLineToFile(std::ofstream& m_logfile, const string& str);
 	static void  writeLineToFile(const string& sFileName, const string& str, bool replace = true);
 	static void  finishOneActionV3(vector<float>& vAcc, int iWatingTime, int& iType, int& iWord, vector<float>& vfShift, int iMark);
+	static void writeVecDoublePointYToFile(string& sFileName, vector<double>& vecPointY, bool replace = true);
 };
 
 #endif

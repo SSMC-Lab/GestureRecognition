@@ -42,7 +42,7 @@ int  SignalProcess::init(string sTemplatePath)
 
 	noisenum = (int)(230 / (step*Tsolu));
 	endmark = 1;
-	
+	segmark=0;
 	return loadTemplate(sTemplatePath);
 }
 
@@ -173,6 +173,9 @@ int    SignalProcess::doProcessV3(short *pSignal, int iLen,  string sResultPath,
 			int iDstRow = 0;
 			int iDstColumn = 0;
 
+             if (segmark==1)
+                       { start=clock();}
+
 			stSpectrogram.spectrogram(pFrameSignal, iFrameSignalLen, iNfft, overlap, iNfft, fs, &logPx, iDstRow, iDstColumn);
 			//sResultFile = sResultPath + fileName + "stSpectrogram_vs.txt";
 
@@ -265,6 +268,14 @@ int    SignalProcess::doProcessV3(short *pSignal, int iLen,  string sResultPath,
 			//sResultFile = sResultPath + fileName + "bwareImfill_vs_" + sIndex + ".txt";
 			//GammaUtil::writeUcharDataToFile(sResultFile, binMUchar);
 
+            if (segmark==1)
+           {
+                        endSignal=clock();
+                        time[0]+=(double)(endSignal-start)*1000/CLOCKS_PER_SEC;
+                       }
+
+
+
 			//获取多普勒曲线
 			vector<int> vecPointY;
 			dopshift(binMUchar, vecPointY, centreBin);
@@ -304,6 +315,22 @@ int    SignalProcess::doProcessV3(short *pSignal, int iLen,  string sResultPath,
 			stSegInfo.iStart = iStart;
 			stSegInfo.iEnd = iEnd;
 
+if(segmark==1)
+			{
+			endDoppler=clock();
+            time[1]+=(double)(endDoppler-endSignal)*1000/CLOCKS_PER_SEC;}
+    if (stSegInfo.iStart >0)
+    {segmark=1;}
+
+if (stSegInfo.iEnd >0)
+{ vt.push_back(time[0]);
+vt.push_back(time[1]);
+segmark=0;}
+
+
+
+
+
 			sResultFile = sResultPath + fileName + "Seg" + sIndex + ".txt";
 			//GammaUtil::writeVecPointYToFile(sResultFile, vSegX);
 			//vpSegPos.clear();
@@ -312,15 +339,16 @@ int    SignalProcess::doProcessV3(short *pSignal, int iLen,  string sResultPath,
 			if (stSegInfo.iStart > 0 && stSegInfo.iEnd > 0 && stSegInfo.iEnd > stSegInfo.iStart)
 			{
 				//插值
+
 				Interpolate stInterpolate;
 				vector<float> vStroke;
 				sResultFile = sResultPath + fileName + "_vfShift_vs_" + sIndex + ".txt";
 				//GammaUtil::writeVecPointYToFile(sResultFile, vfShift);
 
-				sResultFile = sResultPath  + "jni_vSegX_vs_.txt";
-				ostringstream ss;
-				ss << stSegInfo.iStart << "|" << stSegInfo.iEnd << endl;
-				GammaUtil::writeLineToFile(sResultFile, ss.str(), false);
+				//sResultFile = sResultPath  + "jni_vSegX_vs_.txt";
+				//ostringstream ss;
+				//ss << stSegInfo.iStart << "|" << stSegInfo.iEnd << endl;
+				//GammaUtil::writeLineToFile(sResultFile, ss.str(), false);
 
 				for (int j = stSegInfo.iStart; j <= stSegInfo.iEnd; j++)
 				{
@@ -334,14 +362,33 @@ int    SignalProcess::doProcessV3(short *pSignal, int iLen,  string sResultPath,
 
 				//dtw计算 动作类型
 				vector<float> vDis;
+	           startMatch=clock();
 				iType = doDtw(vdstInstroke, NUMSAMPLE, vDis, sResultPath, fileName);
-				ostringstream ssType;
-				ssType<< iType << endl;
-				sResultFile = sResultPath  + "jni_Type_vs_.txt";
-				GammaUtil::writeLineToFile(sResultFile, ssType.str(), false);
+				//ostringstream ssType;
+				//ssType<< iType << endl;
+				//sResultFile = sResultPath  + "jni_Type_vs_.txt";
+				//GammaUtil::writeLineToFile(sResultFile, ssType.str(), false);
 				//sResultFile = sResultPath + fileName + "dtw_vs.txt";
 				//GammaUtil::writeVecPointYToFile(sResultFile, vDis, false);
+                endMatch=clock();
+                time[2]=(double)(endMatch-startMatch)*1000/CLOCKS_PER_SEC;
 
+                vt.push_back(time[2]);
+                time[3]=time[0]+time[1]+time[2];
+                time[4]=(double)iType;
+                vt.push_back(time[3]);
+                vt.push_back(time[4]);
+
+               sResultFile = sResultPath + "time"+ ".txt";
+
+               GammaUtil::writeVecDoublePointYToFile(sResultFile,vt,false);
+                vt.clear();
+                time[0]=0;
+                time[1]=0;
+
+
+
+               // memset(time, 0, sizeof(time));
 				//清理数据
 				GammaUtil::cleanData(iType, stSegInfo, vfShift, vAcc);
 				endmark = 1;

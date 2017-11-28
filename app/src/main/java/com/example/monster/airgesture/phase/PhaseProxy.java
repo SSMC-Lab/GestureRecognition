@@ -49,7 +49,7 @@ public class PhaseProxy {
         ppi = new PhaseProcessI();
         float tempf = ppi.doInit(ppi.nativeSignalProcess, GlobalConfig.sFileTemplatePath);
         sRecordFile = GlobalConfig.stWaveFileUtil.getRecordTxtFileName();
-        fRecordTxtFile = GlobalConfig.stWaveFileUtil.createFile(sRecordFile);
+       // fRecordTxtFile = GlobalConfig.stWaveFileUtil.createFile(sRecordFile);
         // fReadRecordTxtFile = new File(GlobalConfig.stWaveFileUtil.ReadRecordTxtFileName);
         GlobalConfig.bPlayDataReady = true;
         GlobalConfig.stPhaseProxy.start();

@@ -135,6 +135,27 @@ void  GammaUtil::writeVecPointYToFile(string& sFileName, vector<int>& vecPointY,
 	m_logfile.close();
 }
 
+void  GammaUtil::writeVecDoublePointYToFile(string& sFileName, vector<double>& vecPointY, bool replace)
+{
+	std::ofstream m_logfile;
+	if (replace)
+	{
+		m_logfile.open(sFileName.c_str(), std::ios::out);
+	}
+	else
+	{
+		m_logfile.open(sFileName.c_str(), std::ios::app);
+	}
+	ostringstream streamStr;
+	for (size_t i = 0; i < vecPointY.size(); i++)
+	{
+		streamStr << vecPointY[i] << " ";
+	}
+	streamStr << endl;
+	m_logfile << streamStr.str() << std::flush;
+	m_logfile.close();
+}
+
 void  GammaUtil::writePointYToFile(string& sFileName, float *pfPointY, int iSize, bool replace)
 {
 	std::ofstream m_logfile;

@@ -68,14 +68,7 @@ public class MainActivity extends AppCompatActivity
             GlobalConfig.fResultPath.mkdirs();//创建文件夹
             GlobalConfig.stPhaseProxy.init();
             //initIos();
-            if (GlobalConfig.bPlayThreadFlag) {
-                //ThreadInstantPlay threadInstantPlay = new ThreadInstantPlay();
-                //Process.setThreadPriority(Process.THREAD_PRIORITY_URGENT_AUDIO);
-                //threadInstantPlay.start();
-                GlobalConfig.stWavePlayer.play();
-            } else {
-                GlobalConfig.isRecording = true;
-            }
+
             Conditions.configInit = true;
         }
 
@@ -120,6 +113,15 @@ public class MainActivity extends AppCompatActivity
 
     public void startRecordAction() {
 
+
+        if (GlobalConfig.bPlayThreadFlag) {
+            //ThreadInstantPlay threadInstantPlay = new ThreadInstantPlay();
+            //Process.setThreadPriority(Process.THREAD_PRIORITY_URGENT_AUDIO);
+            //threadInstantPlay.start();
+            GlobalConfig.stWavePlayer.play();
+        } else {
+            GlobalConfig.isRecording = true;
+        }
         GlobalConfig.stWavRecorder.start();
         sRecordStatus = "-------------start Record-----------------";
         tv.setText(sRecordStatus);
@@ -160,6 +162,7 @@ public class MainActivity extends AppCompatActivity
         GlobalConfig.stPhaseProxy.destroy();
         GlobalConfig.stWaveFileUtil.destroy();
         GlobalConfig.stWavRecorder.stop();
+        GlobalConfig.stWavePlayer.stop();
     }
 
     //runs when the stop button is pressed

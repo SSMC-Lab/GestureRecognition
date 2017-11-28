@@ -119,6 +119,7 @@ JNICALL Java_com_example_monster_airgesture_PhaseProcessI_doActionRecognitionV3
     const char* c_str2;
     c_str2 = env->GetStringUTFChars(j_str2, NULL);
     int iType = ((SignalProcess *) thizptr)->doProcessV3(carr, size,  c_str, c_str2);
+    //doActionRecognitionV3对应的C实现
     //fDistance = RangeFinder::getCosin();//addAll(carr, size);
     env->ReleaseShortArrayElements(recordData, carr, 0);
     env->ReleaseStringUTFChars(j_str, c_str);

@@ -19,10 +19,10 @@ public class PhaseProcessI {
 
 
     static {
-        System.loadLibrary("PhaseProcess");
+        System.loadLibrary("PhaseProcess");  //导入C代码生成的二进制库
     }
 
-    public native String getJniString();
+    public native String getJniString(); //去PhaseProcess.cpp文件中找出对应的方法实现
 
     public native long createNativeRangeFinder(int inMaxFramesPerSlice, int inNumFreq, float inStartFreq, float inFreqInterv);
 

@@ -51,6 +51,10 @@ private:
 	//Mat  m_repmatM;
 	vector<float> m_VecAvgCol;      //¹¹ÔìÇ°5ÁÐ¾ùÖµ£¬ÓÃÀ´×ö±³¾°²î
 	int  endmark;
+    int  segmark;
 
+            double time[5];
+            vector<double> vt;
+            clock_t start,endSignal,endDoppler,startMatch,endMatch,Total;
 };
 #endif //ANDROID_PHASE_PLAY_STATIC_SIGNALPROCESS_H

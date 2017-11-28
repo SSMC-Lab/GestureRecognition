@@ -110,18 +110,11 @@ public class InputPresenterImpl<V extends InputContract.View> extends BasePresen
             GlobalConfig.fResultPath.mkdirs();//创建文件夹
 
             //initIos();
-            if (GlobalConfig.bPlayThreadFlag) {
-                //ThreadInstantPlay threadInstantPlay = new ThreadInstantPlay();
-                //Process.setThreadPriority(Process.THREAD_PRIORITY_URGENT_AUDIO);
-                //threadInstantPlay.start();
-                GlobalConfig.stWavePlayer.play();
-            } else {
-                GlobalConfig.isRecording = true;
-            }
+
 
             //startRecordAction();
 
-            GlobalConfig.stPhaseProxy.init();
+            GlobalConfig.stPhaseProxy.init();// 拿出数据，启动处理模块
 
         }
         GlobalConfig.stPhaseProxy.sendHandler(handler);
@@ -135,6 +128,15 @@ public class InputPresenterImpl<V extends InputContract.View> extends BasePresen
 
     @Override
     public void startRecording() {
+
+        if (GlobalConfig.bPlayThreadFlag) {
+            //ThreadInstantPlay threadInstantPlay = new ThreadInstantPlay();
+            //Process.setThreadPriority(Process.THREAD_PRIORITY_URGENT_AUDIO);
+            //threadInstantPlay.start();
+            GlobalConfig.stWavePlayer.play();
+        } else {
+            GlobalConfig.isRecording = true;
+        }
         GlobalConfig.stWavRecorder.start();
         GlobalConfig.fPcmRecordFile2 = new File(GlobalConfig.getRecordedFileName(GlobalConfig.sRecordPcmFileName2));
     }
@@ -146,6 +148,7 @@ public class InputPresenterImpl<V extends InputContract.View> extends BasePresen
         GlobalConfig.stPhaseProxy.destroy();
         GlobalConfig.stWaveFileUtil.destroy();
         GlobalConfig.stWavRecorder.stop();
+        GlobalConfig.stWavePlayer.stop();
     }
 
     /**

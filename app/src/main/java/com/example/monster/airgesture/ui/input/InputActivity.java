@@ -53,7 +53,7 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
     private TimerHelper timerHelper;
 
     //自动输入功能的定时时间
-    private final int AUTO_INPUT_MILLI = 1500;
+    private final int AUTO_INPUT_MILLI = 2000;
 
     private boolean isOn = false;//识别开关是否打开
     private boolean isNumKeyboard = false;//数字键盘是否在显示
@@ -239,13 +239,15 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
     public void setCandidateWord(List<Word> words) {
         Log.i(TAG, "set candidate word");
         candidateWordAdapter.notifyDiff(words);
+
         setWordByAuto();
     }
 
+    //下一句可以设置自动上墙，目前此功能关闭
     private void setWordByAuto() {
-        cancelCurrentTimerTask();
-        timerHelper.startTimer();
-        isTiming = true;
+        //cancelCurrentTimerTask();
+       // timerHelper.startTimer();
+      //  isTiming = true;
     }
 
     private void cancelCurrentTimerTask() {

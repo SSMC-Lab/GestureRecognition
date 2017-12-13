@@ -18,7 +18,6 @@ import java.text.SimpleDateFormat;
  * Created by Administrator on 2017/7/5.
  */
 
-
 public class GlobalConfig extends Application {
 
     private static GlobalConfig stGlobalConfig;
@@ -29,6 +28,7 @@ public class GlobalConfig extends Application {
     public static int RECORD_FRAME_SIZE = 512 * 2; //byte
     public static int MAX_RECORD_CACHE_SIZE = 4096;
     ////////////////switch///////////////////////////////////////////
+    public static boolean isPlaying = false;   //是否正在播放
     public static boolean isRecording = false;  //是否正在录制
     public static boolean bPlayDataReady = false; //bPlayData是否READY
     public static boolean bSaveWavFile = true;//是否保存wav文件

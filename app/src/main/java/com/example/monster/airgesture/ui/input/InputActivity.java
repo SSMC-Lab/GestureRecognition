@@ -245,9 +245,9 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
 
     //下一句可以设置自动上墙，目前此功能关闭
     private void setWordByAuto() {
-        //cancelCurrentTimerTask();
-       // timerHelper.startTimer();
-      //  isTiming = true;
+        cancelCurrentTimerTask();
+       timerHelper.startTimer();
+       isTiming = true;
     }
 
     private void cancelCurrentTimerTask() {
@@ -333,7 +333,7 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
                     bt = findView(R.id.bt_off);
                     bt.setTextColor(ContextCompat.getColor(this, R.color.black));
                     getPresenter().startRecording();
-                    showMessage("开始读取手势");
+                    showMessage("ON");
                     isOn = true;
                 } else {
                     showMessage("已经开启手势读取");
@@ -348,7 +348,7 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
                     bt = findView(R.id.bt_off);
                     bt.setTextColor(ContextCompat.getColor(this, R.color.colorAccent));
                     getPresenter().stopRecording();
-                    showMessage("关闭识别功能");
+                    showMessage("OFF");
                     isOn = false;
                 } else {
                     showMessage("已经关闭");
@@ -367,7 +367,7 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
                 } else if (inputText.length() > 0) {
                     clearInput();
                 }
-                showMessage("已清空");
+                //showMessage("Clear");
                 break;
 
             case R.id.bt_comma:
@@ -385,7 +385,7 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
                 } else if (inputText.length() > 0) {
                     delWord();
                 } else {
-                    showMessage("已清空");
+                   // showMessage("Delete");
                 }
                 break;
 

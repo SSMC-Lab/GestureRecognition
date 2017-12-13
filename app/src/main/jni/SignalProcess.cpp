@@ -381,7 +381,7 @@ segmark=0;}
 
                sResultFile = sResultPath + "time"+ ".txt";
 
-               GammaUtil::writeVecDoublePointYToFile(sResultFile,vt,false);
+               //GammaUtil::writeVecDoublePointYToFile(sResultFile,vt,false);
                 vt.clear();
                 time[0]=0;
                 time[1]=0;

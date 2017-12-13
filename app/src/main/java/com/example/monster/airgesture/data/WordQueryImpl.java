@@ -171,8 +171,9 @@ public class WordQueryImpl implements WordQuery {
             dictionary.execSQL("insert into result(word,probability,length,code) " +
                     "select word,probability,length,code " +
                     "from dictionary " +
-                    "where substr(code,1," + length + ") in (select strokes from seq) " +
-                    "limit 100");
+                    "where substr(code,1," + length + ") in (select strokes from seq) " );
+                   // +
+                 //   "limit 100");
 
             Log.i(TAG, "database query : query table : result");
             cursor = dictionary.rawQuery("SELECT * FROM result ORDER BY length ASC,probability DESC ", null);

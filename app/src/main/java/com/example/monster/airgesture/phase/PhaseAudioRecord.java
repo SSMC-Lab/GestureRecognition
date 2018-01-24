@@ -6,7 +6,7 @@ import android.media.MediaRecorder;
 import android.util.Log;
 
 import com.example.monster.airgesture.GlobalConfig;
-import com.example.monster.airgesture.utils.WaveFileUtil;
+import com.example.monster.airgesture.utils.WaveFileUtils;
 
 import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
@@ -56,14 +56,14 @@ public class PhaseAudioRecord {
         GlobalConfig.isRecording = false;
         if (GlobalConfig.bSaveWavFile) {
             String sFile = GlobalConfig.fPcmRecordFile.getAbsolutePath();
-            String sWavPath = WaveFileUtil.getWaveFile(sFile);
+            String sWavPath = WaveFileUtils.getWaveFile(sFile);
             int bufferSize = AudioRecord.getMinBufferSize(stWavAudioRecord.sampleRateInHz,
                     stWavAudioRecord.channelConfig, stWavAudioRecord.audioFormat);
-            WaveFileUtil.copyWaveFile(sFile, sWavPath, stWavAudioRecord.sampleRateInHz, wavCopyChannelNum, bufferSize, wavCopyBitsPerSample);//给裸数据加上头文件
+            WaveFileUtils.copyWaveFile(sFile, sWavPath, stWavAudioRecord.sampleRateInHz, wavCopyChannelNum, bufferSize, wavCopyBitsPerSample);//给裸数据加上头文件
 
             String sFile2 = GlobalConfig.fPcmRecordFile2.getAbsolutePath();
-            String sWavPath2 = WaveFileUtil.getWaveFile(sFile2);
-            WaveFileUtil.copyWaveFile(sFile2, sWavPath2, stWavAudioRecord.sampleRateInHz, wavCopyChannelNum, bufferSize, wavCopyBitsPerSample);//给裸数据加上头文件
+            String sWavPath2 = WaveFileUtils.getWaveFile(sFile2);
+            WaveFileUtils.copyWaveFile(sFile2, sWavPath2, stWavAudioRecord.sampleRateInHz, wavCopyChannelNum, bufferSize, wavCopyBitsPerSample);//给裸数据加上头文件
         }
         recorder.stop();
         recorder.release();

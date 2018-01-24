@@ -15,9 +15,9 @@ import android.widget.Toast;
  * Created by WelkinShadow on 2017/10/26.
  */
 
-public abstract class BaseActivity<T extends BaseContract.Presenter>
+public abstract class BaseActivity<T extends IBaseContract.Presenter>
         extends AppCompatActivity
-        implements BaseContract.View {
+        implements IBaseContract.View {
 
     private ProgressDialog mProgressDialog = null;
     private T presenter;
@@ -59,11 +59,6 @@ public abstract class BaseActivity<T extends BaseContract.Presenter>
         if (mProgressDialog != null && mProgressDialog.isShowing()) {
             mProgressDialog.cancel();
         }
-    }
-
-    @Override
-    public void closeActivity() {
-        finish();
     }
 
     @Override

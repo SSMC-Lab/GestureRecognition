@@ -27,13 +27,13 @@ import com.example.monster.airgesture.R;
 import com.example.monster.airgesture.phase.AudioTrackPlay;
 import com.example.monster.airgesture.GlobalConfig;
 import com.example.monster.airgesture.ui.input.InputActivity;
-import com.example.monster.airgesture.utils.HandlerUtil;
+import com.example.monster.airgesture.utils.HandlerUtils;
 
 /**
  * 这个 activity 被用来测试 phase 模块
  */
 public class MainActivity extends AppCompatActivity
-        implements Thread.UncaughtExceptionHandler, HandlerUtil.OnReceiveMessageListener {
+        implements Thread.UncaughtExceptionHandler, HandlerUtils.OnReceiveMessageListener {
     //////////////////UI///////////////////////////////
     public TextView tv;
     private String sRecordStatus = "Init Record";
@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity
     private TextView tvType;
     private ListView listView;
     private List<String> types = new ArrayList<>();
-    private Handler handler = new HandlerUtil.HandlerHolder(this);
+    private Handler handler = new HandlerUtils.HandlerHolder(this);
 
     //////////////////////////////////////////////////////
 

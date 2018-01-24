@@ -4,7 +4,7 @@ package com.example.monster.airgesture.ui.base;
  * Created by WelkinShadow on 2017/10/26.
  */
 
-public class BasePresenterImpl<V extends BaseContract.View> implements BaseContract.Presenter<V> {
+public class BasePresenterImpl<V extends IBaseContract.View> implements IBaseContract.Presenter<V> {
 
     private V view = null;
 

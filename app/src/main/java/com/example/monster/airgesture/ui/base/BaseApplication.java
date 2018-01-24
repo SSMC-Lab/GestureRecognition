@@ -1,13 +1,14 @@
 package com.example.monster.airgesture.ui.base;
 
-import android.app.Application;
 import android.content.Context;
+
+import org.litepal.LitePalApplication;
 
 /**
  * Created by WelkinShadow on 2017/11/15.
  */
 
-public class BaseApplication extends Application {
+public class BaseApplication extends LitePalApplication {
     private static BaseApplication mApplication;
 
     /**

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">AcouText</string>
+    <string name="app_name">EchoType</string>
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
@@ -7,4 +7,8 @@
     <string name="no_cap">caplocks</string>
     <string name="all_cap">CAPLOCKS</string>
     <string name="first_cap">Caplocks</string>
+    <string name="user_name">name</string>
+    <string name="user_creator_submit">提交</string>
+    <string name="user_creator_next">下一步</string>
+
 </resources>

@@ -2,7 +2,9 @@ package com.example.monster.airgesture.data;
 
 
 import android.database.sqlite.SQLiteDatabase;
-import com.example.monster.airgesture.utils.FileCopyUtil;
+
+import com.example.monster.airgesture.utils.FileCopyUtils;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -65,7 +67,7 @@ class DatabaseManager {
      * @param dbName 数据库在assets目录下的文件名
      */
     private void copyDatabase(String dbName) throws IOException {
-        FileCopyUtil.copyInAssets(dbName,DatabaseConfig.DB_PATH + dbName);
+        FileCopyUtils.copyInAssets(dbName,DatabaseConfig.DB_PATH + dbName);
     }
 
     /**

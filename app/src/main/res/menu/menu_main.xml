@@ -7,4 +7,14 @@
         android:orderInCategory="100"
         android:title="test"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/action_user"
+        android:orderInCategory="100"
+        android:title="user"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_main"
+        android:orderInCategory="100"
+        android:title="main"
+        app:showAsAction="never" />
 </menu>

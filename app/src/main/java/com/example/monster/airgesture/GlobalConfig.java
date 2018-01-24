@@ -7,7 +7,7 @@ import com.example.monster.airgesture.phase.PhaseAudioRecord;
 import com.example.monster.airgesture.phase.PhaseProxy;
 import com.example.monster.airgesture.phase.WavRecorder;
 import com.example.monster.airgesture.phase.WavePlayer;
-import com.example.monster.airgesture.utils.WaveFileUtil;
+import com.example.monster.airgesture.utils.WaveFileUtils;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -42,9 +42,9 @@ public class GlobalConfig extends Application {
     public static WavRecorder stWavRecorder = new WavRecorder(AudioFormat.CHANNEL_IN_MONO, AUDIO_SAMPLE_RATE, AudioFormat.ENCODING_PCM_16BIT);
 
     /////////////////file play//////////////////////////////////////
-    public static String sPlayPcmFileName = WaveFileUtil.sAbsolutePath + "qilixiangmono3.wav";//;//"btts.pcm";//auda20k40s.wav";//"auda20k40s.wav";//"auda18k40s.wav";//"btts.pcm";//;//"AUDA18SIN.wav";//"btts.pcm";//"sin20k40s.pcm";//"sin18k40s.pcm";//"AutoRecording-823432235.pcm";                 //播放的pcm文件路径
-    public static String sFileTemplatePath = WaveFileUtil.sAbsolutePath + "/template/";
-    public static String sFileResultPath = WaveFileUtil.sAbsolutePath + "/result/";
+    public static String sPlayPcmFileName = WaveFileUtils.sAbsolutePath + "qilixiangmono3.wav";//;//"btts.pcm";//auda20k40s.wav";//"auda20k40s.wav";//"auda18k40s.wav";//"btts.pcm";//;//"AUDA18SIN.wav";//"btts.pcm";//"sin20k40s.pcm";//"sin18k40s.pcm";//"AutoRecording-823432235.pcm";                 //播放的pcm文件路径
+    public static String sFileTemplatePath = WaveFileUtils.sAbsolutePath + "/template/";
+    public static String sFileResultPath = WaveFileUtils.sAbsolutePath + "/result/";
     public static File playPcmFile = null;
     public static DataInputStream playPcmDis = null;
     public static byte[] playData;
@@ -64,8 +64,8 @@ public class GlobalConfig extends Application {
     ///////////////////////////////////////////////////////////////////////////////////
     public static PhaseAudioRecord stPhaseAudioRecord = new PhaseAudioRecord();
     public static PhaseProxy stPhaseProxy = new PhaseProxy();
-    public static WaveFileUtil stWaveFileUtil = new WaveFileUtil();
-    public static File fAbsolutepath = new File(WaveFileUtil.sAbsolutePath);
+    public static WaveFileUtils stWaveFileUtil = new WaveFileUtils();
+    public static File fAbsolutepath = new File(WaveFileUtils.sAbsolutePath);
     public static File fTemplatePath = new File(sFileTemplatePath);
     public static File fResultPath = new File(sFileResultPath);
 

@@ -18,27 +18,26 @@ import android.widget.TextView;
 
 import com.example.monster.airgesture.Conditions;
 import com.example.monster.airgesture.R;
-import com.example.monster.airgesture.data.WordQueryImpl;
 import com.example.monster.airgesture.data.bean.CandidateWord;
 import com.example.monster.airgesture.data.bean.Word;
 import com.example.monster.airgesture.timer.TimerHelper;
 import com.example.monster.airgesture.timer.TimerProcessor;
+import com.example.monster.airgesture.ui.PresenterFactory;
 import com.example.monster.airgesture.ui.test.MainActivity;
 import com.example.monster.airgesture.ui.base.BaseActivity;
-import com.example.monster.airgesture.utils.StringUtil;
+import com.example.monster.airgesture.ui.user.UserActivity;
+import com.example.monster.airgesture.utils.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 负责展示数据的View层，处理数据的展示{@link InputContract.View}
- * 主要交互逻辑见onClick方法{@link InputActivity#onClick(View)}
- * 手势识别和数据库的交互见对应的presenter实现类{@link InputPresenterImpl}
+ * 负责展示数据的View层，处理数据的展示{@link IInputContract.View}
  * Created by WelkinShadow on 2017/10/26.
  */
 
-public class InputActivity<T extends InputContract.Presenter> extends BaseActivity<T> implements
-        InputContract.View, View.OnClickListener, View.OnTouchListener {
+public class InputActivity extends BaseActivity<IInputContract.Presenter> implements
+        IInputContract.View, View.OnClickListener, View.OnTouchListener {
 
     private static final String TAG = "InputActivity";
 
@@ -52,6 +51,7 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
     //定时器管理
     private TimerHelper timerHelper;
 
+    private boolean isAutoSetWord = true;//是否开启自动上墙功能
     //自动输入功能的定时时间
     private final int AUTO_INPUT_MILLI = 2000;
 
@@ -61,16 +61,16 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
     private boolean isTiming = false;//计时器是否正在工作
 
     //大小写状态位
-    private final int FIRST_CAP = 100;
-    private final int ALL_CAP = 101;
-    private final int NO_CAP = 102;
+    private final int FIRST_CAP = 0x100;
+    private final int ALL_CAP = 0x101;
+    private final int NO_CAP = 0x102;
     private int capStatus = NO_CAP;
 
     private WordAdapter<Word> candidateWordAdapter;
 
     @Override
-    public T setPresenter() {
-        return (T) new InputPresenterImpl();
+    public IInputContract.Presenter setPresenter() {
+        return PresenterFactory.getInputPresenter();
     }
 
     @Override
@@ -92,24 +92,18 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
             ActivityCompat.requestPermissions(this, new String[]{
                     android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
         }
-        getPresenter().initConfig();
-        getPresenter().attachQueryModel(new WordQueryImpl());
         timerHelper = new TimerHelper(AUTO_INPUT_MILLI, new TimerProcessor() {
             @Override
             public void process() {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Word word = candidateWordAdapter.getFirst();
-                        if (word != null && word instanceof CandidateWord
-                                && !isNumKeyboard && !isTouchRecycler) {
-                            isTiming = false;
-                            enterWord(candidateWordAdapter.getFirst().getWord());
-                        }
-                    }
-                });
+                setWordByAuto();
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        getPresenter().refreshCurrentUser();
     }
 
     @Override
@@ -173,7 +167,6 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
     /**
      * 单词输入
      */
-    @Override
     public void enterWord(String word) {
         Log.i(TAG, "input word :" + word);
         resetCapLock();
@@ -201,10 +194,10 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
      * 删除笔画
      */
     @Override
-    public void setStroke(int type) {
+    public void setStroke(int stokes) {
         Log.i(TAG, "set stroke");
         //返回对应type的Stokes字符
-        inputStrokes.append(Conditions.STOKES[type - 1]);
+        inputStrokes.append(Conditions.STOKES[stokes - 1]);
     }
 
     /**
@@ -235,21 +228,47 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
      * 设置候选词
      */
     @Override
-    @SuppressWarnings("unchecked")
     public void setCandidateWord(List<Word> words) {
         Log.i(TAG, "set candidate word");
         candidateWordAdapter.notifyDiff(words);
-
-        setWordByAuto();
+        startTimerTask();
     }
 
-    //下一句可以设置自动上墙，目前此功能关闭
+    /**
+     * 启动定时任务
+     * 下一句可以自动上墙
+     * 即等待一段时间后首单词自动输入
+     */
+    private void startTimerTask() {
+        if (isAutoSetWord) {
+            cancelCurrentTimerTask();
+            timerHelper.startTimer();
+            isTiming = true;
+        }
+    }
+
+    /**
+     * 下一句自动上墙主逻辑
+     */
     private void setWordByAuto() {
-        cancelCurrentTimerTask();
-       timerHelper.startTimer();
-       isTiming = true;
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Word word = candidateWordAdapter.getFirst();
+                if (word != null &&
+                        word instanceof CandidateWord &&
+                        !isNumKeyboard &&
+                        !isTouchRecycler) {
+                    isTiming = false;
+                    enterWord(candidateWordAdapter.getFirst().getWord());
+                }
+            }
+        });
     }
 
+    /**
+     * 取消当前的计时任务
+     */
     private void cancelCurrentTimerTask() {
         if (isTiming) {
             timerHelper.stopTimer();
@@ -260,7 +279,6 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
     /**
      * 清空候选词区
      */
-    @Override
     public void clearCandidateWord() {
         Log.i(TAG, "clear candidateWords");
         if (candidateWordAdapter != null) {
@@ -290,17 +308,17 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
         }
         switch (capStatus) {
             case NO_CAP:
-                afterTransform = StringUtil.lowerText(lastWord);
+                afterTransform = StringUtils.lowerText(lastWord);
                 capLocks.setTextColor(ContextCompat.getColor(this, R.color.black));
                 capLocks.setText(getString(R.string.no_cap));
                 break;
             case FIRST_CAP:
-                afterTransform = StringUtil.upperFirstLetter(lastWord);
+                afterTransform = StringUtils.upperFirstLetter(lastWord);
                 capLocks.setTextColor(ContextCompat.getColor(this, R.color.colorAccent));
                 capLocks.setText(getString(R.string.first_cap));
                 break;
             case ALL_CAP:
-                afterTransform = StringUtil.upperText(lastWord);
+                afterTransform = StringUtils.upperText(lastWord);
                 capLocks.setTextColor(ContextCompat.getColor(this, R.color.colorAccent));
                 capLocks.setText(getString(R.string.all_cap));
                 break;
@@ -385,7 +403,7 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
                 } else if (inputText.length() > 0) {
                     delWord();
                 } else {
-                   // showMessage("Delete");
+                    // showMessage("Delete");
                 }
                 break;
 
@@ -414,11 +432,6 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-    }
-
-    @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == 1) {
             if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
@@ -435,6 +448,11 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
             return true;
+        } else if (id == R.id.action_user) {
+            Intent intent = new Intent(this, UserActivity.class);
+            startActivity(intent);
+            finish();
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -449,7 +467,7 @@ public class InputActivity<T extends InputContract.Presenter> extends BaseActivi
                     break;
                 case MotionEvent.ACTION_UP:
                     isTouchRecycler = false;
-                    setWordByAuto();
+                    startTimerTask();
                     break;
             }
         }

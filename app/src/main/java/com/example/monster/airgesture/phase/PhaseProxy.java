@@ -59,6 +59,8 @@ public class PhaseProxy {
         this.handler = handler;
     }
 
+    public void dropHandler(){this.handler = null;}
+
     public void destroy() {
     }
 

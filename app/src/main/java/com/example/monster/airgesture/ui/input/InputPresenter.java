@@ -37,7 +37,7 @@ public class InputPresenter<V extends IInputContract.View> extends BasePresenter
     public InputPresenter() {
         mWordDAO = DataFactory.getWordDAO();
         mUserDAO = DataFactory.getUserDAO();
-        refreshCurrentUser();
+        resetCurrentUser();
         recognitionSwitch = RecognitionSwitch.getInstance();
         mHandler = new HandlerUtils.HandlerHolder(this);
         coding = new StringBuilder();
@@ -48,17 +48,17 @@ public class InputPresenter<V extends IInputContract.View> extends BasePresenter
         LogUtils.i("find word");
         if (!StringUtils.isEmpty(coding)) {
             List<Word> words = mWordDAO.getWords(coding);
-            getView().setCandidateWord(words);
+            getView().setWordInView(words);
         } else {
             LogUtils.e("Coding is null");
         }
     }
 
     @Override
-    public void findContacted(String word) {
+    public void findContactedWord(String word) {
         if (!StringUtils.isEmpty(word)) {
             List<Word> words = mWordDAO.getContacted(word);
-            getView().setCandidateWord(words);
+            getView().setWordInView(words);
             LogUtils.i("set contacted word，size = " + words.size());
         }
     }
@@ -76,12 +76,12 @@ public class InputPresenter<V extends IInputContract.View> extends BasePresenter
     public void changeNumKeyboard() {
         LogUtils.i("change num keyboard ");
         List<Word> words = isNumKeyboard ? new ArrayList<Word>() : mWordDAO.getNum();
-        getView().setCandidateWord(words);
+        getView().setWordInView(words);
         isNumKeyboard = !isNumKeyboard;
     }
 
     @Override
-    public void refreshCurrentUser() {
+    public void resetCurrentUser() {
         mWordDAO.attachUser(mUserDAO.getCurrentUser());
     }
 
@@ -107,7 +107,7 @@ public class InputPresenter<V extends IInputContract.View> extends BasePresenter
     @Override
     public void clearStoker() {
         coding.delete(0, coding.length());
-        getView().setCandidateWord(new ArrayList<Word>());
+        getView().setWordInView(new ArrayList<Word>());
         LogUtils.d("clear stoker");
     }
 

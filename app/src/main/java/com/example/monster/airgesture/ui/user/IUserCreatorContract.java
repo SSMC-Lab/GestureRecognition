@@ -23,7 +23,7 @@ public interface IUserCreatorContract {
          * 创建新的User，并根据其操作习惯生成新的单词表
          * @param userName
          */
-        void createUserByHabit(String userName);
+        void createUser(String userName);
     }
 
     interface View extends IBaseContract.View{
@@ -31,7 +31,7 @@ public interface IUserCreatorContract {
          * 刷新页面
          * @param choiceLetters 除去上一轮选择后的字母后剩下的字母集
          */
-        void refreshLetters(List<String> choiceLetters);
+        void refreshLettersAfterSelected(List<String> choiceLetters);
 
         /**
          * 创建新用户成功时的回调

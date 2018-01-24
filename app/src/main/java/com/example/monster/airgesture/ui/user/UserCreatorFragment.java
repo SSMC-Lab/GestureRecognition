@@ -57,14 +57,14 @@ public class UserCreatorFragment extends BaseFragment<IUserCreatorContract.Prese
     private LetterAdapter.OnItemClickListener onItemClickListener = new LetterAdapter.OnItemClickListener() {
         @Override
         public void onClickItem(String letter, LetterAdapter.ViewHolder holder) {
-            if (holder.isSelected) {
+            if (holder.isSelected()) {
                 mSelectedLetter.remove(letter);
                 holder.textView.setTextColor(ContextCompat.getColor(getActivity(), R.color.black));
             } else {
                 mSelectedLetter.add(letter);
                 holder.textView.setTextColor(ContextCompat.getColor(getActivity(), R.color.blue));
             }
-            holder.isSelected = !holder.isSelected;
+            holder.setSelected(!holder.isSelected());
         }
 
         @Override
@@ -91,7 +91,7 @@ public class UserCreatorFragment extends BaseFragment<IUserCreatorContract.Prese
     protected void intiViews() {
         recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 7));
         btNextStep.setText(R.string.user_creator_next);
-        refreshLetters(mChoicedLetter);
+        refreshLettersAfterSelected(mChoicedLetter);
     }
 
     @Override
@@ -113,7 +113,7 @@ public class UserCreatorFragment extends BaseFragment<IUserCreatorContract.Prese
     }
 
     @Override
-    public void refreshLetters(List<String> choiceLetters) {
+    public void refreshLettersAfterSelected(List<String> choiceLetters) {
         if (mAdapter == null) {
             mAdapter = new LetterAdapter(choiceLetters, onItemClickListener);
             recyclerView.setAdapter(mAdapter);
@@ -128,12 +128,12 @@ public class UserCreatorFragment extends BaseFragment<IUserCreatorContract.Prese
         Task task = taskQueue.poll();
         if (task != null) {
             if (task.type == Task.TASK_TYPE.CREATE_USER) {
-                String name = userName.getText().toString();
-                if (!StringUtils.isEmpty(name)) {
+                String username = userName.getText().toString();
+                if (!StringUtils.isEmpty(username)) {
                     //右弧对应的字母的此时还没提交
                     //choiceLetter中剩下的字母都是右弧的
                     getPresenter().saveLetterMapping(mChoicedLetter, Conditions.gestureYouHuCode);
-                    getPresenter().createUserByHabit(name);
+                    getPresenter().createUser(username);
                     mListener.onFragmentInteraction(
                             Uri.parse(Conditions.URI_INTERACTION_SUBMIT));
                 } else {
@@ -147,7 +147,7 @@ public class UserCreatorFragment extends BaseFragment<IUserCreatorContract.Prese
             } else if (task.type == Task.TASK_TYPE.NEXT_LETTER_SELECTED) {
                 getPresenter().saveLetterMapping(mSelectedLetter, task.gestureCode);
                 mChoicedLetter.removeAll(mSelectedLetter);
-                refreshLetters(mChoicedLetter);
+                refreshLettersAfterSelected(mChoicedLetter);
             }
         }
         mSelectedLetter.clear();

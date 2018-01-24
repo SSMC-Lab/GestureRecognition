@@ -1,9 +1,7 @@
 package com.example.monster.airgesture.ui.user;
 
-import android.app.Notification;
 import android.content.Context;
 import android.net.Uri;
-import android.support.v4.app.NotificationCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 

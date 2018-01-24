@@ -34,6 +34,7 @@ public class UserActivity extends BaseActivity<IUserListContract.Presenter>
 
     @Override
     protected IUserListContract.Presenter setPresenter() {
+        ///这里不该传一个Presenter实例，待改进
         return PresenterFactory.getUserListPresenter();
     }
 
@@ -79,6 +80,7 @@ public class UserActivity extends BaseActivity<IUserListContract.Presenter>
 
     @Override
     public void onFragmentInteraction(Uri uri) {
+        //回调从fragment传来的数据
         if (uri.toString().equals(Conditions.URI_INTERACTION_SUBMIT) ) {
             FragmentTransaction transaction = fragmentManager.beginTransaction();
             transaction.replace(R.id.fragment_user, UserListFragment.newInstance());

@@ -18,7 +18,7 @@ public interface IInputContract {
          * 根据单词查找相关的关联词
          * @param word
          */
-        void findContacted(String word);
+        void findContactedWord(String word);
 
         /**
          * 传递在键盘和单词输入状态的切换
@@ -28,7 +28,7 @@ public interface IInputContract {
         /**
          * 刷新当前选择的用户以提供不同的序列查找表
          */
-        void refreshCurrentUser();
+        void resetCurrentUser();
 
         /**
          * 开启手势识别功能
@@ -64,6 +64,6 @@ public interface IInputContract {
          * 将查找到的单词显示在view层
          * @param candidateWord 从数据库查到的单词集
          */
-        void setCandidateWord(List<Word> candidateWord);
+        void setWordInView(List<Word> candidateWord);
     }
 }

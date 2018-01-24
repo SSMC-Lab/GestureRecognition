@@ -43,7 +43,7 @@ public class LetterAdapter extends BaseAdapter<String, LetterAdapter.ViewHolder>
 
     static class ViewHolder extends RecyclerView.ViewHolder {
 
-        boolean isSelected = false;
+        private boolean isSelected = false;//表明该holder是否被选中
 
         @BindView(R.id.item_letter_layout)
         LinearLayout linearLayout;
@@ -55,6 +55,14 @@ public class LetterAdapter extends BaseAdapter<String, LetterAdapter.ViewHolder>
             ButterKnife.bind(this,itemView);
             linearLayout.setClickable(true);
             linearLayout.setLongClickable(true);
+        }
+
+        public boolean isSelected() {
+            return isSelected;
+        }
+
+        public void setSelected(boolean isSelected){
+            this.isSelected = isSelected;
         }
     }
 

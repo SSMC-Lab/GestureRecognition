@@ -40,7 +40,7 @@ public class UserCreatorPresenter<V extends IUserCreatorContract.View> extends B
     }
 
     @Override
-    public void createUserByHabit(String userName) {
+    public void createUser(String userName) {
         User user = new User(userName, letterMapping);
         userDAO.createDictionaryByHabit(user, new IUserDAO.OnCreateListener() {
             @Override

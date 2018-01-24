@@ -103,7 +103,7 @@ public class InputActivity extends BaseActivity<IInputContract.Presenter> implem
     @Override
     protected void onResume() {
         super.onResume();
-        getPresenter().refreshCurrentUser();
+        getPresenter().resetCurrentUser();
     }
 
     @Override
@@ -177,7 +177,7 @@ public class InputActivity extends BaseActivity<IInputContract.Presenter> implem
         if (!isNumKeyboard) {
             clearStroke();
             clearCandidateWord();
-            getPresenter().findContacted(word);
+            getPresenter().findContactedWord(word);
             Log.i(TAG, "find contacted");
         }
     }
@@ -228,7 +228,7 @@ public class InputActivity extends BaseActivity<IInputContract.Presenter> implem
      * 设置候选词
      */
     @Override
-    public void setCandidateWord(List<Word> words) {
+    public void setWordInView(List<Word> words) {
         Log.i(TAG, "set candidate word");
         candidateWordAdapter.notifyDiff(words);
         startTimerTask();

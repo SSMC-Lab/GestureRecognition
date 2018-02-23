@@ -58,12 +58,12 @@ public interface IInputContract {
          * 手势识别的结果是一个int型{@link com.example.monster.airgesture.Conditions#STOKES}
          * @param stokes
          */
-        void setStroke(int stokes);
+        void enterStroke(int stokes);
 
         /**
          * 将查找到的单词显示在view层
          * @param candidateWord 从数据库查到的单词集
          */
-        void setWordInView(List<Word> candidateWord);
+        void showWordInWordArea(List<Word> candidateWord);
     }
 }

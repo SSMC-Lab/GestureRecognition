@@ -1,7 +1,9 @@
 package com.example.monster.airgesture.data;
 
-import com.example.monster.airgesture.data.database.UserDAO;
-import com.example.monster.airgesture.data.database.WordDAO;
+import com.example.monster.airgesture.data.user.IUserDataSource;
+import com.example.monster.airgesture.data.word.IWordDataSource;
+import com.example.monster.airgesture.data.user.UserRepository;
+import com.example.monster.airgesture.data.word.WordRepository;
 
 /**
  * 静态工厂
@@ -9,11 +11,11 @@ import com.example.monster.airgesture.data.database.WordDAO;
  */
 
 public class DataFactory {
-    public static IWordDAO getWordDAO(){
-        return new WordDAO();
+    public static IWordDataSource getWordDAO(){
+        return WordRepository.getInstance();
     }
 
-    public static IUserDAO getUserDAO(){
-        return new UserDAO();
+    public static IUserDataSource getUserDAO(){
+        return UserRepository.getInstance();
     }
 }

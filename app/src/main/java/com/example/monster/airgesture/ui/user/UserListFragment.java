@@ -47,7 +47,7 @@ public class UserListFragment extends BaseFragment<IUserListContract.Presenter> 
 
     @Override
     protected IUserListContract.Presenter setPresenter() {
-        return PresenterFactory.getUserListPresenter();
+        return new UserListPresenter();
     }
 
     @Override

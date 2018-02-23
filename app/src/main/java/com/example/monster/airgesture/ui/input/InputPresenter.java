@@ -5,9 +5,8 @@ import android.os.Message;
 
 import com.example.monster.airgesture.Conditions;
 import com.example.monster.airgesture.GlobalConfig;
-import com.example.monster.airgesture.data.DataFactory;
-import com.example.monster.airgesture.data.IUserDAO;
-import com.example.monster.airgesture.data.IWordDAO;
+import com.example.monster.airgesture.data.DataProvider;
+import com.example.monster.airgesture.data.IDataSource;
 import com.example.monster.airgesture.data.bean.Word;
 import com.example.monster.airgesture.phase.RecognitionSwitch;
 import com.example.monster.airgesture.ui.base.BasePresenter;
@@ -28,15 +27,15 @@ public class InputPresenter<V extends IInputContract.View> extends BasePresenter
         implements IInputContract.Presenter<V>, HandlerUtils.OnReceiveMessageListener {
 
     private boolean isNumKeyboard = false;
+    private IDataSource dataRepository;
     private StringBuilder coding;
-    private IWordDAO mWordDAO;
-    private IUserDAO mUserDAO;
+    /*private IWordDataSource mWordDAO;
+    private IUserDataSource mUserDAO;*/
     private RecognitionSwitch recognitionSwitch;
     private Handler mHandler; //handler会回传phase模块解析出的手势，并递交给presenter内部处理
 
     public InputPresenter() {
-        mWordDAO = DataFactory.getWordDAO();
-        mUserDAO = DataFactory.getUserDAO();
+        dataRepository = DataProvider.provideDataRepository();
         resetCurrentUser();
         recognitionSwitch = RecognitionSwitch.getInstance();
         mHandler = new HandlerUtils.HandlerHolder(this);
@@ -45,10 +44,9 @@ public class InputPresenter<V extends IInputContract.View> extends BasePresenter
     }
 
     private void findWord(String coding) {
-        LogUtils.i("find word");
         if (!StringUtils.isEmpty(coding)) {
-            List<Word> words = mWordDAO.getWords(coding);
-            getView().setWordInView(words);
+            List<Word> words = dataRepository.findWords(coding);
+            getView().showWordInWordArea(words);
         } else {
             LogUtils.e("Coding is null");
         }
@@ -57,32 +55,31 @@ public class InputPresenter<V extends IInputContract.View> extends BasePresenter
     @Override
     public void findContactedWord(String word) {
         if (!StringUtils.isEmpty(word)) {
-            List<Word> words = mWordDAO.getContacted(word);
-            getView().setWordInView(words);
-            LogUtils.i("set contacted word，size = " + words.size());
+            List<Word> words = dataRepository.findContactedWord(word);
+            getView().showWordInWordArea(words);
+            LogUtils.d("set contacted word，size = " + words.size());
         }
     }
 
     private void receiveWord(int type) {
         if (!isNumKeyboard) {
-            getView().setStroke(type);
+            getView().enterStroke(type);
             coding.append(type);
             findWord(coding.toString());
-            LogUtils.i("receive gesture : " + type);
+            LogUtils.d("receive gesture : " + type);
         }
     }
 
     @Override
     public void changeNumKeyboard() {
-        LogUtils.i("change num keyboard ");
-        List<Word> words = isNumKeyboard ? new ArrayList<Word>() : mWordDAO.getNum();
-        getView().setWordInView(words);
+        List<Word> words = isNumKeyboard ? new ArrayList<Word>() : dataRepository.getNum();
+        getView().showWordInWordArea(words);
         isNumKeyboard = !isNumKeyboard;
     }
 
     @Override
     public void resetCurrentUser() {
-        mWordDAO.attachUser(mUserDAO.getCurrentUser());
+        dataRepository.resetCurrentUser();
     }
 
     private void initConfig() {
@@ -107,8 +104,7 @@ public class InputPresenter<V extends IInputContract.View> extends BasePresenter
     @Override
     public void clearStoker() {
         coding.delete(0, coding.length());
-        getView().setWordInView(new ArrayList<Word>());
-        LogUtils.d("clear stoker");
+        getView().showWordInWordArea(new ArrayList<Word>());
     }
 
     @Override

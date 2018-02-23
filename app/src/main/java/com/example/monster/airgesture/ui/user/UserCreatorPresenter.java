@@ -1,7 +1,7 @@
 package com.example.monster.airgesture.ui.user;
 
-import com.example.monster.airgesture.data.DataFactory;
-import com.example.monster.airgesture.data.IUserDAO;
+import com.example.monster.airgesture.data.DataProvider;
+import com.example.monster.airgesture.data.IDataSource;
 import com.example.monster.airgesture.data.bean.User;
 import com.example.monster.airgesture.ui.base.BasePresenter;
 import com.example.monster.airgesture.utils.AlphabetUtils;
@@ -15,15 +15,15 @@ import java.util.List;
  * Created by Welkinshadow on 2018/1/21.
  */
 
-public class UserCreatorPresenter<V extends IUserCreatorContract.View> extends BasePresenter<V>
-        implements IUserCreatorContract.Presenter<V> {
+public class UserCreatorPresenter extends BasePresenter<IUserCreatorContract.View>
+        implements IUserCreatorContract.Presenter<IUserCreatorContract.View> {
 
-    private IUserDAO userDAO;
+    private IDataSource dataRepository;
     private List<Integer> letterMapping;
 
     public UserCreatorPresenter() {
-        userDAO = DataFactory.getUserDAO();
-        letterMapping = userDAO.getDefaultUser().getLetterMapping();//初始值为默认构造序列
+        dataRepository = DataProvider.provideDataRepository();
+        letterMapping = dataRepository.getDefaultUser().getLetterMapping();//初始值为默认构造序列
     }
 
     @Override
@@ -42,7 +42,7 @@ public class UserCreatorPresenter<V extends IUserCreatorContract.View> extends B
     @Override
     public void createUser(String userName) {
         User user = new User(userName, letterMapping);
-        userDAO.createDictionaryByHabit(user, new IUserDAO.OnCreateListener() {
+        dataRepository.createDictionaryByHabit(user, new IDataSource.OnUserCreateListener() {
             @Override
             public void OnStart() {
                 getView().showLoading();

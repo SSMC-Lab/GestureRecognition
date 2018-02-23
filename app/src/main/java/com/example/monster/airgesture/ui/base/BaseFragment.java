@@ -32,8 +32,7 @@ public abstract class BaseFragment<T extends IBaseContract.Presenter>
         return mPresenter;
     }
 
-    protected abstract @LayoutRes
-    int setLayout();
+    protected abstract @LayoutRes int setLayout();
 
     protected abstract void intiViews();
 

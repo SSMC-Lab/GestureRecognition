@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -33,30 +34,24 @@ public class UserActivity extends BaseActivity<IUserListContract.Presenter>
     private FragmentManager fragmentManager;
 
     @Override
-    protected IUserListContract.Presenter setPresenter() {
-        ///这里不该传一个Presenter实例，待改进
-        return PresenterFactory.getUserListPresenter();
-    }
-
-    @Override
-    protected int setLayout() {
+    protected int setContentLayoutId() {
         return R.layout.activity_user;
     }
 
     @Override
-    protected int getMenuId() {
-        return R.menu.menu_main;
+    protected IUserListContract.Presenter setPresenter() {
+        /*待改进
+        该Activity不应该指定Presenter，而是作为Presenter的控制类*/
+        return new UserListPresenter();
     }
 
     @Override
-    protected void initViews() {
-        ButterKnife.bind(this);
-    }
+    protected void initViews() {}
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setSupportActionBar(toolbar);
+//        setSupportActionBar(toolbar);
         fragmentManager = getFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.replace(R.id.fragment_user, UserListFragment.newInstance());
@@ -90,6 +85,12 @@ public class UserActivity extends BaseActivity<IUserListContract.Presenter>
             startActivity(intent);
             finish();
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
     }
 
     @Override

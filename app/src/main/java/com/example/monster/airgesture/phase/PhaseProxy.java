@@ -28,7 +28,6 @@ import java.io.InputStreamReader;
 
 public class PhaseProxy {
 
-
     //Speed adjust
     private static float SPEED_ADJ = (float) 1.5;
     public static PhaseProcessI ppi;

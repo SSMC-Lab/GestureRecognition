@@ -13,6 +13,7 @@ import com.example.monster.airgesture.ui.user.UserListPresenter;
  */
 
 public class PresenterFactory {
+
     public static <V extends IInputContract.View> IInputContract.Presenter<V> getInputPresenter() {
         return new InputPresenter<V>();
     }

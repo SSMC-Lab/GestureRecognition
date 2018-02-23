@@ -11,6 +11,11 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.Toast;
 
+import com.example.monster.airgesture.ui.PresenterFactory;
+import com.example.monster.airgesture.ui.input.InputActivity;
+
+import butterknife.ButterKnife;
+
 /**
  * Created by WelkinShadow on 2017/10/26.
  */
@@ -22,11 +27,10 @@ public abstract class BaseActivity<T extends IBaseContract.Presenter>
     private ProgressDialog mProgressDialog = null;
     private T presenter;
 
+    protected abstract @LayoutRes
+    int setContentLayoutId();
+
     protected abstract T setPresenter();
-
-    protected abstract @LayoutRes int setLayout();
-
-    protected abstract @MenuRes int getMenuId();
 
     protected T getPresenter() {
         return presenter;
@@ -34,14 +38,15 @@ public abstract class BaseActivity<T extends IBaseContract.Presenter>
 
     protected abstract void initViews();
 
-    protected <T extends View> T findView(@IdRes int id) {
-        return (T) findViewById(id);
+    protected <V extends View> V findView(@IdRes int id) {
+        return (V) findViewById(id);
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(setLayout());
+        setContentView(setContentLayoutId());
+        ButterKnife.bind(this);
         presenter = setPresenter();
         presenter.onAttachView(this);
         initViews();
@@ -72,15 +77,6 @@ public abstract class BaseActivity<T extends IBaseContract.Presenter>
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        if (getMenuId() != 0) {
-            getMenuInflater().inflate(getMenuId(), menu);
-            return true;
-        }
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
     public void showMessage(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
@@ -90,6 +86,4 @@ public abstract class BaseActivity<T extends IBaseContract.Presenter>
         presenter.onDetachView();
         super.onDestroy();
     }
-
-
 }

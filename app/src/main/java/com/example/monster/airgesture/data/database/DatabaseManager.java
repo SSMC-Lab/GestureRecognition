@@ -14,6 +14,11 @@ import java.util.Map;
 
 public class DatabaseManager {
 
+    public static final String DB_NAME_DICTIONARY = "dictionary.db";
+    public static final String DB_NAME_CONTACTED = "2gram.db";
+
+    private static final String DB_PATH = "/data/data/com.example.monster.airgesture/database";
+
     private static DatabaseManager mInstance;
 
     private Map<String, SQLiteDatabase> databases = new HashMap<>();
@@ -26,9 +31,6 @@ public class DatabaseManager {
         }
     }
 
-    /**
-     * 返回单例
-     */
     public static DatabaseManager getmInstance() {
         if (mInstance == null) {
             mInstance = new DatabaseManager();
@@ -40,14 +42,14 @@ public class DatabaseManager {
      * 创建数据库
      */
     private void createDataBase() throws IOException {
-        if (!checkDatabase(DatabaseConfig.DB_NAME_DICTIONARY)) {
-            copyDatabase(DatabaseConfig.DB_NAME_DICTIONARY);
+        if (!checkDatabase(DB_NAME_DICTIONARY)) {
+            copyDatabase(DB_NAME_DICTIONARY);
         }
-        if (!checkDatabase(DatabaseConfig.DB_NAME_CONTACTED)) {
-            copyDatabase(DatabaseConfig.DB_NAME_CONTACTED);
+        if (!checkDatabase(DB_NAME_CONTACTED)) {
+            copyDatabase(DB_NAME_CONTACTED);
         }
-        databases.put(DatabaseConfig.DB_NAME_DICTIONARY, SQLiteDatabase.openOrCreateDatabase(DatabaseConfig.DB_PATH + DatabaseConfig.DB_NAME_DICTIONARY, null));
-        databases.put(DatabaseConfig.DB_NAME_CONTACTED, SQLiteDatabase.openOrCreateDatabase(DatabaseConfig.DB_PATH + DatabaseConfig.DB_NAME_CONTACTED, null));
+        databases.put(DB_NAME_DICTIONARY, SQLiteDatabase.openOrCreateDatabase(DB_PATH + DB_NAME_DICTIONARY, null));
+        databases.put(DB_NAME_CONTACTED, SQLiteDatabase.openOrCreateDatabase(DB_PATH + DB_NAME_CONTACTED, null));
     }
 
     /**
@@ -55,7 +57,7 @@ public class DatabaseManager {
      * @param dbName 数据库在database目录下的文件名
      */
     private boolean checkDatabase(String dbName) {
-        File dbFile = new File(DatabaseConfig.DB_PATH + dbName);
+        File dbFile = new File(DB_PATH + dbName);
         return dbFile.exists();
     }
 
@@ -64,7 +66,7 @@ public class DatabaseManager {
      * @param dbName 数据库在assets目录下的文件名
      */
     private void copyDatabase(String dbName) throws IOException {
-        FileCopyUtils.copyInAssets(dbName,DatabaseConfig.DB_PATH + dbName);
+        FileCopyUtils.copyInAssets(dbName,DB_PATH + dbName);
     }
 
     /**

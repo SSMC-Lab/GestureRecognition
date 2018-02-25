@@ -13,13 +13,11 @@ import android.view.View;
 
 import com.example.monster.airgesture.Conditions;
 import com.example.monster.airgesture.R;
-import com.example.monster.airgesture.ui.PresenterFactory;
 import com.example.monster.airgesture.ui.base.BaseActivity;
 import com.example.monster.airgesture.ui.input.InputActivity;
 import com.example.monster.airgesture.ui.test.MainActivity;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class UserActivity extends BaseActivity<IUserListContract.Presenter>

@@ -13,7 +13,6 @@ import android.widget.TextView;
 
 import com.example.monster.airgesture.Conditions;
 import com.example.monster.airgesture.R;
-import com.example.monster.airgesture.ui.PresenterFactory;
 import com.example.monster.airgesture.ui.base.BaseFragment;
 import com.example.monster.airgesture.utils.StringUtils;
 

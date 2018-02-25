@@ -29,8 +29,6 @@ public class InputPresenter<V extends IInputContract.View> extends BasePresenter
     private boolean isNumKeyboard = false;
     private IDataSource dataRepository;
     private StringBuilder coding;
-    /*private IWordDataSource mWordDAO;
-    private IUserDataSource mUserDAO;*/
     private RecognitionSwitch recognitionSwitch;
     private Handler mHandler; //handler会回传phase模块解析出的手势，并递交给presenter内部处理
 
@@ -40,7 +38,12 @@ public class InputPresenter<V extends IInputContract.View> extends BasePresenter
         recognitionSwitch = RecognitionSwitch.getInstance();
         mHandler = new HandlerUtils.HandlerHolder(this);
         coding = new StringBuilder();
-        initConfig();
+        copyTemplate("heng2.txt");
+        copyTemplate("shu2.txt");
+        copyTemplate("youhu2.txt");
+        copyTemplate("youxie2.txt");
+        copyTemplate("zuohu2.txt");
+        copyTemplate("zuoxie2.txt");
     }
 
     private void findWord(String coding) {
@@ -80,15 +83,6 @@ public class InputPresenter<V extends IInputContract.View> extends BasePresenter
     @Override
     public void resetCurrentUser() {
         dataRepository.resetCurrentUser();
-    }
-
-    private void initConfig() {
-        copyTemplate("heng2.txt");
-        copyTemplate("shu2.txt");
-        copyTemplate("youhu2.txt");
-        copyTemplate("youxie2.txt");
-        copyTemplate("zuohu2.txt");
-        copyTemplate("zuoxie2.txt");
     }
 
     @Override

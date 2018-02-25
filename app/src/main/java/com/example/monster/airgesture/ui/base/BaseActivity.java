@@ -4,15 +4,10 @@ import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.LayoutRes;
-import android.support.annotation.MenuRes;
 import android.support.annotation.StringRes;
 import android.support.v7.app.AppCompatActivity;
-import android.view.Menu;
 import android.view.View;
 import android.widget.Toast;
-
-import com.example.monster.airgesture.ui.PresenterFactory;
-import com.example.monster.airgesture.ui.input.InputActivity;
 
 import butterknife.ButterKnife;
 

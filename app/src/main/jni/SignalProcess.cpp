@@ -119,9 +119,9 @@ int  SignalProcess::doProcessV2(float *pSignal, int iLen, float *costArr, int le
     return -1;
 }
 
-int    SignalProcess::doProcessV3(short *pSignal, int iLen,  string sResultPath, string fileName)
+int  SignalProcess::doProcessV3(short *pSignal, int iLen,  string sResultPath, string fileName)
 {
-       //struct timeval start, end;
+        //struct timeval start, end;
         //gettimeofday(&start, NULL);
 		//累积数据
 	    Spectrogram stSpectrogram;
@@ -196,11 +196,11 @@ int    SignalProcess::doProcessV3(short *pSignal, int iLen,  string sResultPath,
 
 			//opencv中值滤波 twice
 			//Mat  medianfilterDesM(4097, 59, CV_32F); twice
-			Mat  medianfilterDesM(iDstColumn, iDstRow, CV_32F);
+			Mat medianfilterDesM(iDstColumn, iDstRow, CV_32F);
 			medianBlur(medianfilterSrcM, medianfilterDesM, 3);
 			sResultFile = sResultPath + fileName + "medianfilterDesM_" + sIndex + ".txt";
 			//GammaUtil::writeDataToFile(sResultFile, medianfilterDesM);
-			Mat  medianfilterDesM2(iDstColumn, iDstRow, CV_32F);
+			Mat medianfilterDesM2(iDstColumn, iDstRow, CV_32F);
 			medianBlur(medianfilterDesM, medianfilterDesM2, 3);
 
 			//构造repmat
@@ -268,11 +268,11 @@ int    SignalProcess::doProcessV3(short *pSignal, int iLen,  string sResultPath,
 			//sResultFile = sResultPath + fileName + "bwareImfill_vs_" + sIndex + ".txt";
 			//GammaUtil::writeUcharDataToFile(sResultFile, binMUchar);
 
-            if (segmark==1)
+           if (segmark==1)
            {
-                        endSignal=clock();
-                        time[0]+=(double)(endSignal-start)*1000/CLOCKS_PER_SEC;
-                       }
+           endSignal=clock();
+           time[0]+=(double)(endSignal-start)*1000/CLOCKS_PER_SEC;
+           }
 
 
 
@@ -315,17 +315,17 @@ int    SignalProcess::doProcessV3(short *pSignal, int iLen,  string sResultPath,
 			stSegInfo.iStart = iStart;
 			stSegInfo.iEnd = iEnd;
 
-if(segmark==1)
-			{
-			endDoppler=clock();
-            time[1]+=(double)(endDoppler-endSignal)*1000/CLOCKS_PER_SEC;}
-    if (stSegInfo.iStart >0)
-    {segmark=1;}
+            if(segmark==1)
+                        {
+                        endDoppler=clock();
+                        time[1]+=(double)(endDoppler-endSignal)*1000/CLOCKS_PER_SEC;}
+                if (stSegInfo.iStart >0)
+                {segmark=1;}
 
-if (stSegInfo.iEnd >0)
-{ vt.push_back(time[0]);
-vt.push_back(time[1]);
-segmark=0;}
+            if (stSegInfo.iEnd >0)
+            { vt.push_back(time[0]);
+            vt.push_back(time[1]);
+            segmark=0;}
 
 
 

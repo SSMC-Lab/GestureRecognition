@@ -33,8 +33,8 @@ public class WaveFileUtils {
     private final static String PLAY_RAW_AUDIO_FILENAME = "PlayRawAudio";
     private final static String PLAY_WAV_AUDIO_FILENAME = "PlayWavAudio";
     private final static String RAW_FILEFORMAT = ".pcm";
-    private final static String WAV_FILEFORMAT  = ".wav";
-    private final static String TXT_FILEFORMAT  = ".txt";
+    private final static String WAV_FILEFORMAT = ".wav";
+    private final static String TXT_FILEFORMAT = ".txt";
 
     //录制的AudioName裸音频数据文件 ，麦克风
     private String RecordRawAudioName = getFilePath(Record_RAW_AUDIO_FILENAME, RAW_FILEFORMAT);
@@ -42,16 +42,16 @@ public class WaveFileUtils {
     private String RecordWavAudioName = getFilePath(Record_WAV_AUDIO_FILENAME, WAV_FILEFORMAT);
 
     //播放的PlayRawAudioName裸音频数据文件
-    private String PlayRawAudioName = getFilePath(PLAY_RAW_AUDIO_FILENAME,RAW_FILEFORMAT);
+    private String PlayRawAudioName = getFilePath(PLAY_RAW_AUDIO_FILENAME, RAW_FILEFORMAT);
     //播放的PlayWavAudioName可播放的音频文件
     private String PlayWavAudioName = getFilePath(PLAY_WAV_AUDIO_FILENAME, WAV_FILEFORMAT);
 
-    private final static String  AndroidPlayFileName = "/storage/emulated/0/data/files/phase/play.wav";
-    private final static String  AndroidRecordFileName = "/storage/emulated/0/data/files/phase/record";
-    private final static String  recordFileName = "/storage/emulated/0/data/files/phase/rec_";
-    public  final static String  sAbsolutePath = Environment.getExternalStorageDirectory().getAbsolutePath()+ "/data/files/phase/";  //存放数据的绝对路径
-    private final static String  RecordTxtFileName = "/storage/emulated/0/data/files/phase/RecTxt_";
-    public  final static  String  shendaTxtFileName = "/storage/emulated/0/data/files/phase/rec2017-07-09_19h04m37.846s_matlab.txt.txt";
+    private final static String AndroidPlayFileName = "/storage/emulated/0/data/files/phase/play.wav";
+    private final static String AndroidRecordFileName = "/storage/emulated/0/data/files/phase/record";
+    private final static String recordFileName = "/storage/emulated/0/data/files/phase/rec_";
+    public final static String sAbsolutePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/data/files/phase/";  //存放数据的绝对路径
+    private final static String RecordTxtFileName = "/storage/emulated/0/data/files/phase/RecTxt_";
+    public final static String shendaTxtFileName = "/storage/emulated/0/data/files/phase/rec2017-07-09_19h04m37.846s_matlab.txt.txt";
     /*public final static String  shendaTxtFileName = "/storage/emulated/0/data/files/phase/2017-07-08_19h-02m-28s._Watch4.txt";
     public final static String  shendaTxtFileName = "/storage/emulated/0/data/files/phase/2017-07-08_19h-02m-30s._Watch5.txt";
     public final static String  shendaTxtFileName = "/storage/emulated/0/data/files/phase/2017-07-08_19h-02m-33s._Watch6.txt";
@@ -73,7 +73,7 @@ public class WaveFileUtils {
 
     private static String[] vFreqBaseIQFile;
     private static BufferedWriter[] vBufferedWriter;
-    public static File[] vIQTxtFile ;
+    public static File[] vIQTxtFile;
     public static DataOutputStream[] vIQDos;
 
     //音频输入-麦克风
@@ -84,48 +84,51 @@ public class WaveFileUtils {
     //public final static int AUDIO_SAMPLE_RATE = 44100;  //44.1KHz,普遍使用的频率
 
     // 缓冲区字节大小
-   // private int bufferSizeInBytes = 8192;
+    // private int bufferSizeInBytes = 8192;
 
-    public String getAndroidRecordFileName(){
-        SimpleDateFormat    sDateFormat    =   new SimpleDateFormat("yyyyMMddhhmmss");
-        String    sDate    =    sDateFormat.format(new    java.util.Date());
-        String sFile = AndroidRecordFileName+sDate+WAV_FILEFORMAT;
+    public String getAndroidRecordFileName() {
+        SimpleDateFormat sDateFormat = new SimpleDateFormat("yyyyMMddhhmmss");
+        String sDate = sDateFormat.format(new java.util.Date());
+        String sFile = AndroidRecordFileName + sDate + WAV_FILEFORMAT;
         return sFile;
     }
 
-    public String getRecordTxtFileName(){
-        SimpleDateFormat    sDateFormat    =   new SimpleDateFormat("yyyyMMddhhmmss");
-        String    sDate    =    sDateFormat.format(new    java.util.Date());
-        String sFile = RecordTxtFileName+ "_"+sDate+TXT_FILEFORMAT;
-        return sFile;
-    }
-    public String getRecordFileName(){
-        SimpleDateFormat    sDateFormat    =   new SimpleDateFormat("yyyyMMddhhmmss");
-        String    sDate    =    sDateFormat.format(new    java.util.Date());
-        String sFile = recordFileName+sDate+TXT_FILEFORMAT;
+    public String getRecordTxtFileName() {
+        SimpleDateFormat sDateFormat = new SimpleDateFormat("yyyyMMddhhmmss");
+        String sDate = sDateFormat.format(new java.util.Date());
+        String sFile = RecordTxtFileName + "_" + sDate + TXT_FILEFORMAT;
         return sFile;
     }
 
+    public String getRecordFileName() {
+        SimpleDateFormat sDateFormat = new SimpleDateFormat("yyyyMMddhhmmss");
+        String sDate = sDateFormat.format(new java.util.Date());
+        String sFile = recordFileName + sDate + TXT_FILEFORMAT;
+        return sFile;
+    }
 
-    public String getAndroidPlayFileName(){return AndroidPlayFileName;}
 
-    public String getRecordRawAudioName(){
+    public String getAndroidPlayFileName() {
+        return AndroidPlayFileName;
+    }
+
+    public String getRecordRawAudioName() {
         return RecordRawAudioName;
     }
 
-    public String getRecordWavAudioName(){
+    public String getRecordWavAudioName() {
         return RecordWavAudioName;
     }
 
-    public String getPlayRawAudioName(){
+    public String getPlayRawAudioName() {
         return PlayRawAudioName;
     }
 
-    public String getPlayWavAudioName(){
+    public String getPlayWavAudioName() {
         return PlayWavAudioName;
     }
 
-    public FileOutputStream  createFileOutputStream(String sFileAbsolutePath) {
+    public FileOutputStream createFileOutputStream(String sFileAbsolutePath) {
         FileOutputStream fos = null;
         try {
             File file = new File(sFileAbsolutePath);//stWaveFileUtils.getRecordRawAudioName());
@@ -140,12 +143,12 @@ public class WaveFileUtils {
     }
 
 
-    public void  destroy() {
+    public void destroy() {
 
     }
 
 
-    public static File  createFile(String sFileName){
+    public static File createFile(String sFileName) {
         File file = new File(sFileName);
         if (!file.exists() != false) {
             try {
@@ -158,41 +161,41 @@ public class WaveFileUtils {
         return file;
     }
 
-    public void writeToTxtFileFast(File fTxtFile, DataOutputStream stDos, byte[] recData){
+    public void writeToTxtFileFast(File fTxtFile, DataOutputStream stDos, byte[] recData) {
 
-            int iReadSize = recData.length;
+        int iReadSize = recData.length;
 //            Log.i("WaveFileUtils ", "|before writetoFile iReadSize:" + iReadSize);
-            if (iReadSize > 0 && recData != null) {
+        if (iReadSize > 0 && recData != null) {
 
-                if (stDos == null) {
+            if (stDos == null) {
 //                    Log.i("record", "resdos is null");
-                    if (fTxtFile != null) {
-                        try {
-                            stDos = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(fTxtFile)));
-                        } catch (FileNotFoundException e) {
-                            e.printStackTrace();
-                        }
+                if (fTxtFile != null) {
+                    try {
+                        stDos = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(fTxtFile)));
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
                     }
                 }
+            }
 
-                //循环将buffer中的音频数据写入到OutputStream中
-                if (stDos != null) {
-                    for (int i = 0; i < iReadSize; i=i+2) {
-                        try {
-                            short iData = (short) ((recData[i] & 0xff) | (recData[i+ 1] & 0xff) << 8);
-                            String sData = String.valueOf(iData);
-                            stDos.writeBytes(sData);
-                            stDos.writeByte('\n');
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
+            //循环将buffer中的音频数据写入到OutputStream中
+            if (stDos != null) {
+                for (int i = 0; i < iReadSize; i = i + 2) {
+                    try {
+                        short iData = (short) ((recData[i] & 0xff) | (recData[i + 1] & 0xff) << 8);
+                        String sData = String.valueOf(iData);
+                        stDos.writeBytes(sData);
+                        stDos.writeByte('\n');
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
                 }
             }
         }
+    }
 
 
-    public void writeToTxtFileFast(File fTxtFile, DataOutputStream stDos, short[] recData){
+    public void writeToTxtFileFast(File fTxtFile, DataOutputStream stDos, short[] recData) {
 
         int iReadSize = recData.length;
 //        Log.i("WaveFileUtils ", "|before writetoFile iReadSize:" + iReadSize);
@@ -224,42 +227,41 @@ public class WaveFileUtils {
         }
     }
 
-    public void writeToTxtFileFast(File fTxtFile, DataOutputStream stDos, String  sBuf){
+    public void writeToTxtFileFast(File fTxtFile, DataOutputStream stDos, String sBuf) {
 
         if (sBuf != null) {
             //循环将buffer中的音频数据写入到OutputStream中
             if (stDos != null) {
-                    try {
-                        stDos.writeBytes(sBuf);
-                        stDos.writeByte('\n');
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                try {
+                    stDos.writeBytes(sBuf);
+                    stDos.writeByte('\n');
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
 
             }
         }
     }
 
 
-
     public void writetoFile(short[] sAudioData, int iSize, FileOutputStream fos) {
 
 //        Log.i("WaveFileUtils ","| writetoFile iReadSize:"+ iSize);
-        byte[] bAudiodata = new byte[iSize*2];
+        byte[] bAudiodata = new byte[iSize * 2];
 
-        for(int i=0; i <iSize; i++){
+        for (int i = 0; i < iSize; i++) {
             short iData = (sAudioData[i]);
-            putShort(bAudiodata, iData, i*2);
-           // Log.i("WaveFileUtils","| writetoFile sAudioData:"+ iData);
+            putShort(bAudiodata, iData, i * 2);
+            // Log.i("WaveFileUtils","| writetoFile sAudioData:"+ iData);
         }
-        writeDateTOFile(bAudiodata, iSize*2, fos);
+        writeDateTOFile(bAudiodata, iSize * 2, fos);
     }
+
     /**
      * 转换short为byte
      *
      * @param b
-     * @param s
-     *            需要转换的short
+     * @param s     需要转换的short
      * @param index
      */
     public static void putShort(byte b[], short s, int index) {
@@ -270,9 +272,10 @@ public class WaveFileUtils {
 
     /**
      * 判断是否有外部存储设备sdcard
+     *
      * @return true | false
      */
-    public static boolean isSdcardExit(){
+    public static boolean isSdcardExit() {
         if (Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED))
             return true;
         else
@@ -281,15 +284,16 @@ public class WaveFileUtils {
 
     /**
      * 获取文件路径
+     *
      * @return
      */
-    public  static String getFilePath(String sFileName, String sFormat){
+    public static String getFilePath(String sFileName, String sFormat) {
         String sFilePath = "";
-        if(isSdcardExit()){
+        if (isSdcardExit()) {
             String fileBasePath = Environment.getExternalStorageDirectory().getAbsolutePath();
-            SimpleDateFormat    sDateFormat    =   new SimpleDateFormat("yyyyMMddhhmmss");
-            String    sDate    =    sDateFormat.format(new    java.util.Date());
-            sFilePath = fileBasePath+"/audio/"+sFileName+sDate+sFormat;
+            SimpleDateFormat sDateFormat = new SimpleDateFormat("yyyyMMddhhmmss");
+            String sDate = sDateFormat.format(new java.util.Date());
+            sFilePath = fileBasePath + "/audio/" + sFileName + sDate + sFormat;
         }
         return sFilePath;
     }
@@ -297,24 +301,24 @@ public class WaveFileUtils {
 
     /**
      * 获取文件大小
+     *
      * @param path,文件的绝对路径
      * @return
      */
-    public static long getFileSize(String path){
+    public static long getFileSize(String path) {
         File mFile = new File(path);
-        if(!mFile.exists())
+        if (!mFile.exists())
             return -1;
         return mFile.length();
     }
-
 
 
     //class AudioRecordThread implements Runnable {
     //    @Override
     //    public void run() {
     //        //writeDateTOFile();//往文件中写入裸数据
-     //       copyWaveFile(AudioName, NewAudioName);//给裸数据加上头文件
-      //  }
+    //       copyWaveFile(AudioName, NewAudioName);//给裸数据加上头文件
+    //  }
     //}
 
     /**
@@ -353,14 +357,13 @@ public class WaveFileUtils {
             e.printStackTrace();
         }
     }*/
-
     public static void writeDateTOFile(byte[] audiodata, int readsize, FileOutputStream fos) {
         // new一个byte数组用来存一些字节数据，大小为缓冲区大小
         //byte[] audiodata = new byte[bufferSizeInBytes];
 
         // while (isRecord == true) {
         //readsize = audioRecord.read(audiodata, 0, bufferSizeInBytes);
-        if (AudioRecord.ERROR_INVALID_OPERATION != readsize && fos!=null) {
+        if (AudioRecord.ERROR_INVALID_OPERATION != readsize && fos != null) {
             try {
                 fos.write(audiodata);
             } catch (IOException e) {
@@ -372,7 +375,7 @@ public class WaveFileUtils {
 
 
     // 这里得到可播放的音频文件
-    public static void copyWaveFile(String inFilename, String outFilename, long longSampleRate, int  channels,int bufferSizeInBytes,short bitsPerSample ) {
+    public static void copyWaveFile(String inFilename, String outFilename, long longSampleRate, int channels, int bufferSizeInBytes, short bitsPerSample) {
         FileInputStream in = null;
         FileOutputStream out = null;
         long totalAudioLen = 0;
@@ -387,7 +390,7 @@ public class WaveFileUtils {
             totalAudioLen = in.getChannel().size();
             totalDataLen = totalAudioLen + 36;
             WriteWaveFileHeader(out, totalAudioLen, totalDataLen,
-                    longSampleRate, channels, byteRate,bitsPerSample);
+                    longSampleRate, channels, byteRate, bitsPerSample);
             while (in.read(data) != -1) {
                 out.write(data);
             }
@@ -456,7 +459,7 @@ public class WaveFileUtils {
     }
 */
     // 这里得到可播放的音频文件
-    public static void saveDataToWav(short[] viData, String outFilename, long longSampleRate, int  channels,int bufferSizeInBytes,short bitsPerSample ) {
+    public static void saveDataToWav(short[] viData, String outFilename, long longSampleRate, int channels, int bufferSizeInBytes, short bitsPerSample) {
         FileOutputStream out = null;
         long totalAudioLen = 0;
         long totalDataLen = 0;
@@ -465,12 +468,12 @@ public class WaveFileUtils {
         long byteRate = 16 * longSampleRate * channels / 8;
         try {
             out = new FileOutputStream(outFilename);
-            totalAudioLen = viData.length*Short.SIZE/8;
+            totalAudioLen = viData.length * Short.SIZE / 8;
             totalDataLen = totalAudioLen + 36;
             WriteWaveFileHeader(out, totalAudioLen, totalDataLen,
-                    longSampleRate, channels, byteRate,bitsPerSample);
+                    longSampleRate, channels, byteRate, bitsPerSample);
 
-            for (short data: viData) {
+            for (short data : viData) {
                 byte bData = (byte) (data & 0x00ff);
                 out.write(bData);
                 bData = (byte) ((data & 0xff00) >>> 8);
@@ -485,7 +488,7 @@ public class WaveFileUtils {
     }
 
     // 这里得到可播放的音频文件
-    public static void saveDataToWav(byte[] viData, String outFilename, long longSampleRate, int  channels,int bufferSizeInBytes,short bitsPerSample ) {
+    public static void saveDataToWav(byte[] viData, String outFilename, long longSampleRate, int channels, int bufferSizeInBytes, short bitsPerSample) {
         FileOutputStream out = null;
         long totalAudioLen = 0;
         long totalDataLen = 0;
@@ -497,9 +500,9 @@ public class WaveFileUtils {
             totalAudioLen = viData.length;
             totalDataLen = totalAudioLen + 36;
             WriteWaveFileHeader(out, totalAudioLen, totalDataLen,
-                    longSampleRate, channels, byteRate,bitsPerSample);
+                    longSampleRate, channels, byteRate, bitsPerSample);
 
-            for (short data: viData) {
+            for (short data : viData) {
                 out.write(data);
             }
             out.close();
@@ -535,14 +538,14 @@ public class WaveFileUtils {
             try {
                 bw = new BufferedWriter(new FileWriter(file));
 
-                for(double d : baseWaveData){
+                for (double d : baseWaveData) {
                     System.out.println(String.valueOf(d));
                     bw.write(String.valueOf(d));//输出字符串
                     bw.newLine();//换行
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-            }finally {
+            } finally {
                 try {
                     bw.flush();
                     bw.close();
@@ -568,7 +571,7 @@ public class WaveFileUtils {
             }
             out.close();
             */
-       // }
+    // }
 
 
     public static BufferedWriter getFileBufferedWriter(String sFileName) {
@@ -595,8 +598,8 @@ public class WaveFileUtils {
     public static void writeTxtData(BufferedWriter bw, String sData) {
         try {
             try {
-                    bw.write(sData);//输出字符串
-                    bw.newLine();//换行
+                bw.write(sData);//输出字符串
+                bw.newLine();//换行
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -616,7 +619,7 @@ public class WaveFileUtils {
             BufferedReader br = new BufferedReader(reader); // 建立一个对象，它把文件内容转成计算机能读懂的语言
             String line = "";
             long totalAudioLen = in.getChannel().size();
-            short[] dData = new short[(int)totalAudioLen];
+            short[] dData = new short[(int) totalAudioLen];
             short iTmp = 0;
             int i = 0;
             while ((line = br.readLine()) != null) {
@@ -650,11 +653,11 @@ public class WaveFileUtils {
         }
     }
 
-    public static String getWaveFile(String pcmFile){
-        SimpleDateFormat sDateFormat  =   new SimpleDateFormat("yyyyMMddhhmmss");
-        String    sDate   =    sDateFormat.format(new    java.util.Date());
+    public static String getWaveFile(String pcmFile) {
+        SimpleDateFormat sDateFormat = new SimpleDateFormat("yyyyMMddhhmmss");
+        String sDate = sDateFormat.format(new java.util.Date());
         int iStart = pcmFile.length();
-        String sWavPath =  pcmFile.substring(0,iStart-4) + "_"+ sDate +".wav";
+        String sWavPath = pcmFile.substring(0, iStart - 4) + "_" + sDate + ".wav";
         return sWavPath;
     }
 
@@ -667,9 +670,8 @@ public class WaveFileUtils {
      */
 
     //ByteBuffer
-
     private static void WriteWaveFileHeader(FileOutputStream out, long totalAudioLen,
-                                     long totalDataLen, long longSampleRate, int channels, long byteRate, short bitsPerSample )
+                                            long totalDataLen, long longSampleRate, int channels, long byteRate, short bitsPerSample)
             throws IOException {
         byte[] header = new byte[44];
 
@@ -724,13 +726,15 @@ public class WaveFileUtils {
         header[31] = (byte) ((byteRate >> 24) & 0xff);
 
         //BlockAlign    2       int16     每次采样的大小 = 采样精度*声道数/8(单位是字节); 这也是字节对齐的最小单位, 譬如 16bit 立体声在这里的值是 4 字节。播放软件需要一次处理多个该值大小的字节数据，以便将其值用于缓冲区的调整。
-        short blockAlign = (short)(channels * bitsPerSample / 8);
-        header[32] = (byte) (blockAlign& 0xff); // block align
+        short blockAlign = (short) (channels * bitsPerSample / 8);
+        header[32] = (byte) (blockAlign & 0xff); // block align
         header[33] = (byte) ((blockAlign >> 8) & 0xff);
 
         //BitsPerSample 2       int16     每个声道的采样精度; 譬如 16bit 在这里的值就是16。如果有多个声道，则每个声道的采样精度大小都一样的。
-        header[34] = (byte) (bitsPerSample & 0xff);; // bits per sample
-        header[35] = (byte) ((bitsPerSample >> 8) & 0xff);;
+        header[34] = (byte) (bitsPerSample & 0xff);
+        ; // bits per sample
+        header[35] = (byte) ((bitsPerSample >> 8) & 0xff);
+        ;
 
         // ckid              4       char      表示 "data" chunk的开始。此块中包含音频数据。小写。
         header[36] = 'd';
@@ -750,8 +754,7 @@ public class WaveFileUtils {
     /**
      * byte数组与short数组转换
      *
-     * @param data
-     * * @param items
+     * @param data * @param items
      * @return
      */
     public static short[] byteArray2ShortArray(byte[] data) {
@@ -774,15 +777,16 @@ public class WaveFileUtils {
             return null;
         }
 
-        double[] retVal = new double[data.length /2];
+        double[] retVal = new double[data.length / 2];
         for (int i = 0; i < retVal.length; i++) {
-            retVal[i] = (double)((short) ((data[i * 2] & 0xff) | (data[i * 2 + 1] & 0xff) << 8));
+            retVal[i] = (double) ((short) ((data[i * 2] & 0xff) | (data[i * 2 + 1] & 0xff) << 8));
             //retVal[i] = retVal[i] *10;
         }
         return retVal;
     }
-    public static byte[] shortArray2ByteArray(short[] shortData){
-        byte[] byteData = new byte[shortData.length*2];
+
+    public static byte[] shortArray2ByteArray(short[] shortData) {
+        byte[] byteData = new byte[shortData.length * 2];
         int idx = 0;
         for (final short val : shortData) {
             // in 16 bit wav PCM, first byte is the low order byte
@@ -791,7 +795,6 @@ public class WaveFileUtils {
         }
         return byteData;
     }
-
 
 
     /**
@@ -818,8 +821,7 @@ public class WaveFileUtils {
     /**
      * 将字节数组（byte[]）转为整形(int)
      */
-    public void judgeEddian() throws IOException
-    {
+    public void judgeEddian() throws IOException {
        /* byte[] byteAr = new byte[]{0x78,0x56,0x34,0x12};
         ByteArrayInputStream bais = new ByteArrayInputStream(byteAr);
         DataInputStream dis = new DataInputStream(bais);
@@ -834,8 +836,7 @@ public class WaveFileUtils {
         dos.writeInt(a);
         byte[] b = baos.toByteArray();
         //byte[] b = baos.toByteArray();
-        for(int i = 3; i >= 0; i--)
-        {
+        for (int i = 3; i >= 0; i--) {
             System.out.print(Integer.toHexString(b[i]));
         }
         System.out.println();
@@ -847,20 +848,19 @@ public class WaveFileUtils {
         //DataInputStream dis = new DataInputStream(new BufferedInputStream(new FileInputStream(playPcmFile)));
         GlobalConfig.playPcmDis = new DataInputStream(new FileInputStream(GlobalConfig.playPcmFile));
         int iLen = GlobalConfig.playPcmDis.available();
-               int i = 0;
+        int i = 0;
         boolean iFirst = true;
         int iPcmIndex = 0;
-        while(iPcmIndex <GlobalConfig.playData.length){
-            if(GlobalConfig.sPlayPcmFileName.indexOf("wav")>0 && i<44 && iFirst){
+        while (iPcmIndex < GlobalConfig.playData.length) {
+            if (GlobalConfig.sPlayPcmFileName.indexOf("wav") > 0 && i < 44 && iFirst) {
                 GlobalConfig.playPcmDis.readByte();
-            }
-            else{
+            } else {
                 GlobalConfig.playData[iPcmIndex] = GlobalConfig.playPcmDis.readByte();
                 iPcmIndex++;
             }
             i++;
         }
-        if(iPcmIndex > 0){
+        if (iPcmIndex > 0) {
             GlobalConfig.bPlayDataReady = true;
         }
 
@@ -868,26 +868,21 @@ public class WaveFileUtils {
     }
 
 
-    public static short  max(short [] A, int iLen)
-    {
+    public static short max(short[] A, int iLen) {
         short result = A[0];
-        for (int i= 0; i< iLen; i++)
-        {
-            if (result < A[i])
-            {
+        for (int i = 0; i < iLen; i++) {
+            if (result < A[i]) {
                 result = A[i];
             }
         }
 
         return result;
     }
-    public static byte  max(byte [] A, int iLen)
-    {
+
+    public static byte max(byte[] A, int iLen) {
         byte result = A[0];
-        for (int i= 0; i< iLen; i++)
-        {
-            if (result < A[i])
-            {
+        for (int i = 0; i < iLen; i++) {
+            if (result < A[i]) {
                 result = A[i];
             }
         }

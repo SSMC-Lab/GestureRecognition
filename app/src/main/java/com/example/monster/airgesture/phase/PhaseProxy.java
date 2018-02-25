@@ -95,9 +95,9 @@ public class PhaseProxy {
                     float iType = ppi.doActionRecognitionV3(ppi.nativeSignalProcess, shData, shData.length, GlobalConfig.sFileResultPath, sFileName);
                     long lCostTime = System.currentTimeMillis() - lBeginTime;
                     if (iType > 0) {
-                        Log.i("actionaction", "cost:" + lCostTime + "|type:" + iType);
+                        Log.d("actionaction", "cost:" + lCostTime + "|type:" + iType);
                     } else {
-//                        Log.i("noaction", "cost:" + lCostTime + "|type:" + iType);
+//                        Log.d("noaction", "cost:" + lCostTime + "|type:" + iType);
                     }
                     if (handler != null && iType > 0.0) {
                         Bundle bundle = new Bundle();
@@ -107,7 +107,7 @@ public class PhaseProxy {
                         handler.sendMessage(message);
                     }
                     long lEndTime = System.currentTimeMillis();
-//                    Log.i("cost", "run begin:" + lBeginTime + "|cost:" + (lEndTime - lBeginTime));
+//                    Log.d("cost", "run begin:" + lBeginTime + "|cost:" + (lEndTime - lBeginTime));
                 }
 
             } catch (InterruptedException e) {

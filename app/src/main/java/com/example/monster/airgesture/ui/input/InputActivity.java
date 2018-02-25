@@ -23,7 +23,6 @@ import com.example.monster.airgesture.data.bean.CandidateWord;
 import com.example.monster.airgesture.data.bean.Word;
 import com.example.monster.airgesture.timer.TimerHelper;
 import com.example.monster.airgesture.timer.TimerProcessor;
-import com.example.monster.airgesture.ui.PresenterFactory;
 import com.example.monster.airgesture.ui.test.MainActivity;
 import com.example.monster.airgesture.ui.base.BaseActivity;
 import com.example.monster.airgesture.ui.user.UserActivity;
@@ -36,12 +35,11 @@ import butterknife.BindView;
 import butterknife.OnClick;
 
 /**
- * 负责展示数据的View层，处理数据的展示{@link IInputContract.View}
+ * 展示数据的View层，处理数据的展示{@link IInputContract.View}
  * Created by WelkinShadow on 2017/10/26.
  */
 
-public class InputActivity extends BaseActivity<IInputContract.Presenter> implements
-        IInputContract.View {
+public class InputActivity extends BaseActivity<IInputContract.Presenter> implements IInputContract.View {
 
     //配置
     //是否开启自动输入候选词区首单词功能
@@ -64,14 +62,19 @@ public class InputActivity extends BaseActivity<IInputContract.Presenter> implem
     @BindView(R.id.bt_num)
     Button num;
 
-    //定时器
-    private TimerHelper timerHelper;
-    //大小写状态位
+    //定时器，处理自动输入首单词的任务
+    private TimerHelper timerHelper= new TimerHelper(AUTO_INPUT_MILLI, new TimerProcessor() {
+        @Override
+        public void process() {
+            enterFirstWordAuto();
+        }
+    });
+    //大小写状态位描述
     private final int FIRST_CAP = 0x100;
     private final int ALL_CAP = 0x101;
     private final int NO_CAP = 0x102;
     private int capStatus = NO_CAP;
-    //控制位
+    //控制位描述
     private boolean isOn = false;//识别开关是否打开
     private boolean isNumKeyboard = false;//数字键盘是否在显示
     private boolean isTouchRecycler = false;//候选词区域是否正被触摸
@@ -98,12 +101,6 @@ public class InputActivity extends BaseActivity<IInputContract.Presenter> implem
             ActivityCompat.requestPermissions(this, new String[]{
                     android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
         }
-        timerHelper = new TimerHelper(AUTO_INPUT_MILLI, new TimerProcessor() {
-            @Override
-            public void process() {
-                enterFirstWordAuto();
-            }
-        });
     }
 
     @Override
@@ -155,14 +152,13 @@ public class InputActivity extends BaseActivity<IInputContract.Presenter> implem
     }
 
     /**
-     * 设置候选词
+     * 展示候选词
      */
     @Override
     public void showWordInWordArea(List<Word> words) {
         candidateWordAdapter.notifyDiff(words);
         startTimerTask();
     }
-
 
     /**
      * 单词输入
@@ -299,20 +295,21 @@ public class InputActivity extends BaseActivity<IInputContract.Presenter> implem
             case NO_CAP:
                 capStatus = FIRST_CAP;
                 lastWord = StringUtils.upperFirstLetter(lastWord);
-                color = R.color.black;
-                capLocks.setText(getString(R.string.no_cap));
+                color = R.color.colorAccent;
+                capLocks.setText(getString(R.string.first_cap));
                 break;
             case FIRST_CAP:
                 capStatus = ALL_CAP;
                 lastWord = StringUtils.upperText(lastWord);
                 color = R.color.colorAccent;
-                capLocks.setText(getString(R.string.first_cap));
+                capLocks.setText(getString(R.string.all_cap));
                 break;
             case ALL_CAP:
                 capStatus = NO_CAP;
                 lastWord = StringUtils.lowerText(lastWord);
-                color = R.color.colorAccent;
-                capLocks.setText(getString(R.string.all_cap));
+
+                color = R.color.black;
+                capLocks.setText(getString(R.string.no_cap));
                 break;
             default:
                 color = R.color.black;

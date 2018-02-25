@@ -133,8 +133,7 @@ public class WordRepository implements IWordDataSource {
      * 查询字母
      */
     private List<Word> query(String seq) {
-        Cursor cursor = mDictionary.rawQuery(
-                "SELECT * FROM " + user.getDictionaryName() +
+        Cursor cursor = mDictionary.rawQuery("SELECT * FROM " + user.getDictionaryName() +
                         " WHERE CODE = " + seq +
                         " ORDER BY WORD", null);
         return createQueryResult(cursor);
@@ -178,7 +177,8 @@ public class WordRepository implements IWordDataSource {
                     "select word,probability,length,code " +
                     "from " + user.getDictionaryName() + " " +
                     "where substr(code,1," + length + ") in (select strokes from seq) ");
-            cursor = mDictionary.rawQuery("SELECT * FROM result ORDER BY length ASC,probability DESC ",
+            cursor = mDictionary.rawQuery("SELECT * FROM result " +
+                            "ORDER BY length ASC,probability DESC ",
                     null);
         } else {
             cursor = mDictionary.rawQuery("SELECT * FROM Dictionary WHERE code LIKE '"

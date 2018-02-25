@@ -8,7 +8,6 @@ import android.support.v7.widget.RecyclerView;
 import com.example.monster.airgesture.Conditions;
 import com.example.monster.airgesture.R;
 import com.example.monster.airgesture.data.bean.User;
-import com.example.monster.airgesture.ui.PresenterFactory;
 import com.example.monster.airgesture.ui.base.BaseFragment;
 
 import java.util.List;

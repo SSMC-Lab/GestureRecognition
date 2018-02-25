@@ -17,7 +17,6 @@ public class StringUtils {
         return s == null || s.length() == 0;
     }
 
-
     /**
      * 首字母大写
      *
@@ -25,12 +24,10 @@ public class StringUtils {
      * @return 首字母大写字符串
      */
     public static String upperFirstLetter(String text) {
-        if (isEmpty(text) || !Character.isUpperCase(text.charAt(0))) {
+        if (isEmpty(text)) {
             return text;
         } else {
-            char[] textArray = text.toCharArray();
-            textArray[0] += 32;
-            return String.valueOf(textArray);
+            return text.substring(0, 1).toUpperCase() + text.substring(1);
         }
     }
 
@@ -44,13 +41,7 @@ public class StringUtils {
         if (isEmpty(text)) {
             return text;
         } else {
-            char[] textArray = text.toCharArray();
-            for (int i = 0; i < textArray.length; i++) {
-                if (Character.isUpperCase(textArray[i])) {
-                    textArray[i] -= 32;
-                }
-            }
-            return String.valueOf(textArray);
+            return text.toUpperCase();
         }
     }
 
@@ -64,13 +55,7 @@ public class StringUtils {
         if (isEmpty(text)) {
             return text;
         } else {
-            char[] textArray = text.toCharArray();
-            for (int i = 0; i < textArray.length; i++) {
-                if (!Character.isUpperCase(textArray[i])) {
-                    textArray[i] += 32;
-                }
-            }
-            return String.valueOf(textArray);
+            return text.toLowerCase();
         }
     }
 }

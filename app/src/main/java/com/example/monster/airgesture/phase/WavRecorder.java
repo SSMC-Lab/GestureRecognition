@@ -15,17 +15,12 @@ public class WavRecorder extends Recorder {
     private String audioName;//录音文件的名字
     private String subDir;//用于存放录音文件的子目录
 
-    public WavRecorder(){
-        super();
-    }
-
     public WavRecorder(int channelIn, int sampleRate, int encoding){
         super(channelIn,sampleRate,encoding);
     }
 
     @Override
     public void start() {
-
         Log.i(TAG,"start()");
         //使用异步的方法录制音频
         new Thread(new Runnable() {

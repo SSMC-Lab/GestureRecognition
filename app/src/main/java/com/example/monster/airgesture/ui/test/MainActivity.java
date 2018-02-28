@@ -24,6 +24,7 @@ import android.os.Handler;
 
 import com.example.monster.airgesture.Conditions;
 import com.example.monster.airgesture.R;
+import com.example.monster.airgesture.phase.AudioTrackPlay;
 import com.example.monster.airgesture.GlobalConfig;
 import com.example.monster.airgesture.ui.input.InputActivity;
 import com.example.monster.airgesture.utils.HandlerUtils;
@@ -62,7 +63,7 @@ public class MainActivity extends AppCompatActivity
         tv.setText(sRecordStatus);
 
         if (!Conditions.configInit) {
-            GlobalConfig.fAbsolutePath.mkdirs();//创建文件夹
+            GlobalConfig.fAbsolutepath.mkdirs();//创建文件夹
             GlobalConfig.fTemplatePath.mkdirs();//创建文件夹
             GlobalConfig.fResultPath.mkdirs();//创建文件夹
             GlobalConfig.stPhaseProxy.init();
@@ -73,7 +74,7 @@ public class MainActivity extends AppCompatActivity
 
         //startRecordAction();
 
-        GlobalConfig.stPhaseProxy.setHandler(handler);
+        GlobalConfig.stPhaseProxy.sendHandler(handler);
 
     }
 
@@ -95,6 +96,20 @@ public class MainActivity extends AppCompatActivity
         listView.setSelection(ListView.FOCUS_DOWN);
     }
 
+    class ThreadInstantPlay extends Thread {
+        @Override
+        public void run() {
+            //Process.setThreadPriority(Process.THREAD_PRIORITY_AUDIO);
+            AudioTrackPlay Player = new AudioTrackPlay();
+            GlobalConfig.isRecording = true;
+            Player.play();
+
+            while (GlobalConfig.isRecording) {
+            }
+            Player.stop();
+        }
+    }
+
 
     public void startRecordAction() {
 
@@ -113,8 +128,8 @@ public class MainActivity extends AppCompatActivity
 
         /*try {
             //创建临时文件,注意这里的格式为.pcm
-            GlobalConfig.fPcmRecordFile = File.createTempFile(GlobalConfig.sRecordPcmFileName, ".pcm", GlobalConfig.fAbsolutePath);
-            GlobalConfig.fPcmRecordFile2 = File.createTempFile(GlobalConfig.sRecordPcmFileName2, ".pcm", GlobalConfig.fAbsolutePath);
+            GlobalConfig.fPcmRecordFile = File.createTempFile(GlobalConfig.sRecordPcmFileName, ".pcm", GlobalConfig.fAbsolutepath);
+            GlobalConfig.fPcmRecordFile2 = File.createTempFile(GlobalConfig.sRecordPcmFileName2, ".pcm", GlobalConfig.fAbsolutepath);
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

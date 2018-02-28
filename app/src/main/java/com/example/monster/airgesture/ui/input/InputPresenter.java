@@ -1,13 +1,17 @@
 package com.example.monster.airgesture.ui.input;
 
+import android.os.Handler;
+import android.os.Message;
+
+import com.example.monster.airgesture.Conditions;
 import com.example.monster.airgesture.GlobalConfig;
 import com.example.monster.airgesture.data.DataProvider;
 import com.example.monster.airgesture.data.IDataSource;
 import com.example.monster.airgesture.data.bean.Word;
-import com.example.monster.airgesture.phase.ActionTypeListener;
-import com.example.monster.airgesture.phase.PhaseBiz;
+import com.example.monster.airgesture.phase.RecognitionSwitch;
 import com.example.monster.airgesture.ui.base.BasePresenter;
 import com.example.monster.airgesture.utils.FileCopyUtils;
+import com.example.monster.airgesture.utils.HandlerUtils;
 import com.example.monster.airgesture.utils.LogUtils;
 import com.example.monster.airgesture.utils.StringUtils;
 
@@ -20,36 +24,26 @@ import java.util.List;
  */
 
 public class InputPresenter<V extends IInputContract.View> extends BasePresenter<V>
-        implements IInputContract.Presenter<V> {
+        implements IInputContract.Presenter<V>, HandlerUtils.OnReceiveMessageListener {
 
     private boolean isNumKeyboard = false;
     private IDataSource dataRepository;
-    private StringBuilder coding = new StringBuilder();
-    private PhaseBiz phaseBiz;
-    //    private Handler mHandler; //handler会回传phase模块解析出的手势，并递交给presenter内部处理
-    private ActionTypeListener mListener = new ActionTypeListener() {//解析模块的的回调接口
-        @Override
-        public void receiveActionType(float type) {
-            if (!isNumKeyboard) {
-                getView().enterStroke((int)type);
-                coding.append(type);
-                findWord(coding.toString());
-                LogUtils.d("receive gesture : " + type);
-            }
-        }
-    };
+    private StringBuilder coding;
+    private RecognitionSwitch recognitionSwitch;
+    private Handler mHandler; //handler会回传phase模块解析出的手势，并递交给presenter内部处理
 
     public InputPresenter() {
         dataRepository = DataProvider.provideDataRepository();
-        phaseBiz = PhaseBiz.getInstance();
-//        mHandler = new HandlerUtils.HandlerHolder(this);
+        resetCurrentUser();
+        recognitionSwitch = RecognitionSwitch.getInstance();
+        mHandler = new HandlerUtils.HandlerHolder(this);
+        coding = new StringBuilder();
         copyTemplate("heng2.txt");
         copyTemplate("shu2.txt");
         copyTemplate("youhu2.txt");
         copyTemplate("youxie2.txt");
         copyTemplate("zuohu2.txt");
         copyTemplate("zuoxie2.txt");
-//        resetCurrentUser();
     }
 
     private void findWord(String coding) {
@@ -70,11 +64,20 @@ public class InputPresenter<V extends IInputContract.View> extends BasePresenter
         }
     }
 
+    private void receiveWord(int type) {
+        if (!isNumKeyboard) {
+            getView().enterStroke(type);
+            coding.append(type);
+            findWord(coding.toString());
+            LogUtils.d("receive gesture : " + type);
+        }
+    }
+
     @Override
     public void changeNumKeyboard() {
-        isNumKeyboard = !isNumKeyboard;
-        List<Word> words = isNumKeyboard ? dataRepository.getNum() : new ArrayList<Word>();
+        List<Word> words = isNumKeyboard ? new ArrayList<Word>() : dataRepository.getNum();
         getView().showWordInWordArea(words);
+        isNumKeyboard = !isNumKeyboard;
     }
 
     @Override
@@ -84,12 +87,12 @@ public class InputPresenter<V extends IInputContract.View> extends BasePresenter
 
     @Override
     public void startRecording() {
-        phaseBiz.startRecognition(mListener);
+        recognitionSwitch.startRecognition(mHandler);
     }
 
     @Override
     public void stopRecording() {
-        phaseBiz.stopRecognition();
+        recognitionSwitch.stopRecognition();
     }
 
     @Override
@@ -103,6 +106,7 @@ public class InputPresenter<V extends IInputContract.View> extends BasePresenter
         if (coding.length() > 0) {
             coding.delete(coding.length() - 1, coding.length());
             findWord(coding.toString());
+            LogUtils.d("delete stoker,now coding = \"" + coding + "\"");
         }
     }
 
@@ -111,5 +115,14 @@ public class InputPresenter<V extends IInputContract.View> extends BasePresenter
      */
     private void copyTemplate(String templateName) {
         FileCopyUtils.copyInAssets(templateName, GlobalConfig.sFileTemplatePath + templateName);
+    }
+
+    @Override
+    public void handlerMessage(Message msg) {
+        switch (msg.what) {
+            case Conditions.MESSAGE_PHASE_MODEL:
+                receiveWord((int) msg.getData().getFloat(Conditions.TYPE));
+                break;
+        }
     }
 }

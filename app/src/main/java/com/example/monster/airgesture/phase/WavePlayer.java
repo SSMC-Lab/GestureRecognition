@@ -13,7 +13,7 @@ import com.example.monster.airgesture.GlobalConfig;
  */
 
 public class WavePlayer extends Player {
-    private final static String TAG = ".play.WavePlayer";
+    private final static String TAG=".play.WavePlayer";
 
     private int waveRate;//声波的频率
     private int waveType;//声波的类型///此变量暂时使用
@@ -21,16 +21,16 @@ public class WavePlayer extends Player {
 
     private AudioTrack audioTrack;
 
-    public WavePlayer(int channelOut, int waveRate, int waveType, int sampleRate) {
+    public WavePlayer(int channelOut, int waveRate, int waveType, int sampleRate){
         super(channelOut);
-        this.waveType = waveType;
-        this.waveRate = waveRate;
-        this.sampleRate = sampleRate;
+        this.waveType=waveType;
+        this.waveRate=waveRate;
+        this.sampleRate=sampleRate;
     }
 
     @Override
     public void play() {
-        final int bufferSize = 3 * AudioTrack.getMinBufferSize(
+        final int bufferSize = 3* AudioTrack.getMinBufferSize(
                 sampleRate,
                 AudioFormat.CHANNEL_OUT_MONO,
                 AudioFormat.ENCODING_PCM_16BIT);
@@ -56,7 +56,7 @@ public class WavePlayer extends Player {
                 break;
             default:
                 audioTrack.setVolume(1.0f);
-                Log.w(TAG, "play() : channel error");
+                Log.w(TAG,"play() : channel error");
         }
 
         audioTrack.play();
@@ -74,11 +74,11 @@ public class WavePlayer extends Player {
                 int index = 0;
                 while (audioTrack != null && audioTrack.getPlayState() == AudioTrack.PLAYSTATE_PLAYING) {
                     for (int i = 0; i < wave.length; ++i, ++index) {
-                        wave[i] = (short) (Short.MAX_VALUE / 2 *
+                        wave[i] = (short) (Short.MAX_VALUE/2 *
                                 Math.sin(2.0 * Math.PI * index / sampleCountInWave)
                         );
                     }
-                    writeBytes = audioTrack.write(wave, 0, wave.length);
+                    writeBytes=audioTrack.write(wave, 0, wave.length);
 //                    Log.d(TAG,"play() : writeBytes="+writeBytes);
                 }
             }
@@ -88,16 +88,16 @@ public class WavePlayer extends Player {
 
     @Override
     public void stop() {
-        if (audioTrack != null) {
+        if(audioTrack!=null){
             audioTrack.stop();
         }
     }
 
     @Override
     public void release() {
-        if (audioTrack != null) {
+        if(audioTrack !=null){
             audioTrack.release();
-            audioTrack = null;
+            audioTrack =null;
         }
     }
 

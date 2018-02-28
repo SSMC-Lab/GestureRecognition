@@ -8,12 +8,11 @@ import android.util.Log;
 import com.example.monster.airgesture.Conditions;
 import com.example.monster.airgesture.GlobalConfig;
 import com.example.monster.airgesture.PhaseProcessI;
-
-import java.util.*;
+import com.example.monster.airgesture.utils.LogUtils;
+import com.example.monster.airgesture.utils.WaveFileUtils;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -23,93 +22,106 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 /**
+ * 解析任务代理类
+ * 录音器录制音频数据并存放到{@link GlobalConfig}维护的一个队列中，本实例维护了一个线程来循环读取这个队列
+ * 中存放的音频数据，这些音频数据将会递交给native层处理，解析出该某段音频对应的动作数据类型，当这个动作数据
+ * 类型合法的时候，该动作类型对应的编号将通过handler发送到主线程中进行处理
  * Created by Administrator on 2017/6/21.
  */
 
 public class PhaseProxy {
 
-    //Speed adjust
-    private static float SPEED_ADJ = (float) 1.5;
-    public static PhaseProcessI ppi;
-    private static float iDistance = 0;
-    private static double fMaxDis = 0;
-    private static double fMinDis = 0;
-    private static String sRecordFile;
-    private static BufferedWriter RecordBufferedWriter;
-    //PhaseProcessThread pthread = new PhaseProcessThread();
-    ComputeThread stComputeThread = new ComputeThread();
-    public Thread thread;
-    private Handler handler = null;
-    public static File fRecordTxtFile;
-    public static File fReadRecordTxtFile;
+    private static PhaseProcessI ppi;
+    private ComputeTask mComputeTask;
+    private Handler mHandler = null;
+    private DataOutputStream recDos;
+    private boolean isComputing = false;
 
-    public void init() {
-        long lTime = 0;
-        ppi = new PhaseProcessI();
-        float tempf = ppi.doInit(ppi.nativeSignalProcess, GlobalConfig.sFileTemplatePath);
-        sRecordFile = GlobalConfig.stWaveFileUtil.getRecordTxtFileName();
-       // fRecordTxtFile = GlobalConfig.stWaveFileUtil.createFile(sRecordFile);
-        // fReadRecordTxtFile = new File(GlobalConfig.stWaveFileUtil.ReadRecordTxtFileName);
-        GlobalConfig.bPlayDataReady = true;
-        GlobalConfig.stPhaseProxy.start();
-    }
-
-    public void sendHandler(Handler handler) {
-        this.handler = handler;
-    }
-
-    public void dropHandler(){this.handler = null;}
-
-    public void destroy() {
-    }
-
-    class ComputeThread implements Runnable {
-        ComputeThread() {
-
-        }
-
+    /**
+     * 不断把声音数据存放到起来并计算出对应的手势类型
+     */
+    private class ComputeTask implements Runnable {
         public void run() {
-            Log.i("play", "run:");
-
-            //doSignalProcess();
-            while (true) {
+            while (isComputing) {
                 saveRecordDataToFile();
-                //computeByFileData();
-                //computeByRecordData();
-                //compareIos();
             }
         }
     }
 
-    public void saveRecordDataToFile() {
+    public PhaseProxy() {
+        init();
+    }
+
+    public PhaseProxy(Handler mHandler) {
+        this.mHandler = mHandler;
+    }
+
+    public void init() {
+        ppi = new PhaseProcessI();
+        mComputeTask = new ComputeTask();
+        GlobalConfig.bPlayDataReady = true;
+    }
+
+    /**
+     * 设置主线程用于接收结果的handler
+     */
+    public void setHandler(Handler handler) {
+        this.mHandler = handler;
+    }
+
+    public void dropHandler() {
+        this.mHandler = null;
+    }
+
+    public void destroy() {
+        dropHandler();
+        try {
+            isComputing = false;
+            recDos.flush();
+            recDos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 启动任务
+     */
+    public void start() {
+        isComputing = true;
+        if (GlobalConfig.bDataProcessThreadFlag) {
+            new Thread(mComputeTask).start();
+        }
+    }
+
+    /**
+     * 该方法计算出手势的具体类型，然后把数据封装到handler中
+     */
+    private void saveRecordDataToFile() {
         if (GlobalConfig.bPlayDataReady) {
             try {
+                //取出录音得到的数据
                 byte[] recData = GlobalConfig.getInstance().popByteRecData();
                 if (recData != null) {
-                    //writeByte(recData);
                     writeBytePcm(recData);
-
-                    short[] shData = GlobalConfig.stWaveFileUtil.byteArray2ShortArray(recData);
+                    short[] shData = WaveFileUtils.byteArray2ShortArray(recData);
                     String sFileName = GlobalConfig.getRecordedFileName("jni");
                     long lBeginTime = System.currentTimeMillis();
-                    float iType = ppi.doActionRecognitionV3(ppi.nativeSignalProcess, shData, shData.length, GlobalConfig.sFileResultPath, sFileName);
+                    //在native层计算出手势类型
+                    float iType = ppi.doActionRecognitionV3(ppi.nativeSignalProcess, shData,
+                            shData.length, GlobalConfig.sFileResultPath, sFileName);
                     long lCostTime = System.currentTimeMillis() - lBeginTime;
-                    if (iType > 0) {
-                        Log.d("actionaction", "cost:" + lCostTime + "|type:" + iType);
-                    } else {
-//                        Log.d("noaction", "cost:" + lCostTime + "|type:" + iType);
-                    }
-                    if (handler != null && iType > 0.0) {
+                    /*if (iType > 0)
+                        LogUtils.d("cost:" + lCostTime + "|type:" + iType);*/
+                    //发送结果到主线程中
+                    if (mHandler != null && iType > 0.0) {
                         Bundle bundle = new Bundle();
                         bundle.putFloat(Conditions.TYPE, iType);
-                        Message message = handler.obtainMessage(Conditions.MESSAGE_PHASE_MODEL);
+                        Message message = mHandler.obtainMessage(Conditions.MESSAGE_PHASE_MODEL);
                         message.setData(bundle);
-                        handler.sendMessage(message);
+                        mHandler.sendMessage(message);
                     }
-                    long lEndTime = System.currentTimeMillis();
-//                    Log.d("cost", "run begin:" + lBeginTime + "|cost:" + (lEndTime - lBeginTime));
                 }
-
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -117,196 +129,30 @@ public class PhaseProxy {
     }
 
 
-    public void readTxtDataToShort(String sFileName, int iFrameSize) {
-        try {
-            File filename = new File(sFileName);
-            FileInputStream in = new FileInputStream(sFileName);
-            InputStreamReader reader = new InputStreamReader(new FileInputStream(filename));
-            BufferedReader br = new BufferedReader(reader); // 建立一个对象，它把文件内容转成计算机能读懂的语言
-            String line = "";
-            long totalAudioLen = in.getChannel().size();
-            short[] dData = new short[iFrameSize];
-            short iTmp = 0;
-            int i = 0;
-            int iCount = 0;
-            String sDataBuf = "";
-            while ((line = br.readLine()) != null) {
-
-                if (i >= iFrameSize) {
-                    i = 0;
-                    long lBeginTime = System.currentTimeMillis();
-                    //getDistance(dData);
-                    long lEndTime = System.currentTimeMillis();
-                    Log.e("cost", "GetDistanceChange begin:" + lBeginTime + "|cost:" + (lEndTime - lBeginTime));
-                    Log.e("sData", "iCount[" + iCount + "],sData:" + sDataBuf);
-                    sDataBuf = "";
+    private void writeBytePcm(byte[] recData) {
+        int iReadSize = recData.length;
+        if (iReadSize > 0) {
+            if (recDos == null) {
+                try {
+                    recDos = new DataOutputStream(
+                            new BufferedOutputStream(
+                                    new FileOutputStream(GlobalConfig.fPcmRecordFile2)));
+                } catch (FileNotFoundException | NullPointerException e) {
+                    LogUtils.e("GlobalConfig.fPcmRecordFile2 is not exits");
+                    e.printStackTrace();
                 }
-                String sData = line;
-                iTmp = Short.valueOf(sData);
-                dData[i] = iTmp;
-                sDataBuf += dData[i] + ",";
-                iCount++;
-                i++;
             }
-
-            System.out.println("readTxtData dataNum is " + String.valueOf(i));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-
-    public void writeByte(byte[] recData) {
-        if (GlobalConfig.bByte && GlobalConfig.bSaveWavFile) {
-            int iReadSize = recData.length;
-            /*Log.i("WaveFileUtil ", "|before writetoFile iReadSize:" + iReadSize);*/
-            if (iReadSize > 0 && recData != null) {
-
-                if (GlobalConfig.recTxtDos == null) {
-                    /*Log.i("record", "resdos is null");*/
-                    if (fRecordTxtFile != null) {
-                        try {
-                            GlobalConfig.recTxtDos = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(fRecordTxtFile)));
-                        } catch (FileNotFoundException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-
-                //循环将buffer中的音频数据写入到OutputStream中
-                if (GlobalConfig.recTxtDos != null) {
-                    for (int i = 0; i < iReadSize; i = i + 2) {
-                        try {
-                            short iData = (short) ((recData[i] & 0xff) | (recData[i + 1] & 0xff) << 8);
-                            String sData = String.valueOf(iData);
-                            GlobalConfig.recTxtDos.writeBytes(sData);
-                            GlobalConfig.recTxtDos.writeByte('\n');
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
+            //循环将buffer中的音频数据写入到OutputStream中
+            if (recDos != null) {
+                for (int i = 0; i < iReadSize; i++) {
+                    try {
+                        recDos.writeByte(recData[i]);
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
                 }
             }
         }
     }
-
-    public void writeBytePcm(byte[] recData) {
-        {
-            int iReadSize = recData.length;
-            /*Log.i("WaveFileUtil ", "|before writetoFile iReadSize:" + iReadSize);*/
-            if (iReadSize > 0 && recData != null) {
-
-                if (GlobalConfig.recDos2 == null) {
-                    Log.i("record", "resdos is null");
-                    if (GlobalConfig.fPcmRecordFile2 != null) {
-                        try {
-                            GlobalConfig.recDos2 = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(GlobalConfig.fPcmRecordFile2)));
-                        } catch (FileNotFoundException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-
-                //循环将buffer中的音频数据写入到OutputStream中
-                if (GlobalConfig.recDos2 != null) {
-                    for (int i = 0; i < iReadSize; i++) {
-                        try {
-                            GlobalConfig.recDos2.writeByte(recData[i]);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    public void start() {
-        if (GlobalConfig.bDataProcessThreadFlag) {
-            thread = new Thread(stComputeThread);
-            thread.start();
-        }
-
-    }
-
-    public void doSignalProcess() {
-        String sFileName = GlobalConfig.stWaveFileUtil.shendaTxtFileName;
-
-        Map<String, Integer> mapStr = new HashMap<String, Integer>();
-        /*mapStr.put("2017-07-08_19h-02m-28s._Watch4.txt", 46570);
-        mapStr.put("2017-07-08_19h-02m-30s._Watch5.txt", 50154);
-        mapStr.put("2017-07-08_19h-02m-33s._Watch6.txt", 51946);
-        mapStr.put("2017-07-08_15h-08m-33s._Watch19.txt", 66282);
-        mapStr.put("2017-07-08_15h-08m-36s._Watch20.txt", 71658);
-        mapStr.put("2017-07-08_15h-08m-43s._Watch22.txt", 53738);
-        mapStr.put("2017-07-08_19h-07m-04s._Watch4.txt", 46570);
-        mapStr.put("2017-07-08_19h-07m-09s._Watch6.txt", 46570);
-        mapStr.put("2017-07-08_19h-07m-11s._Watch7.txt", 53738);
-        mapStr.put("2017-07-09_16h-45m-29s._Watch17.txt", 68074);
-        mapStr.put("2017-07-09_16h-45m-37s._Watch20.txt", 60906);
-        mapStr.put("2017-07-09_16h-45m-42s._Watch22.txt", 77034);
-        mapStr.put("2017-07-08_19h-13m-47s._Watch18.txt", 62698);
-        mapStr.put("2017-07-08_19h-14m-26s._Watch31.txt", 96746);
-        mapStr.put("2017-07-08_19h-14m-34s._Watch34.txt", 85994);
-        mapStr.put("2017-07-08_19h-15m-38s._Watch8.txt", 62698);
-        mapStr.put("2017-07-08_19h-15m-54s._Watch14.txt", 60906);
-        mapStr.put("2017-07-08_19h-16m-10s._Watch20.txt", 78826);*/
-        mapStr.put("rec2017-07-09_19h04m37.846s_matlab.txt", 350208);
-
-
-        Iterator<Map.Entry<String, Integer>> it = mapStr.entrySet().iterator();
-        while (it.hasNext()) {
-            int totalAudioLen = 0;       //8192*4;//69866;//in.getChannel().size();
-            Map.Entry<String, Integer> entry = it.next();
-            String str = entry.getKey();
-            totalAudioLen = entry.getValue();
-            sFileName = GlobalConfig.sFileTemplatePath + str;
-            try {
-                File filename = new File(sFileName);
-                FileInputStream in = new FileInputStream(sFileName);
-                InputStreamReader reader = new InputStreamReader(new FileInputStream(filename));
-                BufferedReader br = new BufferedReader(reader); // 建立一个对象，它把文件内容转成计算机能读懂的语言
-                String line = "";
-                short iTmp = 0;
-                int i = 0;
-                int iCount = 0;
-                String sDataBuf = "";
-                float[] recordData = new float[(int) totalAudioLen];
-                while ((line = br.readLine()) != null) {
-                    String sData = line;
-                    recordData[i] = Float.valueOf(sData);
-                    i++;
-                    iCount++;
-                    if (i == totalAudioLen) {
-                        break;
-                    }
-                }
-
-                long lBeginTime = System.currentTimeMillis();
-                Log.e("Jni", ppi.getJniString());
-                int SignalProcess_Size = 2048;
-                //float logpxx = ppi.doActionRecognition(ppi.nativeSignalProcess, recordData, recordData.length);
-                int iIndex = 0;
-                while (true) {
-
-                    if (recordData.length >= SignalProcess_Size && ((iIndex + SignalProcess_Size) <= recordData.length)) {
-                        float[] fData = new float[SignalProcess_Size];
-                        System.arraycopy(recordData, iIndex, fData, 0, SignalProcess_Size);
-                        iIndex += SignalProcess_Size;
-                        int iLen = 20;
-                        float[] costArr = new float[iLen];
-                        costArr = ppi.doActionRecognitionV2(ppi.nativeSignalProcess, fData, fData.length, GlobalConfig.sFileResultPath, str);
-                        long lCostTime = System.currentTimeMillis() - lBeginTime;
-//                        Log.i("doActionRecognition", "cost:" + lCostTime + "|type:" + costArr[0]);
-                        //vecSrc.erase(vecSrc.begin(), vecSrc.begin() + SignalProcess_Size);
-                    }
-                }
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
 
 }

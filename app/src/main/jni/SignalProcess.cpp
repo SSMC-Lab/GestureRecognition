@@ -114,15 +114,13 @@ int SignalProcess::doDtw(vector<float> pStroke, int iSize, vector<float>& vDis, 
 	return iType;
 }
 
-int  SignalProcess::doProcessV2(float *pSignal, int iLen, float *costArr, int length, string sResultPath, string fileName)
+int SignalProcess::doProcessV2(float *pSignal, int iLen, float *costArr, int length, string sResultPath, string fileName)
 {
     return -1;
 }
 
-int  SignalProcess::doProcessV3(short *pSignal, int iLen,  string sResultPath, string fileName)
+int SignalProcess::doProcessV3(short *pSignal, int iLen,  string sResultPath, string fileName)
 {
-        //struct timeval start, end;
-        //gettimeofday(&start, NULL);
 		//累积数据
 	    Spectrogram stSpectrogram;
         ButterworthFilter stButterworthFilter;
@@ -138,7 +136,6 @@ int  SignalProcess::doProcessV3(short *pSignal, int iLen,  string sResultPath, s
 
 		int iFrame = 5;
 		int iPool = step *(iFrame - 1) + iNfft;
-
 		int iMark = 0;
 		int iStart = 1;
 		int iWatingTime = 100;

@@ -1,17 +1,13 @@
 package com.example.monster.airgesture.ui.input;
 
-import android.os.Handler;
-import android.os.Message;
-
 import com.example.monster.airgesture.Conditions;
-import com.example.monster.airgesture.GlobalConfig;
 import com.example.monster.airgesture.data.DataProvider;
 import com.example.monster.airgesture.data.IDataSource;
 import com.example.monster.airgesture.data.bean.Word;
-import com.example.monster.airgesture.phase.RecognitionSwitch;
+import com.example.monster.airgesture.phase.IPhaseBiz;
+import com.example.monster.airgesture.phase.PhaseBizProvider;
 import com.example.monster.airgesture.ui.base.BasePresenter;
 import com.example.monster.airgesture.utils.FileCopyUtils;
-import com.example.monster.airgesture.utils.HandlerUtils;
 import com.example.monster.airgesture.utils.LogUtils;
 import com.example.monster.airgesture.utils.StringUtils;
 
@@ -24,19 +20,22 @@ import java.util.List;
  */
 
 public class InputPresenter<V extends IInputContract.View> extends BasePresenter<V>
-        implements IInputContract.Presenter<V>, HandlerUtils.OnReceiveMessageListener {
+        implements IInputContract.Presenter<V> {
 
     private boolean isNumKeyboard = false;
     private IDataSource dataRepository;
     private StringBuilder coding;
-    private RecognitionSwitch recognitionSwitch;
-    private Handler mHandler; //handler会回传phase模块解析出的手势，并递交给presenter内部处理
+    private IPhaseBiz phaseBiz;
 
     public InputPresenter() {
         dataRepository = DataProvider.provideDataRepository();
+        phaseBiz = PhaseBizProvider.providePhaseBiz(new IPhaseBiz.PhaseListener() {
+            @Override
+            public void receiveActionType(float type) {
+                receiveWord((int) type);
+            }
+        });
         resetCurrentUser();
-        recognitionSwitch = RecognitionSwitch.getInstance();
-        mHandler = new HandlerUtils.HandlerHolder(this);
         coding = new StringBuilder();
         copyTemplate("heng2.txt");
         copyTemplate("shu2.txt");
@@ -87,12 +86,12 @@ public class InputPresenter<V extends IInputContract.View> extends BasePresenter
 
     @Override
     public void startRecording() {
-        recognitionSwitch.startRecognition(mHandler);
+        phaseBiz.startRecognition();
     }
 
     @Override
     public void stopRecording() {
-        recognitionSwitch.stopRecognition();
+        phaseBiz.stopRecognition();
     }
 
     @Override
@@ -114,15 +113,6 @@ public class InputPresenter<V extends IInputContract.View> extends BasePresenter
      * 拷贝用于解析的模板数据
      */
     private void copyTemplate(String templateName) {
-        FileCopyUtils.copyInAssets(templateName, GlobalConfig.sFileTemplatePath + templateName);
-    }
-
-    @Override
-    public void handlerMessage(Message msg) {
-        switch (msg.what) {
-            case Conditions.MESSAGE_PHASE_MODEL:
-                receiveWord((int) msg.getData().getFloat(Conditions.TYPE));
-                break;
-        }
+        FileCopyUtils.copyInAssets(templateName, Conditions.sFileTemplatePath + templateName);
     }
 }

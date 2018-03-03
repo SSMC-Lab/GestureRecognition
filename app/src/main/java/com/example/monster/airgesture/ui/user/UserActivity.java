@@ -15,7 +15,6 @@ import com.example.monster.airgesture.Conditions;
 import com.example.monster.airgesture.R;
 import com.example.monster.airgesture.ui.base.BaseActivity;
 import com.example.monster.airgesture.ui.input.InputActivity;
-import com.example.monster.airgesture.ui.test.MainActivity;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -94,10 +93,7 @@ public class UserActivity extends BaseActivity<IUserListContract.Presenter>
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.action_main) {
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
-        }
+
         return super.onOptionsItemSelected(item);
     }
 }

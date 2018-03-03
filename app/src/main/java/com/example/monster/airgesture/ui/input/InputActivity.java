@@ -23,7 +23,6 @@ import com.example.monster.airgesture.data.bean.CandidateWord;
 import com.example.monster.airgesture.data.bean.Word;
 import com.example.monster.airgesture.timer.TimerHelper;
 import com.example.monster.airgesture.timer.TimerProcessor;
-import com.example.monster.airgesture.ui.test.MainActivity;
 import com.example.monster.airgesture.ui.base.BaseActivity;
 import com.example.monster.airgesture.ui.user.UserActivity;
 import com.example.monster.airgesture.utils.StringUtils;
@@ -408,12 +407,7 @@ public class InputActivity extends BaseActivity<IInputContract.Presenter> implem
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.action_test) {
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
-            finish();
-            return true;
-        } else if (id == R.id.action_user) {
+         if (id == R.id.action_user) {
             Intent intent = new Intent(this, UserActivity.class);
             startActivity(intent);
             finish();

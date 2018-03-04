@@ -1,18 +1,13 @@
 package com.example.monster.airgesture.ui.input;
 
-import android.os.Handler;
-import android.os.Message;
-
 import com.example.monster.airgesture.Conditions;
-import com.example.monster.airgesture.GlobalConfig;
-import com.example.monster.airgesture.data.DataFactory;
-import com.example.monster.airgesture.data.IUserDAO;
-import com.example.monster.airgesture.data.IWordDAO;
+import com.example.monster.airgesture.data.DataProvider;
+import com.example.monster.airgesture.data.IDataSource;
 import com.example.monster.airgesture.data.bean.Word;
-import com.example.monster.airgesture.phase.RecognitionSwitch;
+import com.example.monster.airgesture.phase.IPhaseBiz;
+import com.example.monster.airgesture.phase.PhaseBizProvider;
 import com.example.monster.airgesture.ui.base.BasePresenter;
 import com.example.monster.airgesture.utils.FileCopyUtils;
-import com.example.monster.airgesture.utils.HandlerUtils;
 import com.example.monster.airgesture.utils.LogUtils;
 import com.example.monster.airgesture.utils.StringUtils;
 
@@ -25,67 +20,23 @@ import java.util.List;
  */
 
 public class InputPresenter<V extends IInputContract.View> extends BasePresenter<V>
-        implements IInputContract.Presenter<V>, HandlerUtils.OnReceiveMessageListener {
+        implements IInputContract.Presenter<V> {
 
     private boolean isNumKeyboard = false;
+    private IDataSource dataRepository;
     private StringBuilder coding;
-    private IWordDAO mWordDAO;
-    private IUserDAO mUserDAO;
-    private RecognitionSwitch recognitionSwitch;
-    private Handler mHandler; //handler会回传phase模块解析出的手势，并递交给presenter内部处理
+    private IPhaseBiz phaseBiz;
 
     public InputPresenter() {
-        mWordDAO = DataFactory.getWordDAO();
-        mUserDAO = DataFactory.getUserDAO();
+        dataRepository = DataProvider.provideDataRepository();
+        phaseBiz = PhaseBizProvider.providePhaseBiz(new IPhaseBiz.PhaseListener() {
+            @Override
+            public void receiveActionType(float type) {
+                receiveWord((int) type);
+            }
+        });
         resetCurrentUser();
-        recognitionSwitch = RecognitionSwitch.getInstance();
-        mHandler = new HandlerUtils.HandlerHolder(this);
         coding = new StringBuilder();
-        initConfig();
-    }
-
-    private void findWord(String coding) {
-        LogUtils.i("find word");
-        if (!StringUtils.isEmpty(coding)) {
-            List<Word> words = mWordDAO.getWords(coding);
-            getView().setWordInView(words);
-        } else {
-            LogUtils.e("Coding is null");
-        }
-    }
-
-    @Override
-    public void findContactedWord(String word) {
-        if (!StringUtils.isEmpty(word)) {
-            List<Word> words = mWordDAO.getContacted(word);
-            getView().setWordInView(words);
-            LogUtils.i("set contacted word，size = " + words.size());
-        }
-    }
-
-    private void receiveWord(int type) {
-        if (!isNumKeyboard) {
-            getView().setStroke(type);
-            coding.append(type);
-            findWord(coding.toString());
-            LogUtils.i("receive gesture : " + type);
-        }
-    }
-
-    @Override
-    public void changeNumKeyboard() {
-        LogUtils.i("change num keyboard ");
-        List<Word> words = isNumKeyboard ? new ArrayList<Word>() : mWordDAO.getNum();
-        getView().setWordInView(words);
-        isNumKeyboard = !isNumKeyboard;
-    }
-
-    @Override
-    public void resetCurrentUser() {
-        mWordDAO.attachUser(mUserDAO.getCurrentUser());
-    }
-
-    private void initConfig() {
         copyTemplate("heng2.txt");
         copyTemplate("shu2.txt");
         copyTemplate("youhu2.txt");
@@ -94,21 +45,59 @@ public class InputPresenter<V extends IInputContract.View> extends BasePresenter
         copyTemplate("zuoxie2.txt");
     }
 
+    private void findWord(String coding) {
+        if (!StringUtils.isEmpty(coding)) {
+            List<Word> words = dataRepository.findWords(coding);
+            getView().showWordInWordArea(words);
+        } else {
+            LogUtils.e("Coding is null");
+        }
+    }
+
+    @Override
+    public void findContactedWord(String word) {
+        if (!StringUtils.isEmpty(word)) {
+            List<Word> words = dataRepository.findContactedWord(word);
+            getView().showWordInWordArea(words);
+            LogUtils.d("set contacted word，size = " + words.size());
+        }
+    }
+
+    private void receiveWord(int type) {
+        if (!isNumKeyboard) {
+            getView().enterStroke(type);
+            coding.append(type);
+            findWord(coding.toString());
+            LogUtils.d("receive gesture : " + type);
+        }
+    }
+
+    @Override
+    public void changeNumKeyboard() {
+        List<Word> words = isNumKeyboard ? new ArrayList<Word>() : dataRepository.getNum();
+        getView().showWordInWordArea(words);
+        isNumKeyboard = !isNumKeyboard;
+    }
+
+    @Override
+    public void resetCurrentUser() {
+        dataRepository.resetCurrentUser();
+    }
+
     @Override
     public void startRecording() {
-        recognitionSwitch.startRecognition(mHandler);
+        phaseBiz.startRecognition();
     }
 
     @Override
     public void stopRecording() {
-        recognitionSwitch.stopRecognition();
+        phaseBiz.stopRecognition();
     }
 
     @Override
     public void clearStoker() {
         coding.delete(0, coding.length());
-        getView().setWordInView(new ArrayList<Word>());
-        LogUtils.d("clear stoker");
+        getView().showWordInWordArea(new ArrayList<Word>());
     }
 
     @Override
@@ -124,15 +113,6 @@ public class InputPresenter<V extends IInputContract.View> extends BasePresenter
      * 拷贝用于解析的模板数据
      */
     private void copyTemplate(String templateName) {
-        FileCopyUtils.copyInAssets(templateName, GlobalConfig.sFileTemplatePath + templateName);
-    }
-
-    @Override
-    public void handlerMessage(Message msg) {
-        switch (msg.what) {
-            case Conditions.MESSAGE_PHASE_MODEL:
-                receiveWord((int) msg.getData().getFloat(Conditions.TYPE));
-                break;
-        }
+        FileCopyUtils.copyInAssets(templateName, Conditions.sFileTemplatePath + templateName);
     }
 }

@@ -13,7 +13,6 @@ import android.widget.TextView;
 
 import com.example.monster.airgesture.Conditions;
 import com.example.monster.airgesture.R;
-import com.example.monster.airgesture.ui.PresenterFactory;
 import com.example.monster.airgesture.ui.base.BaseFragment;
 import com.example.monster.airgesture.utils.StringUtils;
 
@@ -79,7 +78,7 @@ public class UserCreatorFragment extends BaseFragment<IUserCreatorContract.Prese
 
     @Override
     protected IUserCreatorContract.Presenter setPresenter() {
-        return PresenterFactory.getUserCreatorPresenter();
+        return new UserCreatorPresenter();
     }
 
     @Override
@@ -97,18 +96,18 @@ public class UserCreatorFragment extends BaseFragment<IUserCreatorContract.Prese
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        taskQueue.add(new Task("当您写 一 的时候，您是想写……", Task.TASK_TYPE.NEXT_LETTER_SELECTED,
-                Conditions.gestureHengCode));
-        taskQueue.add(new Task("当您写 | 的时候，您是想写……", Task.TASK_TYPE.NEXT_LETTER_SELECTED,
-                Conditions.gestureShuCode));
-        taskQueue.add(new Task("当您写 / 的时候，您是想写……", Task.TASK_TYPE.NEXT_LETTER_SELECTED,
-                Conditions.gestureZuoXieCode));
-        taskQueue.add(new Task("当您写 \\ 的时候，您是想写……", Task.TASK_TYPE.NEXT_LETTER_SELECTED,
-                Conditions.gestureYouXieCode));
-        taskQueue.add(new Task("当您写 ⊂ 的时候，您是想写……", Task.TASK_TYPE.NEXT_LETTER_SELECTED,
-                Conditions.gestureZuoHuCode));
+        taskQueue.add(new Task("当您写 一 的时候，您是想写……",
+                TASK_TYPE.NEXT_LETTER_SELECTED, Conditions.gestureHengCode));
+        taskQueue.add(new Task("当您写 | 的时候，您是想写……",
+                TASK_TYPE.NEXT_LETTER_SELECTED, Conditions.gestureShuCode));
+        taskQueue.add(new Task("当您写 / 的时候，您是想写……",
+                TASK_TYPE.NEXT_LETTER_SELECTED, Conditions.gestureZuoXieCode));
+        taskQueue.add(new Task("当您写 \\ 的时候，您是想写……",
+                TASK_TYPE.NEXT_LETTER_SELECTED, Conditions.gestureYouXieCode));
+        taskQueue.add(new Task("当您写 ⊂ 的时候，您是想写……",
+                TASK_TYPE.NEXT_LETTER_SELECTED, Conditions.gestureZuoHuCode));
         taskQueue.add(new Task("当您写 ⊃ 的时候，您是想写……\n点击提交完成用户创建,请确认您填写了用户名",
-                Task.TASK_TYPE.CREATE_USER, -1));
+                TASK_TYPE.CREATE_USER, -1));
         showNextTask();
     }
 
@@ -127,7 +126,7 @@ public class UserCreatorFragment extends BaseFragment<IUserCreatorContract.Prese
         //从任务队列中查找任务
         Task task = taskQueue.poll();
         if (task != null) {
-            if (task.type == Task.TASK_TYPE.CREATE_USER) {
+            if (task.type == TASK_TYPE.CREATE_USER) {
                 String username = userName.getText().toString();
                 if (!StringUtils.isEmpty(username)) {
                     //右弧对应的字母的此时还没提交
@@ -141,10 +140,10 @@ public class UserCreatorFragment extends BaseFragment<IUserCreatorContract.Prese
                             .setAction("Action", null).show();
                     taskQueue.add(new Task("当您写 ⊃ 的时候，您是想写……\n" +
                             "点击提交完成用户创建,请确认您填写了用户名",
-                            Task.TASK_TYPE.CREATE_USER, -1));
+                            TASK_TYPE.CREATE_USER, -1));
                     showNextTask();
                 }
-            } else if (task.type == Task.TASK_TYPE.NEXT_LETTER_SELECTED) {
+            } else if (task.type == TASK_TYPE.NEXT_LETTER_SELECTED) {
                 getPresenter().saveLetterMapping(mSelectedLetter, task.gestureCode);
                 mChoicedLetter.removeAll(mSelectedLetter);
                 refreshLettersAfterSelected(mChoicedLetter);
@@ -161,9 +160,9 @@ public class UserCreatorFragment extends BaseFragment<IUserCreatorContract.Prese
         Task task = taskQueue.peek();
         if (task != null) {
             hint.setText(task.hint);
-            if (task.type == Task.TASK_TYPE.CREATE_USER) {
+            if (task.type == TASK_TYPE.CREATE_USER) {
                 btNextStep.setText(R.string.user_creator_submit);
-            } else if (task.type == Task.TASK_TYPE.NEXT_LETTER_SELECTED) {
+            } else if (task.type == TASK_TYPE.NEXT_LETTER_SELECTED) {
                 btNextStep.setText(R.string.user_creator_submit);
             }
         }
@@ -202,15 +201,15 @@ public class UserCreatorFragment extends BaseFragment<IUserCreatorContract.Prese
         void onFragmentInteraction(Uri uri);
     }
 
+    enum TASK_TYPE {
+        NEXT_LETTER_SELECTED,
+        CREATE_USER
+    }
+
     /**
      * 任务队列中的任务
      */
-    static class Task {
-
-        enum TASK_TYPE {
-            NEXT_LETTER_SELECTED,
-            CREATE_USER
-        }
+     class Task {
 
         private String hint;//用于提示用户操作
         private TASK_TYPE type;//用于识别当前任务类型

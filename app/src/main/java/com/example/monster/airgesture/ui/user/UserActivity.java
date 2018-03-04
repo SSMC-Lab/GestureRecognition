@@ -7,18 +7,16 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
 import com.example.monster.airgesture.Conditions;
 import com.example.monster.airgesture.R;
-import com.example.monster.airgesture.ui.PresenterFactory;
 import com.example.monster.airgesture.ui.base.BaseActivity;
 import com.example.monster.airgesture.ui.input.InputActivity;
-import com.example.monster.airgesture.ui.test.MainActivity;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class UserActivity extends BaseActivity<IUserListContract.Presenter>
@@ -33,30 +31,24 @@ public class UserActivity extends BaseActivity<IUserListContract.Presenter>
     private FragmentManager fragmentManager;
 
     @Override
-    protected IUserListContract.Presenter setPresenter() {
-        ///这里不该传一个Presenter实例，待改进
-        return PresenterFactory.getUserListPresenter();
-    }
-
-    @Override
-    protected int setLayout() {
+    protected int setContentLayoutId() {
         return R.layout.activity_user;
     }
 
     @Override
-    protected int getMenuId() {
-        return R.menu.menu_main;
+    protected IUserListContract.Presenter setPresenter() {
+        /*待改进
+        该Activity不应该指定Presenter，而是作为Presenter的控制类*/
+        return new UserListPresenter();
     }
 
     @Override
-    protected void initViews() {
-        ButterKnife.bind(this);
-    }
+    protected void initViews() {}
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setSupportActionBar(toolbar);
+//        setSupportActionBar(toolbar);
         fragmentManager = getFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.replace(R.id.fragment_user, UserListFragment.newInstance());
@@ -93,12 +85,15 @@ public class UserActivity extends BaseActivity<IUserListContract.Presenter>
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.action_main) {
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
-        }
+
         return super.onOptionsItemSelected(item);
     }
 }

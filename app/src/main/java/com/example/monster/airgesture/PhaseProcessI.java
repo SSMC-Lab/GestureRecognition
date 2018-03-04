@@ -8,6 +8,10 @@ package com.example.monster.airgesture;
 
 public class PhaseProcessI {
 
+    static {
+        System.loadLibrary("PhaseProcess");  //导入C代码生成的二进制库
+    }
+
     //保存c++类的地址
     public long nativePerson;
     public long nativeSignalProcess;
@@ -15,11 +19,6 @@ public class PhaseProcessI {
     //构造函数
     public PhaseProcessI() {
         nativeSignalProcess = createNativeSignalProcess();
-    }
-
-
-    static {
-        System.loadLibrary("PhaseProcess");  //导入C代码生成的二进制库
     }
 
     public native String getJniString(); //去PhaseProcess.cpp文件中找出对应的方法实现
@@ -30,7 +29,6 @@ public class PhaseProcessI {
 
     public native float[] getBaseBand(long thizptr, int inNumFreq);
 
-    //public native float[] doProcess(long thizptr, int inNumFreq);
     public native long createNativeSignalProcess();
 
     public native float doActionRecognition(long thizptr, float[] recordData, int iLen);

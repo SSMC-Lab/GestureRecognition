@@ -106,7 +106,8 @@ JNICALL Java_com_example_monster_airgesture_PhaseProcessI_doActionRecognitionV2
 
 JNIEXPORT jfloat
 JNICALL Java_com_example_monster_airgesture_PhaseProcessI_doActionRecognitionV3
-        (JNIEnv *env, jobject obj, jlong thizptr, jshortArray recordData, jint size, jstring j_str, jstring j_str2) {
+        (JNIEnv *env, jobject obj, jlong thizptr, jshortArray recordData,
+        jint size, jstring j_str, jstring j_str2) {
 
     jshort * carr;
     carr = env->GetShortArrayElements(recordData, 0);

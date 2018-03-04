@@ -8,7 +8,7 @@ import com.example.monster.airgesture.utils.AlphabetUtils
 import com.example.monster.airgesture.utils.LogUtils
 
 /**
- * 辅助定制用户的dictionary
+ * 数据库创建辅助
  * Created by Welkinshadow on 2018/1/20.
  */
 
@@ -16,7 +16,7 @@ internal class UserCreatorHelper {
 
     companion object {
         fun createNewDictionary(user: User, repository: UserRepository, listener: IUserDataSource.OnCreateListener) {
-            val dictionaryDB = DatabaseManager.getmInstance().getDatabase(DatabaseManager.DB_NAME_DICTIONARY)
+            val dictionaryDB = DatabaseManager.getInstance().getDatabase(DatabaseManager.DB_NAME_DICTIONARY)
             val tableName = user.dictionaryName
 
             dictionaryDB.execSQL(

@@ -5,6 +5,7 @@ import com.example.monster.airgesture.data.user.UserRepository;
 import com.example.monster.airgesture.data.word.WordRepository;
 
 /**
+ * 依赖注入
  * Created by WelkinShadow on 18/2/21.
  */
 

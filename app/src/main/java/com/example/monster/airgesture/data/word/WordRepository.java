@@ -50,7 +50,7 @@ public class WordRepository implements IWordDataSource {
         mContext = BaseApplication.getContext();
         num = createNumList();
         //初始化数据库
-        DatabaseManager manager = DatabaseManager.getmInstance();
+        DatabaseManager manager = DatabaseManager.getInstance();
         mDictionary = manager.getDatabase(DatabaseManager.DB_NAME_DICTIONARY);
         mContacted = manager.getDatabase(DatabaseManager.DB_NAME_CONTACTED);
     }

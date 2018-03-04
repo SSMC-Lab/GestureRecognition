@@ -34,7 +34,7 @@ class ProbTableUtil {
     }
 
     /**
-     * 检查传入的序列是否存在纠错序列，不存在纠错序列返回false
+     * 检查传入的序列是否存在纠错序列，纠错序列不存在返回false
      */
     static boolean checkStr(String seq) {
         return seq.indexOf('1') != -1 || seq.indexOf('6') != -1 || seq.indexOf('2') != -1;
@@ -45,7 +45,7 @@ class ProbTableUtil {
     }
 
     /**
-     * 计算出纠错序列
+     * 计算纠错序列
      *
      * @param seq        待纠错序列
      * @param probMatrix 转移矩阵

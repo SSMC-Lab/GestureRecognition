@@ -21,6 +21,13 @@ public class UserRepository implements IUserDataSource {
 
     private static UserRepository INSTANCE = null;
 
+    //默认的手势类型-字母映射
+    private final List<Integer> defaultCode = new ArrayList<>(Arrays.asList(
+            3, 6, 5, 6, 2, 2, 5,
+            2, 1, 1, 2, 2, 3, 3,
+            5, 6, 5, 6, 5, 1,
+            5, 4, 4, 4, 4, 1));
+
     public static UserRepository getInstance() {
         if (INSTANCE == null) {
             INSTANCE = new UserRepository();
@@ -100,12 +107,7 @@ public class UserRepository implements IUserDataSource {
     @Override
     public User getDefaultUser() {
         if (defaultUser == null) {
-            List<Integer> code = new ArrayList<>(Arrays.asList(
-                    3, 6, 5, 6, 2, 2, 5,
-                    2, 1, 1, 2, 2, 3, 3,
-                    5, 6, 5, 6, 5, 1,
-                    5, 4, 4, 4, 4, 1));
-            defaultUser = new User("dictionary", code);
+            defaultUser = new User("dictionary", defaultCode);
         }
         return defaultUser;
     }

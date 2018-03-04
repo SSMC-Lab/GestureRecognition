@@ -6,6 +6,7 @@ import com.example.monster.airgesture.data.bean.Word;
 import java.util.List;
 
 /**
+ * Data业务逻辑接口
  * Created by WelkinShadow on 18/2/21.
  */
 

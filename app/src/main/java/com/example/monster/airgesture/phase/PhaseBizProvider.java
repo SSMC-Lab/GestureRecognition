@@ -13,14 +13,12 @@ public class PhaseBizProvider {
     /**
      * 提供{@link IPhaseBiz}实例
      *
-     * @param listener {@link IPhaseBiz.PhaseListener}
      * @return {@link IPhaseBiz}的实例对象
      */
-    public static IPhaseBiz providePhaseBiz(IPhaseBiz.PhaseListener listener) {
+    public static IPhaseBiz providePhaseBiz() {
         return new PhaseBiz(
                 new PhaseProxy(),
                 new PlayerTask(AUDIO_PLAY_FREQ, AUDIO_SAMPLE_RATE),
-                new RecorderTask(AudioFormat.CHANNEL_IN_MONO, AUDIO_SAMPLE_RATE, AudioFormat.ENCODING_PCM_16BIT),
-                listener);
+                new RecorderTask(AudioFormat.CHANNEL_IN_MONO, AUDIO_SAMPLE_RATE, AudioFormat.ENCODING_PCM_16BIT));
     }
 }

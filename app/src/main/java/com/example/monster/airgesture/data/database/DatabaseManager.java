@@ -1,6 +1,7 @@
 package com.example.monster.airgesture.data.database;
 
 import android.database.sqlite.SQLiteDatabase;
+
 import com.example.monster.airgesture.utils.FileCopyUtils;
 import java.io.File;
 import java.io.IOException;
@@ -19,7 +20,7 @@ public class DatabaseManager {
 
     private static final String DB_PATH = "/data/data/com.example.monster.airgesture/database";
 
-    private static DatabaseManager mInstance;
+    private static DatabaseManager INSTANCE;
 
     private Map<String, SQLiteDatabase> databases = new HashMap<>();
 
@@ -31,11 +32,11 @@ public class DatabaseManager {
         }
     }
 
-    public static DatabaseManager getmInstance() {
-        if (mInstance == null) {
-            mInstance = new DatabaseManager();
+    public static DatabaseManager getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new DatabaseManager();
         }
-        return mInstance;
+        return INSTANCE;
     }
 
     /**

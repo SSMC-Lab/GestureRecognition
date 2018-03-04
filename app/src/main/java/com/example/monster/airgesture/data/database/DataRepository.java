@@ -11,6 +11,7 @@ import com.example.monster.airgesture.data.word.WordRepository;
 import java.util.List;
 
 /**
+ * 数据库仓库
  * Created by WelkinShadow on 18/2/21.
  */
 
@@ -31,10 +32,6 @@ public class DataRepository implements IDataSource {
             INSTANCE = new DataRepository(mUserRepository, mWordRepository);
         }
         return INSTANCE;
-    }
-
-    public static void destroyInstance() {
-        INSTANCE = null;
     }
 
     @Override

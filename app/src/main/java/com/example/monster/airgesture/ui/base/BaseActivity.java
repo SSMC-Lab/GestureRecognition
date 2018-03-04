@@ -33,10 +33,6 @@ public abstract class BaseActivity<T extends IBaseContract.Presenter>
 
     protected abstract void initViews();
 
-    protected <V extends View> V findView(@IdRes int id) {
-        return (V) findViewById(id);
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

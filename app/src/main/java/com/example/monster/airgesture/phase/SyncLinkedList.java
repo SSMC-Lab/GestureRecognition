@@ -4,6 +4,7 @@ import java.util.LinkedList;
 
 /**
  * SyncLinkedList 线程安全的 LinkedList
+ * 做线程间通信
  */
 public class SyncLinkedList<T> {
     private LinkedList<T> list = null;

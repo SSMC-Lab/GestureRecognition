@@ -11,6 +11,6 @@ public interface IPhaseBiz {
     interface PhaseListener{
         void receiveActionType(float type);
     }
-    void startRecognition();
+    void startRecognition(PhaseListener listener);
     void stopRecognition();
 }

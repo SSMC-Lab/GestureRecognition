@@ -29,12 +29,7 @@ public class InputPresenter<V extends IInputContract.View> extends BasePresenter
 
     public InputPresenter() {
         dataRepository = DataProvider.provideDataRepository();
-        phaseBiz = PhaseBizProvider.providePhaseBiz(new IPhaseBiz.PhaseListener() {
-            @Override
-            public void receiveActionType(float type) {
-                receiveWord((int) type);
-            }
-        });
+        phaseBiz = PhaseBizProvider.providePhaseBiz();
         resetCurrentUser();
         coding = new StringBuilder();
         copyTemplate("heng2.txt");
@@ -86,7 +81,12 @@ public class InputPresenter<V extends IInputContract.View> extends BasePresenter
 
     @Override
     public void startRecording() {
-        phaseBiz.startRecognition();
+        phaseBiz.startRecognition(new IPhaseBiz.PhaseListener() {
+            @Override
+            public void receiveActionType(float type) {
+                receiveWord((int) type);
+            }
+        });
     }
 
     @Override
@@ -110,7 +110,7 @@ public class InputPresenter<V extends IInputContract.View> extends BasePresenter
     }
 
     /**
-     * 拷贝用于解析的模板数据
+     * 拷贝模板数据
      */
     private void copyTemplate(String templateName) {
         FileCopyUtils.copyInAssets(templateName, Conditions.sFileTemplatePath + templateName);

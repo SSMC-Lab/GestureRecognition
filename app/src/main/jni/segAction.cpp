@@ -8,7 +8,7 @@
 #define ACC_SEG_START_MIN  26
 #define ACC_SEG_END_SHIFT  15
 
-#define ACC_SEG_START_REAL_TIME_MIN  60
+//#define ACC_SEG_START_REAL_TIME_MIN  60
 //#define ACC_SEG_END_SHIFT  15
 int segAction::getAccelerate(float * pdata, int iLen, vector<float>& vAcc)
 {
@@ -94,7 +94,7 @@ int segAction::doseg(float * pAcc, int iLen, vector<int>& vpSegPos, int& iAction
 	return 0;
 }
 
-int segAction::doSegRealTime(float * pAcc, int iLen, int& iMark, int& iThresPoint,int & iStart, int& iEnd)
+int segAction::doSegRealTime(float * pAcc, int iLen, int & iMark, int & iThresPoint,int & iStart, int & iEnd,int sensitive)
 {
 	if (pAcc)
 	{		
@@ -103,7 +103,7 @@ int segAction::doSegRealTime(float * pAcc, int iLen, int& iMark, int& iThresPoin
 		{
 			if (iMark == 0) // need to find the start point
 			{
-				if (abs((int)(pAcc[i])) > ACC_SEG_START_REAL_TIME_MIN)
+				if (abs((int)(pAcc[i])) > sensitive)
 				{
 
 					int iSignum = 0;
@@ -168,8 +168,6 @@ int segAction::doSegRealTime(float * pAcc, int iLen, int& iMark, int& iThresPoin
 
 	}
 
-
-	//û��ȡ��ͬʱ��ʼ�ͽ�����  ���߿�ʼ�������ԵĻ�
 	if (iStart > iEnd || iMark != 0)
 	{
 		iStart = 0;

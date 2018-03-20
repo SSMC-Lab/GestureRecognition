@@ -1,7 +1,8 @@
 package com.example.monster.airgesture.phase;
 
-import com.example.monster.airgesture.Conditions;
+import com.example.monster.airgesture.GlobalConfig;
 
+import com.example.monster.airgesture.base.BaseApplication;
 import com.example.monster.airgesture.utils.LogUtils;
 
 import java.util.Queue;
@@ -23,9 +24,9 @@ public class PhaseBiz implements IPhaseBiz {
         this.mPhaseProxy = mPhaseProxy;
         this.mPlayerTask = mPlayerTask;
         this.mRecorderTask = mRecorderTask;
-        Conditions.fAbsolutePath.mkdirs();//创建文件夹
-        Conditions.fTemplatePath.mkdirs();//创建文件夹
-        Conditions.fResultPath.mkdirs();//创建文件夹
+        GlobalConfig.fAbsolutePath.mkdirs();//创建文件夹
+        GlobalConfig.fTemplatePath.mkdirs();//创建文件夹
+        GlobalConfig.fResultPath.mkdirs();//创建文件夹
     }
 
     @Override

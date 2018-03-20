@@ -12,12 +12,12 @@ android {
         minSdkVersion 21
         targetSdkVersion 21
         versionCode 1
-        versionName "0.11.0"
+        versionName "0.12.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
-    sourceSets{
-        main{
+    sourceSets {
+        main {
             jni.srcDirs = []    // disable automatic ndk-build call, which ignore our Android.mk
             jniLibs.srcDir 'src/main/jni/libs'
         }
@@ -31,9 +31,9 @@ android {
     }
 
     task ndkBuild(type: Exec) {
-        File workingDir=file('src/main/jni')
+        File workingDir = file('src/main/jni')
         println workingDir.absolutePath
-        commandLine getNdkBuildCmd(),'NDK_PROJECT_PATH='+workingDir.absolutePath,'APP_BUILD_SCRIPT='+workingDir.absolutePath+'/Android.mk','NDK_APPLICATION_MK='+workingDir.absolutePath+'/Application.mk'
+        commandLine getNdkBuildCmd(), 'NDK_PROJECT_PATH=' + workingDir.absolutePath, 'APP_BUILD_SCRIPT=' + workingDir.absolutePath + '/Android.mk', 'NDK_APPLICATION_MK=' + workingDir.absolutePath + '/Application.mk'
     }
 
     tasks.withType(JavaCompile) {
@@ -71,7 +71,8 @@ dependencies {
     implementation 'com.jakewharton:butterknife:8.8.1'
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
     implementation 'com.android.support:design:25.4.0'
-    implementation   'com.android.support:recyclerview-v7:25.4.0'
+    implementation 'com.android.support:recyclerview-v7:25.4.0'
+    implementation 'com.android.support:support-v4:25.4.0'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
     androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'

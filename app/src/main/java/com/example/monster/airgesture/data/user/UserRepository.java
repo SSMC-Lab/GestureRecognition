@@ -1,6 +1,6 @@
 package com.example.monster.airgesture.data.user;
 
-import com.example.monster.airgesture.Conditions;
+import com.example.monster.airgesture.GlobalConfig;
 import com.example.monster.airgesture.data.bean.User;
 import com.example.monster.airgesture.utils.SPUtils;
 
@@ -51,7 +51,7 @@ public class UserRepository implements IUserDataSource {
 
     @Override
     public User getCurrentUser() {
-        int currentUserId = (int) SPUtils.get(Conditions.CURRENT_USER_ID, -1);
+        int currentUserId = (int) SPUtils.get(GlobalConfig.CURRENT_USER_ID, -1);
         if (currentUserId != -1) {
             return DataSupport.find(User.class, currentUserId);
         } else {
@@ -63,7 +63,7 @@ public class UserRepository implements IUserDataSource {
 
     @Override
     public void setCurrentUser(User user) {
-        SPUtils.put(Conditions.CURRENT_USER_ID, user.getId());
+        SPUtils.put(GlobalConfig.CURRENT_USER_ID, user.getId());
     }
 
     @Override

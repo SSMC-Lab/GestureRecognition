@@ -1,15 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
-    android:layout_height="match_parent"
+    android:layout_height="@dimen/word_height"
     android:id="@+id/item_layout"
     android:descendantFocusability="blocksDescendants"
     android:orientation="vertical">
 
     <TextView
-        android:padding="12dp"
-        android:textSize="20sp"
+        android:padding="8dp"
+        android:textSize="18sp"
+        android:gravity="center"
+        android:text="测试性文本"
         android:id="@+id/item_text"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="match_parent" />
 </LinearLayout>

@@ -1,11 +1,9 @@
 package com.example.monster.airgesture.utils;
 
 import android.content.Context;
-import android.util.Log;
 
-import com.example.monster.airgesture.ui.base.BaseApplication;
+import com.example.monster.airgesture.base.BaseApplication;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;

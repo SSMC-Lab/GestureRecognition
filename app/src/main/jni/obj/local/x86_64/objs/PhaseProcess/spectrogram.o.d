@@ -1,11 +1,11 @@
-E:\workcode\G4\gama\GestureRecognition_AndroidStudio\shendaGestureRecognition\app\src\main\jni/obj/local/x86_64/objs/PhaseProcess/spectrogram.o: \
-  E:/workcode/G4/gama/GestureRecognition_AndroidStudio/shendaGestureRecognition/app/src/main/jni/spectrogram.cpp \
-  D:/Android/sdk/ndk-bundle/build//../sources/cxx-stl/gnu-libstdc++/4.9/include\iostream \
-  D:/Android/sdk/ndk-bundle/build//../sources/cxx-stl/gnu-libstdc++/4.9/include\complex \
-  E:/workcode/G4/gama/GestureRecognition_AndroidStudio/shendaGestureRecognition/app/src/main/jni/Spectrogram.h
+F:\projects\android\GestureRecognitionGit\app\src\main\jni/obj/local/x86_64/objs/PhaseProcess/spectrogram.o: \
+  F:/projects/android/GestureRecognitionGit/app/src/main/jni/spectrogram.cpp \
+  C:/Users/lenovo/AppData/Local/Android/Sdk/ndk-bundle/build//../sources/cxx-stl/gnu-libstdc++/4.9/include\iostream \
+  C:/Users/lenovo/AppData/Local/Android/Sdk/ndk-bundle/build//../sources/cxx-stl/gnu-libstdc++/4.9/include\complex \
+  F:/projects/android/GestureRecognitionGit/app/src/main/jni/Spectrogram.h
 
-D:/Android/sdk/ndk-bundle/build//../sources/cxx-stl/gnu-libstdc++/4.9/include\iostream:
+C:/Users/lenovo/AppData/Local/Android/Sdk/ndk-bundle/build//../sources/cxx-stl/gnu-libstdc++/4.9/include\iostream:
 
-D:/Android/sdk/ndk-bundle/build//../sources/cxx-stl/gnu-libstdc++/4.9/include\complex:
+C:/Users/lenovo/AppData/Local/Android/Sdk/ndk-bundle/build//../sources/cxx-stl/gnu-libstdc++/4.9/include\complex:
 
-E:/workcode/G4/gama/GestureRecognition_AndroidStudio/shendaGestureRecognition/app/src/main/jni/Spectrogram.h:
+F:/projects/android/GestureRecognitionGit/app/src/main/jni/Spectrogram.h:

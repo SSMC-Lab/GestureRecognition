@@ -22,7 +22,7 @@ public:
     int costTime(struct timeval& stbegin, struct timeval& stend);
 	int  doDtw(vector<float> pStroke, int iSize, vector<float>& vDis, const string& sResultPath, const string&  fileName);
 	int  getNoiseNum() {	return noisenum;}
-	int  doProcessV3(short *pSignal, int iLen,  string sResultPath, string fileName);
+	int  doProcessV3(short *pSignal, int iLen,  string sResultPath, string fileName,int sensitive);
 private:	
 	int  loadTemplate(string sPath);
 	

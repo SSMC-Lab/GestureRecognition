@@ -8,57 +8,16 @@
 extern "C" {
 #endif
 /*
- * Class:     com_example_monster_airgesture_PhaseProcessI
- * Method:    getJniString
- * Signature: ()Ljava/lang/String;
- */
-JNIEXPORT jstring JNICALL Java_com_example_monster_airgesture_PhaseProcessI_getJniString
-        (JNIEnv *, jobject);
-
-/*
- * Class:     com_example_monster_airgesture_PhaseProcessI
- * Method:    createNativeRangeFinder
- * Signature: (IIFF)J
- */
-JNIEXPORT jlong JNICALL Java_com_example_monster_airgesture_PhaseProcessI_createNativeRangeFinder
-        (JNIEnv *, jobject, jint, jint, jfloat, jfloat);
-
-/*
- * Class:     com_example_monster_airgesture_PhaseProcessI
- * Method:    getDistanceChange
- * Signature: (J[SI)F
- */
-JNIEXPORT jfloat JNICALL Java_com_example_monster_airgesture_PhaseProcessI_getDistanceChange
-        (JNIEnv *, jobject, jlong, jshortArray, jint);
-
-/*
- * Class:     com_example_monster_airgesture_PhaseProcessI
- * Method:    getBaseBand
- * Signature: ()[F
- */
-JNIEXPORT jfloatArray JNICALL Java_com_example_monster_airgesture_PhaseProcessI_getBaseBand
-        (JNIEnv *, jobject, jlong , jint);
-/*
  * Class:     Java_com_example_monster_airgesture_PhaseProcessI_createNativePhaseProcess
  * Method:    createNativePhaseProcess
  * Signature: (IIFF)J
  */
 JNIEXPORT jlong JNICALL Java_com_example_monster_airgesture_PhaseProcessI_createNativeSignalProcess
         (JNIEnv *, jobject);
-/*
- * Class:     Java_com_example_monster_airgesture_PhaseProcessI_doActionRecognition
- * Method:    doActionRecognition
- * Signature: ()[F
- */
-JNIEXPORT jfloat JNICALL Java_com_example_monster_airgesture_PhaseProcessI_doActionRecognition
-        (JNIEnv *, jobject,  jlong, jfloatArray, jint);
 
-
-JNIEXPORT jfloatArray JNICALL Java_com_example_monster_airgesture_PhaseProcessI_doActionRecognitionV2
-        (JNIEnv *, jobject,  jlong, jfloatArray, jint, jstring j_str, jstring j_str2);
 
 JNIEXPORT jfloat JNICALL Java_com_example_monster_airgesture_PhaseProcessI_doActionRecognitionV3
-        (JNIEnv *, jobject,  jlong, jshortArray, jint, jstring j_str, jstring j_str2);
+        (JNIEnv *, jobject,  jlong, jshortArray, jint, jstring j_str, jstring j_str2, jint sensitive);
 
 
 JNIEXPORT jfloat JNICALL Java_com_example_monster_airgesture_PhaseProcessI_doInit

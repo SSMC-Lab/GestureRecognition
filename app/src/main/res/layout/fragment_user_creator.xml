@@ -19,6 +19,7 @@
         app:layout_constraintTop_toTopOf="@+id/edit_user_name" />
 
     <EditText
+        android:hint="please enter your name"
         android:id="@+id/edit_user_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -47,9 +48,11 @@
         android:id="@+id/text_hint_gesture"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView3" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/textView3"
+        app:layout_constraintTop_toTopOf="@+id/textView3" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerView_letter"

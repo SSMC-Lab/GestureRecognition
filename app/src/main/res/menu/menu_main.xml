@@ -4,12 +4,16 @@
     tools:context=".ui.test.MainActivity">
     <item
         android:id="@+id/action_user"
+        android:icon="@drawable/ic_user"
         android:orderInCategory="100"
         android:title="user"
-        app:showAsAction="never" />
+        app:showAsAction="always" />
+
     <item
-        android:id="@+id/action_main"
+        android:id="@+id/action_setting"
+        android:icon="@drawable/ic_setting"
         android:orderInCategory="100"
-        android:title="main"
-        app:showAsAction="never" />
+        android:title="setting"
+        app:showAsAction="always" />
+
 </menu>

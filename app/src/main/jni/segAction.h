@@ -8,24 +8,24 @@ public:
 	segAction() {};
 	~segAction() {};
 	/*
-	*¼ÆËã²¨ÐÎ±ä»¯µÄ¼ÓËÙ¶È
-	*@ÊäÈë£ºpdata ²¨ÐÎÊý¾Ý  iLen, Êý¾Ý³¤¶È
-	*@Êä³ö£ºppAcc ²¨ÐÎµÄ¼ÓËÙ¶È£¬ Î¬ÊýºÍpdataÏàÍ¬
+	*ï¿½ï¿½ï¿½ã²¨ï¿½Î±ä»¯ï¿½Ä¼ï¿½ï¿½Ù¶ï¿½
+	*@ï¿½ï¿½ï¿½ë£ºpdata ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½  iLen, ï¿½ï¿½ï¿½Ý³ï¿½ï¿½ï¿½
+	*@ï¿½ï¿½ï¿½ï¿½ï¿½ppAcc ï¿½ï¿½ï¿½ÎµÄ¼ï¿½ï¿½Ù¶È£ï¿½ Î¬ï¿½ï¿½ï¿½ï¿½pdataï¿½ï¿½Í¬
 	*/
 	int getAccelerate(float * pdata, int iLen, vector<float>& vAcc);
 	/*
-	*½øÐÐ¶¯×÷²ð·Ö
-	*@ÊäÈë£ºpAcc Ã¿¸öµãµÄ¼ÓËÙ¶È iLen ¼ÓËÙ¶ÈµÄµãÊý
-	*@Êä³ö£ºvpSegPoss ²ð·ÖµÄ¶¯×÷µÄÆðÊ¼½áÊøÎ»ÖÃ£¬ iActionNum ²ð·ÖµÄ¶¯×÷¸öÊý
+	*ï¿½ï¿½ï¿½Ð¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	*@ï¿½ï¿½ï¿½ë£ºpAcc Ã¿ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½Ù¶ï¿½ iLen ï¿½ï¿½ï¿½Ù¶ÈµÄµï¿½ï¿½ï¿½
+	*@ï¿½ï¿½ï¿½ï¿½ï¿½vpSegPoss ï¿½ï¿½ÖµÄ¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½Î»ï¿½Ã£ï¿½ iActionNum ï¿½ï¿½ÖµÄ¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	*/
 	int doseg(float * pAcc, int iLen, vector<int>& vpSegPos, int& iActionNum);
 
 	/*
-	*½øÐÐÊµÊ±¶¯×÷²ð·Ö
-	*@ÊäÈë£ºpAcc Ã¿¸öµãµÄ¼ÓËÙ¶È iLen ¼ÓËÙ¶ÈµÄµãÊý
-	*@Êä³ö£ºvpSegPoss ²ð·ÖµÄ¶¯×÷µÄÆðÊ¼½áÊøÎ»ÖÃ£¬ iActionNum ²ð·ÖµÄ¶¯×÷¸öÊý
+	*ï¿½ï¿½ï¿½ï¿½ÊµÊ±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	*@ï¿½ï¿½ï¿½ë£ºpAcc Ã¿ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½Ù¶ï¿½ iLen ï¿½ï¿½ï¿½Ù¶ÈµÄµï¿½ï¿½ï¿½
+	*@ï¿½ï¿½ï¿½ï¿½ï¿½vpSegPoss ï¿½ï¿½ÖµÄ¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½Î»ï¿½Ã£ï¿½ iActionNum ï¿½ï¿½ÖµÄ¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	*/
-	int doSegRealTime(float * pAcc, int iLen, int& iMark, int& iThresPoint, int & iStart, int& iEnd);
+	int doSegRealTime(float * pAcc, int iLen, int& iMark, int& iThresPoint, int & iStart, int& iEnd,int sensitive);
 
 private:
 };

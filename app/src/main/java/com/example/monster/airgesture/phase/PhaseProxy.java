@@ -4,10 +4,12 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 
-import com.example.monster.airgesture.Conditions;
+import com.example.monster.airgesture.GlobalConfig;
 
 import com.example.monster.airgesture.PhaseProcessI;
-import com.example.monster.airgesture.utils.LogUtils;
+import com.example.monster.airgesture.R;
+import com.example.monster.airgesture.base.BaseApplication;
+import com.example.monster.airgesture.utils.SPUtils;
 
 import java.util.Queue;
 
@@ -24,7 +26,7 @@ public class PhaseProxy {
 
     PhaseProxy() {
         ppi = new PhaseProcessI();
-        ppi.doInit(ppi.nativeSignalProcess, Conditions.sFileTemplatePath);
+        ppi.doInit(ppi.nativeSignalProcess, GlobalConfig.sFileTemplatePath);
     }
 
     public void start(Queue<short[]> queue, IPhaseBiz.PhaseListener listener) {
@@ -33,8 +35,8 @@ public class PhaseProxy {
         mHandler = new Handler(new Handler.Callback() {
             @Override
             public boolean handleMessage(Message msg) {
-                if (msg.what == Conditions.MESSAGE_PHASE_MODEL) {
-                    mListener.receiveActionType(msg.getData().getFloat(Conditions.TYPE));
+                if (msg.what == GlobalConfig.MESSAGE_PHASE_MODEL) {
+                    mListener.receiveActionType(msg.getData().getFloat(GlobalConfig.TYPE));
                 }
                 return true;
             }
@@ -53,22 +55,21 @@ public class PhaseProxy {
         isReadyRunning = false;
     }
 
-
     private void saveRecordDataToFile() {
         while (isReadyRunning) {
             short[] recData = mQueue.poll();
             if (recData != null) {
+                int sensitive = (int) SPUtils.get(BaseApplication.getContext().getString(R.string.key_sensibility), 60);
                 //LogUtils.d("recData len in PhaseProxy : " + recData.length);
-                String sFileName = Conditions.getRecordedFileName("jni");
+                String sFileName = GlobalConfig.getRecordedFileName("jni");
                 float iType = ppi.doActionRecognitionV3(ppi.nativeSignalProcess, recData, recData.length,
-                        Conditions.sFileResultPath, sFileName);
+                        GlobalConfig.sFileResultPath, sFileName, sensitive);
                 if (iType > 0.0f) {
                     Bundle bundle = new Bundle();
-                    bundle.putFloat(Conditions.TYPE, iType);
-                    Message message = Message.obtain(mHandler, Conditions.MESSAGE_PHASE_MODEL);
+                    bundle.putFloat(GlobalConfig.TYPE, iType);
+                    Message message = Message.obtain(mHandler, GlobalConfig.MESSAGE_PHASE_MODEL);
                     message.setData(bundle);
                     message.sendToTarget();
-                    LogUtils.d("type:" + iType);
                 }
             }
         }

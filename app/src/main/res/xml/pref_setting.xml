@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory android:title="@string/category_auto_enter">
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="@string/key_auto_enter"
+            android:title="@string/title_auto_enter" />
+
+        <com.example.monster.airgesture.setting.SeekBarPreference
+            android:defaultValue="2"
+            android:dependency="@string/key_auto_enter"
+            android:key="@string/key_auto_enter_wait"
+            android:max="15"
+            android:summary="找单词比较慢不妨试试把自动输入等待的时间拉长一点？"
+            android:text="s"
+            android:title="自动输入单词时间间隔" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/category_auto_enter">
+        <com.example.monster.airgesture.setting.SeekBarPreference
+            android:defaultValue="60"
+            android:summary="越小越灵敏"
+            android:key="@string/key_sensibility"
+            android:max="100"
+            android:text=""
+            android:title="@string/title_sensibility" />
+    </PreferenceCategory>
+
+</PreferenceScreen>

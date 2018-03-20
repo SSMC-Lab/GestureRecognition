@@ -119,7 +119,7 @@ int SignalProcess::doProcessV2(float *pSignal, int iLen, float *costArr, int len
     return -1;
 }
 
-int SignalProcess::doProcessV3(short *pSignal, int iLen,  string sResultPath, string fileName)
+int SignalProcess::doProcessV3(short *pSignal, int iLen,  string sResultPath, string fileName , int sensitive)
 {
 		//累积数据
 	    Spectrogram stSpectrogram;
@@ -191,7 +191,7 @@ int SignalProcess::doProcessV3(short *pSignal, int iLen,  string sResultPath, st
 			sResultFile = sResultPath + fileName + "renoisespectrum_vs_" + sIndex + ".txt";
 			//GammaUtil::writeDataToFile(sResultFile, medianfilterSrcM);
 
-			//opencv中值滤波 twice
+			//openCv中值滤波 twice
 			//Mat  medianfilterDesM(4097, 59, CV_32F); twice
 			Mat medianfilterDesM(iDstColumn, iDstRow, CV_32F);
 			medianBlur(medianfilterSrcM, medianfilterDesM, 3);
@@ -308,7 +308,7 @@ int SignalProcess::doProcessV3(short *pSignal, int iLen,  string sResultPath, st
 			int iThresPoint = 0;
 			int iEnd = 0;
 			SegInfo stSegInfo;		
-			iRet = stSegAction.doSegRealTime(&vAcc[0], vAcc.size(), iMark, iThresPoint, iStart, iEnd);
+			iRet = stSegAction.doSegRealTime(&vAcc[0], vAcc.size(), iMark, iThresPoint, iStart, iEnd,sensitive);
 			stSegInfo.iStart = iStart;
 			stSegInfo.iEnd = iEnd;
 

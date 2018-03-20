@@ -1,9 +1,9 @@
 package com.example.monster.airgesture.utils;
 
-import android.content.Context;
 import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 
-import com.example.monster.airgesture.ui.base.BaseApplication;
+import com.example.monster.airgesture.base.BaseApplication;
 
 import java.util.Collection;
 import java.util.Map;
@@ -16,9 +16,7 @@ import java.util.Set;
 
 public class SPUtils {
 
-    public static final String FILE_NAME = "share_data";//保存文件名
-    private static SharedPreferences sp = BaseApplication.getContext()
-            .getSharedPreferences(FILE_NAME, Context.MODE_PRIVATE);
+    private static SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(BaseApplication.getContext());
 
     /**
      * 依据obj的类型填装

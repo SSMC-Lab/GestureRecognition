@@ -1,17 +1,17 @@
-E:\workcode\G4\gama\GestureRecognition_AndroidStudio\shendaGestureRecognition\app\src\main\jni/obj/local/mips/objs/PhaseProcess/Butterworth.o: \
-  E:/workcode/G4/gama/GestureRecognition_AndroidStudio/shendaGestureRecognition/app/src/main/jni/Butterworth.cpp \
-  D:/Android/sdk/ndk-bundle/build//../sources/cxx-stl/gnu-libstdc++/4.9/include\iostream \
-  D:/Android/sdk/ndk-bundle/build//../sources/cxx-stl/gnu-libstdc++/4.9/include\algorithm \
-  E:/workcode/G4/gama/GestureRecognition_AndroidStudio/shendaGestureRecognition/app/src/main/jni/Butterworth.h \
-  E:/workcode/G4/gama/GestureRecognition_AndroidStudio/shendaGestureRecognition/app/src/main/jni/Biquad.h \
-  D:/Android/sdk/ndk-bundle/build//../sources/cxx-stl/gnu-libstdc++/4.9/include\complex
+F:\projects\android\GestureRecognitionGit\app\src\main\jni/obj/local/mips/objs/PhaseProcess/Butterworth.o: \
+  F:/projects/android/GestureRecognitionGit/app/src/main/jni/Butterworth.cpp \
+  C:/Users/lenovo/AppData/Local/Android/Sdk/ndk-bundle/build//../sources/cxx-stl/gnu-libstdc++/4.9/include\iostream \
+  C:/Users/lenovo/AppData/Local/Android/Sdk/ndk-bundle/build//../sources/cxx-stl/gnu-libstdc++/4.9/include\algorithm \
+  F:/projects/android/GestureRecognitionGit/app/src/main/jni/Butterworth.h \
+  F:/projects/android/GestureRecognitionGit/app/src/main/jni/Biquad.h \
+  C:/Users/lenovo/AppData/Local/Android/Sdk/ndk-bundle/build//../sources/cxx-stl/gnu-libstdc++/4.9/include\complex
 
-D:/Android/sdk/ndk-bundle/build//../sources/cxx-stl/gnu-libstdc++/4.9/include\iostream:
+C:/Users/lenovo/AppData/Local/Android/Sdk/ndk-bundle/build//../sources/cxx-stl/gnu-libstdc++/4.9/include\iostream:
 
-D:/Android/sdk/ndk-bundle/build//../sources/cxx-stl/gnu-libstdc++/4.9/include\algorithm:
+C:/Users/lenovo/AppData/Local/Android/Sdk/ndk-bundle/build//../sources/cxx-stl/gnu-libstdc++/4.9/include\algorithm:
 
-E:/workcode/G4/gama/GestureRecognition_AndroidStudio/shendaGestureRecognition/app/src/main/jni/Butterworth.h:
+F:/projects/android/GestureRecognitionGit/app/src/main/jni/Butterworth.h:
 
-E:/workcode/G4/gama/GestureRecognition_AndroidStudio/shendaGestureRecognition/app/src/main/jni/Biquad.h:
+F:/projects/android/GestureRecognitionGit/app/src/main/jni/Biquad.h:
 
-D:/Android/sdk/ndk-bundle/build//../sources/cxx-stl/gnu-libstdc++/4.9/include\complex:
+C:/Users/lenovo/AppData/Local/Android/Sdk/ndk-bundle/build//../sources/cxx-stl/gnu-libstdc++/4.9/include\complex:

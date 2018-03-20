@@ -10,7 +10,7 @@ import com.example.monster.airgesture.data.word.WordRepository;
  */
 
 public class DataProvider {
-    public static DataRepository provideDataRepository() {
+    public static IDataSource provideDataRepository() {
         return DataRepository.getInstance(UserRepository.getInstance(), WordRepository.getInstance());
     }
 }

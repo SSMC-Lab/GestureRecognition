@@ -60,7 +60,6 @@ public class RecorderTask {
                         LogUtils.e("readState == AudioRecord.ERROR_BAD_VALUE");
                         return;
                     } else {
-                        //LogUtils.d("recData len in RecordTask : " + buffer.length);
                         queue.add(buffer);
                     }
                 }

@@ -14,7 +14,7 @@ import com.example.monster.airgesture.data.bean.ProbCode;
 import com.example.monster.airgesture.data.bean.User;
 import com.example.monster.airgesture.data.bean.Word;
 import com.example.monster.airgesture.data.database.DatabaseManager;
-import com.example.monster.airgesture.ui.base.BaseApplication;
+import com.example.monster.airgesture.base.BaseApplication;
 import com.example.monster.airgesture.utils.LogUtils;
 
 import java.util.ArrayList;

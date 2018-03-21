@@ -232,12 +232,11 @@ public class InputActivity extends BaseActivity<IInputContract.Presenter> implem
         if (!StringUtils.isEmpty(strokes)) {
             if (strokes.length() == 1) {
                 clearCandidateWord();
+                clearStrokeArea();
             }
             inputStrokes.setText(strokes.subSequence(0, strokes.length() - 1));
             getPresenter().delStoker();
         }
-        clearCandidateWord();
-
     }
 
     /**

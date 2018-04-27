@@ -2,6 +2,7 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/app" vcs="svn" />
+    <mapping directory="$PROJECT_DIR$/demo" vcs="svn" />
+    <mapping directory="$PROJECT_DIR$/gesturephase" vcs="svn" />
   </component>
 </project>

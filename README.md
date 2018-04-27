@@ -1,4 +1,6 @@
-﻿# EchoType: a new text entry method for small smart device
-EchoType is a system which can use echo of sound to input text for small device.
-User can use a finger to write letters or words in the air without touching screen.
-Devoloped by: SZU-SSMC,Tencent company.
+﻿# FingerIO: a new interactiong with small smart device
+FingerIO is a ststem which can use echo of sound to Interact with the smart device, as long as you have speakers and microphones.User can use a finger to write letters or words in the air without touching screen.
+Devoloped by: SZU-SSMC, Tencent company.
+
+# Moudle
+We have packaged ECHOTYPE's core algorithm, you can use it easily.

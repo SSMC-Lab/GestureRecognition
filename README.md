@@ -3,4 +3,4 @@ FingerIO is a ststem which can use echo of sound to Interact with the smart devi
 Devoloped by: SZU-SSMC, Tencent company.
 
 # Moudle
-We have packaged ECHOTYPE's core algorithm, you can use it easily.
+We have packaged FingerIO's core algorithm, you can use it easily.

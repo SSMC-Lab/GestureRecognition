@@ -20,6 +20,8 @@
 #include <stdlib.h>
 //#include <syswait.h>
 #include <unistd.h>
+#include <cstring>
+
 using namespace std;
 #define M_PI 3.1415926535897932384
 static double **SinTable = NULL;

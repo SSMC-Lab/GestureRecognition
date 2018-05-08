@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/GestureRecognitionGit.iml" filepath="$PROJECT_DIR$/GestureRecognitionGit.iml" />
+      <module fileurl="file://$PROJECT_DIR$/GestureRecognitionGithub.iml" filepath="$PROJECT_DIR$/GestureRecognitionGithub.iml" />
       <module fileurl="file://$PROJECT_DIR$/demo/demo.iml" filepath="$PROJECT_DIR$/demo/demo.iml" />
       <module fileurl="file://$PROJECT_DIR$/gesturephase/gesturephase.iml" filepath="$PROJECT_DIR$/gesturephase/gesturephase.iml" />
     </modules>

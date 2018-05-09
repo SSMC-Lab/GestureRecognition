@@ -16,7 +16,6 @@ public class PhaseBizProvider {
     private static final int AUDIO_PLAY_SAMPLE_RATE = 44100;//播放采样率
     private static final int AUDIO_PLAY_FREQ = 20000;//音频频率采样率
 
-
     /**
      * 提供 IPhaseBiz 实例对象
      */

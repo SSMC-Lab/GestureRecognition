@@ -1,12 +1,14 @@
 package com.example.demo;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioRecord;
 import android.media.AudioTrack;
 import android.media.MediaRecorder;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -34,6 +36,8 @@ public class MainActivity extends AppCompatActivity {
     private Button btStop;
     private IPhaseBiz mPhaseBiz;
 
+    private boolean isStart = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,13 +63,17 @@ public class MainActivity extends AppCompatActivity {
                 mPhaseBiz.startRecognition(new IPhaseBiz.PhaseListener() {
                     @Override
                     public void receiveActionType(Gesture type) {
-                        Log.d("MainActivity", type.getStoke());
-                        //3.在回调接口得到单个手势对象，更新UI
-                        textGesture.append(type.getStoke());
-                        //如果需要，验证手势类型并做出其他的操作处理
-                        if (type.equals(Gesture.HENG)) {
-                            Log.d("MainActivity", "This is heng");
-                            //在这里实现具体交互逻辑
+                        if (!isStart){
+                            Log.d("MainActivity", type.getStoke());
+                            //3.在回调接口得到单个手势对象，更新UI
+                            textGesture.append(type.getStoke());
+                            //如果需要，验证手势类型并做出其他的操作处理
+                            if (type.equals(Gesture.HENG)) {
+                                Log.d("MainActivity", "This is heng");
+                                //在这里实现具体交互逻辑
+                            }
+                        }else {
+                            Toast.makeText(MainActivity.this,"已经开启",Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -77,7 +85,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //4.手动关闭功能释放资源
-                mPhaseBiz.stopRecognition();
+                if (isStart){
+                    mPhaseBiz.stopRecognition();
+                }else {
+                    Toast.makeText(MainActivity.this,"已经关闭",Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }

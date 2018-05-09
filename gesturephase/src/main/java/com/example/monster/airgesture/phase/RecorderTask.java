@@ -41,6 +41,7 @@ class RecorderTask {
         new Thread(new Runnable() {
             @Override
             public void run() {
+
                 short[] buffer = new short[mBufferSize / 2];
                 mAudioRecord.startRecording();
 

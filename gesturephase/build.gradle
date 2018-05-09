@@ -12,11 +12,6 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        ndk {
-            moduleName "PhaseProcess"
-            ldLibs "log", "z", "m"
-            abiFilters "armeabi", "armeabi-v7a", "x86"
-        }
     }
     externalNativeBuild{
         ndkBuild{

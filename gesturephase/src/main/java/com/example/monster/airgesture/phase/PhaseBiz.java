@@ -4,7 +4,7 @@ import android.content.Context;
 
 import com.example.monster.airgesture.utils.FileCopyUtils;
 import java.io.File;
-import java.util.Queue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedTransferQueue;
 
 
@@ -45,7 +45,7 @@ public class PhaseBiz implements IPhaseBiz {
 
     @Override
     public void startRecognition(PhaseListener listener) {
-        Queue<short[]> queue = new LinkedTransferQueue<>();
+        BlockingQueue<short[]> queue = new LinkedTransferQueue<>();
         if (!isRunning) {
             mPlayerTask.start();
             mRecorderTask.start(queue);

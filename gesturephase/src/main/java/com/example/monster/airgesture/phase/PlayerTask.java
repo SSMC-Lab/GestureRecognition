@@ -12,12 +12,12 @@ class PlayerTask {
     private int mWaveRate;
     private int mSampleRate;
     private AudioTrack mAudioTrack;
-    private int mBufferSize;
+    private int mMinBufferSize;
 
     PlayerTask(int waveRate, int sampleRate) {
         mWaveRate = waveRate;
         mSampleRate = sampleRate;
-        mBufferSize = AudioTrack.getMinBufferSize(
+        mMinBufferSize = AudioTrack.getMinBufferSize(
                 sampleRate,
                 AudioFormat.CHANNEL_OUT_MONO,
                 AudioFormat.ENCODING_PCM_16BIT);
@@ -26,7 +26,7 @@ class PlayerTask {
                 sampleRate,
                 AudioFormat.CHANNEL_OUT_MONO,
                 AudioFormat.ENCODING_PCM_16BIT,
-                mBufferSize,
+                mMinBufferSize,
                 AudioTrack.MODE_STREAM);
     }
 
@@ -34,7 +34,7 @@ class PlayerTask {
         this.mWaveRate = waveRate;
         this.mSampleRate = sampleRate;
         this.mAudioTrack = audioTrack;
-        this.mBufferSize = bufferSize;
+        this.mMinBufferSize = bufferSize;
     }*/
 
     public void start() {
@@ -43,7 +43,7 @@ class PlayerTask {
             @Override
             public void run() {
                 double sampleCountInWave = mSampleRate / (double) mWaveRate;//每一个波中，包含的样本点数量
-                short[] wave = new short[mBufferSize];
+                short[] wave = new short[mMinBufferSize];
                 int index = 0;
                 while (mAudioTrack != null && mAudioTrack.getPlayState() == AudioTrack.PLAYSTATE_PLAYING) {
                     for (int i = 0; i < wave.length; ++i, ++index) {
@@ -51,7 +51,7 @@ class PlayerTask {
                                 Math.sin(2.0 * Math.PI * index / sampleCountInWave)
                         );
                     }
-                    mAudioTrack.write(wave, 0, wave.length);
+                    mAudioTrack.write(wave, 0, mMinBufferSize);
                 }
             }
         }).start();

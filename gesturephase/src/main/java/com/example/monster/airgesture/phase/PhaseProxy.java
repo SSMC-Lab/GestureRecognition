@@ -95,18 +95,17 @@ class PhaseProxy {
      * 解析音频数据获得手势类型
      */
     private void recognizeGesture() {
-        int sensitive = (int) SPUtils.get(KEY_SENSITIVITY, 45, mContext);
+        int sensitive = (int) SPUtils.get(KEY_SENSITIVITY, 50, mContext);
         String sFileName = getRecordedFileName("jni");
         while (isReadyRunning) {
             //从录制音频数据队列获取待解析音频数据
-            short[] recData;
             try {
-                recData = mQueue.take();
-                if (recData != null) {
+                short[] recData = mQueue.take();
+                if (recData != null && recData.length > 0) {
                     float iType = mPPI.doActionRecognitionV3(mPPI.nativeSignalProcess, recData, recData.length,
                             Condition.S_FILE_RESULT_PATH, sFileName, sensitive);
                     if (iType > 0.0f) {
-                        Log.i("PhaseProxy", "receive : " + iType);
+                        //Log.i("PhaseProxy", "receive : " + iType);
                         Bundle bundle = new Bundle();
                         bundle.putInt(TYPE, (int) iType);
                         Message message = Message.obtain(mHandler, MESSAGE_PHASE_MODEL);

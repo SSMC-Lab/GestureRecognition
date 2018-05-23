@@ -5,7 +5,7 @@ import android.media.MediaRecorder;
 import android.util.Log;
 
 
-import java.util.Queue;
+import java.util.concurrent.BlockingQueue;
 
 /**
  * 录制声音
@@ -17,15 +17,15 @@ class RecorderTask {
     private boolean isReadyRecording;
 
     private AudioRecord mAudioRecord;
-    private int mBufferSize;
+    private int mMinBufferSize;
 
     /*RecorderTask(AudioRecord audioRecord, int bufferSize) {
         this.mAudioRecord = audioRecord;
-        this.mBufferSize = bufferSize;
+        this.mMinBufferSize = bufferSize;
     }*/
 
     RecorderTask(int channelIn, int sampleRate, int encoding) {
-        mBufferSize = AudioRecord.getMinBufferSize(
+        mMinBufferSize = AudioRecord.getMinBufferSize(
                 sampleRate,
                 channelIn,
                 encoding);
@@ -34,20 +34,18 @@ class RecorderTask {
                 sampleRate,
                 channelIn,
                 encoding,
-                mBufferSize);
+                mMinBufferSize);
     }
 
-    public void start(final Queue<short[]> queue) {
+    public void start(final BlockingQueue<short[]> queue) {
         new Thread(new Runnable() {
             @Override
             public void run() {
-
-                short[] buffer = new short[mBufferSize / 2];
+                short[] buffer = new short[mMinBufferSize];
                 mAudioRecord.startRecording();
-
                 isReadyRecording = true;
                 while (isReadyRecording) {
-                    int readResult = mAudioRecord.read(buffer, 0, buffer.length);
+                    int readResult = mAudioRecord.read(buffer, 0, mMinBufferSize);
                     if (readResult == AudioRecord.ERROR_INVALID_OPERATION) {
                         Log.e(TAG, "readState == AudioRecord.ERROR_INVALID_OPERATION");
                         return;
@@ -55,7 +53,11 @@ class RecorderTask {
                         Log.e(TAG, "readState == AudioRecord.ERROR_BAD_VALUE");
                         return;
                     }
-                    queue.add(buffer);
+                    try {
+                        queue.put(buffer);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }).start();

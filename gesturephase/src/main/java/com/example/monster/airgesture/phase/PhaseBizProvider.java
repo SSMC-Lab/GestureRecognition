@@ -2,8 +2,6 @@ package com.example.monster.airgesture.phase;
 
 import android.content.Context;
 import android.media.AudioFormat;
-import android.media.AudioRecord;
-import android.media.AudioTrack;
 
 /**
  * 依赖注入
@@ -36,8 +34,8 @@ public class PhaseBizProvider {
                                             int playFreq) {
         return new PhaseBiz(
                 context,
-                new PhaseProxy(context),
-                new PlayerTask(playFreq, playSampleRate),
+                new PhaseTask(context),
+                new HighFreqWavePlayTask(playFreq, playSampleRate),
                 new RecorderTask(recordChannel, recordSampleRate, recordEncoding));
     }
 }

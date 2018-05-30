@@ -4,21 +4,18 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 
 import com.example.monster.airgesture.PhaseProcessI;
 import com.example.monster.airgesture.utils.SPUtils;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
 
 /**
- * 录音数据解析处理模块(native层{@link PhaseProxy#mPPI})代理
+ * 录音数据解析处理模块(native层{@link PhaseTask#mPPI})代理
  */
 
-class PhaseProxy {
+class PhaseTask {
     private static final String KEY_SENSITIVITY = "KEY_SENSITIVITY";
     private static final int MESSAGE_PHASE_MODEL = 0x100;
     private static final String TYPE = "type";
@@ -31,7 +28,7 @@ class PhaseProxy {
 
     private boolean isReadyRunning;
 
-    PhaseProxy(Context context) {
+    PhaseTask(Context context) {
         mContext = context;
         mPPI = new PhaseProcessI();
         mPPI.doInit(mPPI.nativeSignalProcess, Condition.S_FILE_TEMPLATE_PATH);
@@ -102,10 +99,10 @@ class PhaseProxy {
             try {
                 short[] recData = mQueue.take();
                 if (recData != null && recData.length > 0) {
-                    float iType = mPPI.doActionRecognitionV3(mPPI.nativeSignalProcess, recData, recData.length,
-                            Condition.S_FILE_RESULT_PATH, sFileName, sensitive);
+                    float iType = mPPI.doActionRecognitionV3(mPPI.nativeSignalProcess, recData,
+                            recData.length, Condition.S_FILE_RESULT_PATH, sFileName, sensitive);
                     if (iType > 0.0f) {
-                        //Log.i("PhaseProxy", "receive : " + iType);
+                        //Log.i("PhaseTask", "receive : " + iType);
                         Bundle bundle = new Bundle();
                         bundle.putInt(TYPE, (int) iType);
                         Message message = Message.obtain(mHandler, MESSAGE_PHASE_MODEL);

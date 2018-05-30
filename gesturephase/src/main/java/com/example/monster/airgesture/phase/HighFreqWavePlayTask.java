@@ -5,16 +5,16 @@ import android.media.AudioManager;
 import android.media.AudioTrack;
 
 /**
- * 使用播放器发出指定频率{@link PlayerTask#mWaveRate}的正弦波
+ * 使用播放器发出指定频率{@link HighFreqWavePlayTask#mWaveRate}的正弦波
  */
 
-class PlayerTask {
+class HighFreqWavePlayTask {
     private int mWaveRate;
     private int mSampleRate;
     private AudioTrack mAudioTrack;
     private int mMinBufferSize;
 
-    PlayerTask(int waveRate, int sampleRate) {
+    HighFreqWavePlayTask(int waveRate, int sampleRate) {
         mWaveRate = waveRate;
         mSampleRate = sampleRate;
         mMinBufferSize = AudioTrack.getMinBufferSize(
@@ -30,7 +30,7 @@ class PlayerTask {
                 AudioTrack.MODE_STREAM);
     }
 
-    /*PlayerTask(int waveRate,int sampleRate, AudioTrack audioTrack, int bufferSize) {
+    /*HighFreqWavePlayTask(int waveRate,int sampleRate, AudioTrack audioTrack, int bufferSize) {
         this.mWaveRate = waveRate;
         this.mSampleRate = sampleRate;
         this.mAudioTrack = audioTrack;

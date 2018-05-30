@@ -17,6 +17,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,9 +32,9 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int PERMISSION_REQUEST_CODE = 0;
 
+    private static final int SEEKBAR_ZERO_POINT = 30;
+
     private TextView textGesture;
-    private Button btStart;
-    private Button btStop;
     private IPhaseBiz mPhaseBiz;
 
     private boolean isStart = false;
@@ -48,36 +49,34 @@ public class MainActivity extends AppCompatActivity {
                 Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.RECORD_AUDIO});
 
         textGesture = findViewById(R.id.tv_gesture);
-        btStart = findViewById(R.id.bt_start);
-        btStop = findViewById(R.id.bt_stop);
+        Button btStart = findViewById(R.id.bt_start);
+        Button btStop = findViewById(R.id.bt_stop);
+        SeekBar seekBarSensitivity = findViewById(R.id.seek_bar_sensitivity);
 
         //mPhaseBiz = PhaseBizProvider.providePhaseBiz(MainActivity.this,44100,
         //        AudioFormat.CHANNEL_IN_MONO,AudioFormat.ENCODING_PCM_16BIT,44100,24000);
         btStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                //1.得到PhaseBiz对象的实例，需要写文件的权限
-                mPhaseBiz = PhaseBizProvider.providePhaseBiz(MainActivity.this);
-                //2.调用PhaseBiz的方法启业务功能
-                mPhaseBiz.startRecognition(new IPhaseBiz.PhaseListener() {
-                    @Override
-                    public void receiveActionType(Gesture type) {
-                        if (!isStart){
-                            Log.d("MainActivity", type.getStoke());
+                if (!isStart){
+                    isStart = true;
+                    //1.得到PhaseBiz对象的实例，需要写文件的权限
+                    mPhaseBiz = PhaseBizProvider.providePhaseBiz(MainActivity.this);
+                    //2.调用PhaseBiz的方法启业务功能
+                    mPhaseBiz.startRecognition(new IPhaseBiz.PhaseListener() {
+                        @Override
+                        public void receiveActionType(Gesture type) {
                             //3.在回调接口得到单个手势对象，更新UI
                             textGesture.append(type.getStoke());
                             //如果需要，验证手势类型并做出其他的操作处理
                             if (type.equals(Gesture.HENG)) {
-                                Log.d("MainActivity", "This is heng");
                                 //在这里实现具体交互逻辑
                             }
-                        }else {
-                            Toast.makeText(MainActivity.this,"已经开启",Toast.LENGTH_SHORT).show();
                         }
-                    }
-                });
-
+                    });
+                }else {
+                    showToast("已经开启，不要重复点击");
+                }
             }
         });
 
@@ -85,10 +84,30 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //4.手动关闭功能释放资源
-                if (isStart){
+                if (isStart) {
                     mPhaseBiz.stopRecognition();
-                }else {
-                    Toast.makeText(MainActivity.this,"已经关闭",Toast.LENGTH_SHORT).show();
+                    isStart = false;
+                } else {
+                    showToast("已经关闭,不要重复点击");
+                }
+            }
+        });
+
+        seekBarSensitivity.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                if (mPhaseBiz != null) {
+                    mPhaseBiz.modifySensitivity(seekBar.getProgress() + SEEKBAR_ZERO_POINT);
+                    showToast("灵敏度已更新，请关闭识别功能再打开，如果仍有问题，请检查媒体音量大小或提交BUG");
                 }
             }
         });
@@ -117,9 +136,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void showToast(String msg) {
+        Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
-
 }

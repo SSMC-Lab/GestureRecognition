@@ -14,17 +14,17 @@ import java.util.concurrent.LinkedTransferQueue;
 
 public class PhaseBiz implements IPhaseBiz {
 
-    private PhaseProxy mPhaseProxy;
-    private PlayerTask mPlayerTask;
+    private PhaseTask mPhaseTask;
+    private HighFreqWavePlayTask mHighFreqWavePlayTask;
     private RecorderTask mRecorderTask;
     private Context mContext;
 
     private boolean isRunning;
 
-    PhaseBiz(Context context, PhaseProxy mPhaseProxy,
-             PlayerTask mPlayerTask, RecorderTask mRecorderTask) {
-        this.mPhaseProxy = mPhaseProxy;
-        this.mPlayerTask = mPlayerTask;
+    PhaseBiz(Context context, PhaseTask mPhaseTask,
+             HighFreqWavePlayTask mHighFreqWavePlayTask, RecorderTask mRecorderTask) {
+        this.mPhaseTask = mPhaseTask;
+        this.mHighFreqWavePlayTask = mHighFreqWavePlayTask;
         this.mRecorderTask = mRecorderTask;
         this.mContext = context;
         File fAbsolutePath = new File(Condition.S_ABSOLUTE_PATH);
@@ -47,9 +47,9 @@ public class PhaseBiz implements IPhaseBiz {
     public void startRecognition(PhaseListener listener) {
         BlockingQueue<short[]> queue = new LinkedTransferQueue<>();
         if (!isRunning) {
-            mPlayerTask.start();
+            mHighFreqWavePlayTask.start();
             mRecorderTask.start(queue);
-            mPhaseProxy.start(queue, listener);
+            mPhaseTask.start(queue, listener);
             isRunning = true;
         }
     }
@@ -57,16 +57,16 @@ public class PhaseBiz implements IPhaseBiz {
     @Override
     public void stopRecognition() {
         if (isRunning) {
-            mPlayerTask.stop();
+            mHighFreqWavePlayTask.stop();
             mRecorderTask.stop();
-            mPhaseProxy.stop();
+            mPhaseTask.stop();
             isRunning = false;
         }
     }
 
     @Override
     public void modifySensitivity(int sensitivity) {
-        mPhaseProxy.modifySensitivity(sensitivity);
+        mPhaseTask.modifySensitivity(sensitivity);
     }
 
     /**
